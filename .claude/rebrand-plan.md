@@ -1,4 +1,4 @@
-# Rebrand Plan: Huntarr → Seekarr
+# Seekarr Project — Master Task List
 
 Repository: https://github.com/diybits/seekarr
 Domain: seekarr.io (owned, site setup pending)
@@ -30,9 +30,20 @@ Domain: seekarr.io (owned, site setup pending)
 
 ---
 
-## Task List
+## Security Tasks (all complete ✅)
 
-### Task #5 — Python core rebrand
+| # | Task | Commit |
+|---|------|--------|
+| 1 | Fix hardcoded fallback Flask secret key | ec57262 |
+| 2 | Fix X-Forwarded-For spoofing bypass in local network auth | 7d0938a |
+| 3 | Remove unauthenticated /api/stats/reset_public endpoint | 23e6914 |
+| 4 | Replace SHA-256 password hashing with bcrypt | 1c81fc5 |
+
+---
+
+## Rebrand Task List
+
+### Task #5 — Python core rebrand ⏳
 Files: `main.py`, `src/primary/windows_service.py`, `src/primary/auth.py`, `src/primary/background.py`
 - Logger names: HuntarrRoot → SeekarrRoot, HuntarrBackground → SeekarrBackground
 - Class: HuntarrService → SeekarrService
@@ -41,12 +52,12 @@ Files: `main.py`, `src/primary/windows_service.py`, `src/primary/auth.py`, `src/
 - **Session cookie**: "huntarr_session" → "seekarr_session"
   ⚠️ Breaking change — all users must log in again after upgrade
 
-### Task #6 — API User-Agent strings
+### Task #6 — API User-Agent strings ⏳
 Files: `src/primary/apps/{sonarr,radarr,lidarr,readarr,whisparr,eros}/api.py`
 - "Huntarr/1.0 (https://github.com/plexguide/Huntarr.io)"
 - → "Seekarr/7.0.0 (https://github.com/diybits/seekarr)"
 
-### Task #7 — HTML templates
+### Task #7 — HTML templates ⏳
 Files: `frontend/templates/**/*.html`, `docs/**/*.html`
 - Titles, headings, display text, footers: Huntarr → Seekarr
 - GitHub links → https://github.com/diybits/seekarr
@@ -54,21 +65,21 @@ Files: `frontend/templates/**/*.html`, `docs/**/*.html`
 - Docker image refs → ghcr.io/diybits/seekarr:latest
 - Logo image refs: huntarr-logo.png → seekarr-logo.png
 
-### Task #8 — JavaScript files
+### Task #8 — JavaScript files ⏳
 Files: `frontend/static/js/**/*.js`
 - "Huntarr" → "Seekarr" in comments and string literals
 - GitHub API calls in new-main.js → api.github.com/repos/diybits/seekarr/*
 - github-sponsors.js: sponsorsUsername → 'diybits'
 - 52 huntarr.io links → https://seekarr.io/threads/* (placeholders)
 
-### Task #9 — Docker files
+### Task #9 — Docker files ⏳
 Files: `Dockerfile`, `docker-compose.yml`
 - OCI labels: title="Seekarr", url/source=https://github.com/diybits/seekarr, authors="diybits"
 - docker-compose: service/container/volume names huntarr → seekarr
 - Image: ghcr.io/diybits/seekarr
 - ⚠️ Volume rename — document migration in CHANGELOG
 
-### Task #10 — GitHub Actions workflows
+### Task #10 — GitHub Actions workflows ⏳
 Files: `.github/workflows/*.yml`
 - huntarr-docs.yml → seekarr-docs.yml
 - All image refs → ghcr.io/diybits/seekarr:*
@@ -77,7 +88,7 @@ Files: `.github/workflows/*.yml`
 - New: security.yml (pip-audit + Trivy)
 - GHCR push target: ghcr.io/diybits/seekarr (GITHUB_TOKEN auto-scoped to repo)
 
-### Task #11 — Markdown documentation
+### Task #11 — Markdown documentation ⏳
 Files: `README.md`, `CHANGELOG.md`, `docs/README.md`, `.claude/security-findings.md`
 - "Huntarr" → "Seekarr" throughout
 - All plexguide/Huntarr.io links → https://github.com/diybits/seekarr
@@ -89,14 +100,14 @@ Files: `README.md`, `CHANGELOG.md`, `docs/README.md`, `.claude/security-findings
 - CHANGELOG: add [7.0.0] section with breaking changes + volume migration command
 - GitHub Pages: diybits.github.io/seekarr
 
-### Task #12 — Static assets (rename now; artwork later)
+### Task #12 — Static assets (rename now; artwork later) ⏳
 - docs/images/huntarr-logo.png → seekarr-logo.png
 - frontend/static/logo/Huntarr.svg → Seekarr.svg
 - frontend/static/logo/huntarr.ico → seekarr.ico
 - Update all HTML references to renamed files
 - PNG set (16–864px) awaiting new artwork
 
-### Task #13 — 2FA issuer name
+### Task #13 — 2FA issuer name ⏳
 File: `src/primary/auth.py`
 - issuer_name="Huntarr" → issuer_name="Seekarr"
 - Cosmetic only; existing 2FA codes unaffected
