@@ -19,10 +19,9 @@ Started: 2026-05-17
 
 ## 🟡 Polish
 
-- [ ] **#5 Remove unconditional `debug_template_rendering()`** — hooks Jinja loader on every request in production; `web_server.py:95–118`
-  - Gate behind `app.debug` or remove entirely (Jinja errors already surface in logs)
+- [x] **#5 Remove unconditional `debug_template_rendering()`** — removed function and call from `web_server.py`
 
-- [ ] **#6 Remove `print()` startup statements** — `web_server.py:91–92` raw prints to stdout in production
+- [x] **#6 Remove `print()` startup statements** — removed all debug `print()` calls from `web_server.py` startup
 
 - [ ] **#7 Fix settings cache wipe on every request** — `auth.py:304–305` clears `settings_cache` on every authenticated request, defeating the 5s TTL and causing a disk read per request
   - Remove the manual cache clear; the TTL is sufficient
