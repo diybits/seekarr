@@ -1,12 +1,21 @@
 # Changelog
 
-All notable changes to Huntarr are documented here.
+All notable changes to Seekarr are documented here.
 
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
 ## [Unreleased]
+
+### Changed (Rebrand: Huntarr → Seekarr)
+
+- **Breaking** — Session cookie renamed from `huntarr_session` to `seekarr_session`. All existing sessions are invalidated; users must log in again after upgrading. (`src/primary/auth.py`)
+- Logger names updated: `HuntarrRoot` → `SeekarrRoot`, `HuntarrBackground` → `SeekarrBackground`. (`main.py`, `src/primary/background.py`)
+- Windows service class renamed `HuntarrService` → `SeekarrService`; service name and display name updated to "Seekarr" / "Seekarr Service". (`src/primary/windows_service.py`)
+- Background entry point renamed `start_huntarr()` → `start_seekarr()`; migration env var renamed `HUNTARR_RUN_MIGRATION` → `SEEKARR_RUN_MIGRATION`. (`src/primary/background.py`)
+- TOTP 2FA provisioning issuer updated from `"Huntarr"` to `"Seekarr"`. Existing enrolled authenticators are unaffected. (`src/primary/auth.py`)
+- HTTP `User-Agent` header updated from `Huntarr/1.0 (https://github.com/plexguide/Huntarr.io)` to `Seekarr/7.0.0 (https://github.com/diybits/seekarr)` across all six Arr app API modules.
 
 ### Security
 
@@ -22,4 +31,4 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [6.6.3] — previous release
 
-See [GitHub Releases](https://github.com/plexguide/Huntarr.io/releases) for earlier version history.
+See [GitHub Releases](https://github.com/diybits/seekarr/releases) for earlier version history.

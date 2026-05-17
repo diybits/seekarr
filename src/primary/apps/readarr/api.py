@@ -41,10 +41,10 @@ def check_connection(api_url: str, api_key: str, api_timeout: int) -> bool:
         base_url = api_url.rstrip('/')
         full_url = f"{base_url}/api/v1/system/status"
         
-        # Add User-Agent header to identify Huntarr
+        # Add User-Agent header to identify Seekarr
         headers = {
             "X-Api-Key": api_key,
-            "User-Agent": "Huntarr/1.0 (https://github.com/plexguide/Huntarr.io)"
+            "User-Agent": "Seekarr/7.0.0 (https://github.com/diybits/seekarr)"
         }
         logger.debug(f"Using User-Agent: {headers['User-Agent']}")
         
@@ -187,7 +187,7 @@ def arr_request(endpoint: str, method: str = "GET", data: Dict = None, app_type:
     headers = {
         "X-Api-Key": key,
         "Content-Type": "application/json",
-        "User-Agent": f"Huntarr/1.0 ({app_type})"
+        "User-Agent": f"Seekarr/7.0.0 ({app_type})"
     }
     
     # Get SSL verification setting
@@ -292,10 +292,10 @@ def get_wanted_missing_books(api_url: str, api_key: str, api_timeout: int, monit
         return []
     base_url = api_url.rstrip('/')
     url = f"{base_url}/api/v1/{endpoint.lstrip('/')}"
-    # Add User-Agent header to identify Huntarr
+    # Add User-Agent header to identify Seekarr
     headers = {
         "X-Api-Key": api_key,
-        "User-Agent": "Huntarr/1.0 (https://github.com/plexguide/Huntarr.io)",
+        "User-Agent": "Seekarr/7.0.0 (https://github.com/diybits/seekarr)",
         "Content-Type": "application/json"
     }
     logger.debug(f"Using User-Agent: {headers['User-Agent']}")
