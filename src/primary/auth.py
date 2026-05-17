@@ -11,6 +11,7 @@ import hashlib
 import secrets
 import time
 import pathlib
+import threading
 import base64
 import io
 import qrcode
@@ -30,8 +31,46 @@ USER_FILE = USER_DIR / "credentials.json"
 SESSION_EXPIRY = 60 * 60 * 24 * 7  # 1 week in seconds
 SESSION_COOKIE_NAME = "seekarr_session"
 
-# Store active sessions
-active_sessions = {}
+# Session persistence
+_session_lock = threading.Lock()
+_SESSIONS_FILE = pathlib.Path("/config/sessions.json")
+
+active_sessions: Dict[str, Dict] = {}
+
+
+def _load_sessions() -> None:
+    """Load persisted sessions into active_sessions, dropping any that have expired."""
+    global active_sessions
+    if not _SESSIONS_FILE.exists():
+        return
+    try:
+        with open(_SESSIONS_FILE, "r") as f:
+            data = json.load(f)
+        now = time.time()
+        active_sessions = {sid: s for sid, s in data.items() if s.get("expires_at", 0) > now}
+        if active_sessions:
+            logger.info(f"Loaded {len(active_sessions)} active session(s) from disk")
+    except Exception as e:
+        logger.warning(f"Could not load sessions file: {e}")
+
+
+def _save_sessions() -> None:
+    """Write active_sessions to disk atomically. Caller must hold _session_lock."""
+    try:
+        _SESSIONS_FILE.parent.mkdir(parents=True, exist_ok=True)
+        tmp = _SESSIONS_FILE.with_suffix(".tmp")
+        with open(tmp, "w") as f:
+            json.dump(active_sessions, f)
+        tmp.replace(_SESSIONS_FILE)
+        try:
+            os.chmod(_SESSIONS_FILE, 0o600)
+        except OSError:
+            pass
+    except Exception as e:
+        logger.warning(f"Could not save sessions file: {e}")
+
+
+_load_sessions()
 
 # --- Add Helper functions for user data ---
 def get_user_data() -> Dict[str, Any]:
@@ -228,43 +267,41 @@ def verify_user(username: str, password: str, otp_code: str = None) -> Tuple[boo
     return False, False
 
 def create_session(username: str) -> str:
-    """Create a new session for an authenticated user"""
+    """Create a new session for an authenticated user and persist it."""
     session_id = secrets.token_hex(32)
-    # Store the actual username, not the hash
-    
-    # Store session data
-    active_sessions[session_id] = {
-        "username": username, # Store actual username
-        "created_at": time.time(),
-        "expires_at": time.time() + SESSION_EXPIRY
-    }
-    
+    with _session_lock:
+        active_sessions[session_id] = {
+            "username": username,
+            "created_at": time.time(),
+            "expires_at": time.time() + SESSION_EXPIRY,
+        }
+        _save_sessions()
     return session_id
 
+
 def verify_session(session_id: str) -> bool:
-    """Verify if a session is valid"""
-    if not session_id or session_id not in active_sessions:
+    """Verify if a session is valid, extending its expiry window in memory."""
+    if not session_id:
         return False
-        
-    session_data = active_sessions[session_id]
-    
-    # Check if session has expired
-    if session_data.get("expires_at", 0) < time.time():
-        # Clean up expired session
-        del active_sessions[session_id]
-        return False
-        
-    # Extend session expiry
-    active_sessions[session_id]["expires_at"] = time.time() + SESSION_EXPIRY
-    return True
+    with _session_lock:
+        if session_id not in active_sessions:
+            return False
+        session_data = active_sessions[session_id]
+        if session_data.get("expires_at", 0) < time.time():
+            del active_sessions[session_id]
+            _save_sessions()
+            return False
+        # Slide the expiry window in memory; persisted on next create/logout
+        active_sessions[session_id]["expires_at"] = time.time() + SESSION_EXPIRY
+        return True
+
 
 def get_username_from_session(session_id: str) -> Optional[str]:
-    """Get the username from a session"""
-    if not session_id or session_id not in active_sessions:
+    """Get the username from a session."""
+    if not session_id:
         return None
-    
-    # Return the stored username
-    return active_sessions[session_id].get("username")
+    with _session_lock:
+        return active_sessions.get(session_id, {}).get("username")
 
 def authenticate_request():
     """Flask route decorator to check if user is authenticated"""
@@ -381,12 +418,10 @@ def authenticate_request():
     return None
 
 def logout(session_id: str):
-    """Log out the current user by invalidating their session"""
-    if session_id and session_id in active_sessions:
-        del active_sessions[session_id]
-    
-    # Clear the session cookie in Flask context (if available, otherwise handled by route)
-    # session.pop(SESSION_COOKIE_NAME, None) # This might be better handled solely in the route
+    """Invalidate a session and remove it from disk."""
+    with _session_lock:
+        active_sessions.pop(session_id, None)
+        _save_sessions()
 
 def is_2fa_enabled(username):
     """Check if 2FA is enabled for a user."""

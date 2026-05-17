@@ -27,8 +27,7 @@ Started: 2026-05-17
 
 ## 🟢 Nice to have
 
-- [ ] **#8 Persist sessions across restarts** — `active_sessions` dict in `auth.py` is in-memory only; all users re-authenticate on container restart
-  - Write/read sessions to `/config/sessions.json` with expiry cleanup on load
+- [x] **#8 Persist sessions across restarts** — sessions saved to `/config/sessions.json` (atomic write, 0o600); loaded on startup with expired entries pruned; `threading.Lock` guards all mutations
 
 ---
 
