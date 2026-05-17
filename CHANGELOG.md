@@ -31,6 +31,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   docker volume rm huntarr-config
   ```
 - `docker-compose.yml`: service name, container name, and volume updated to `seekarr`; image set to `ghcr.io/diybits/seekarr:latest`.
+- GitHub Actions workflows replaced and added:
+  - `huntarr-docs.yml` renamed to `seekarr-docs.yml` (GitHub Pages deploy).
+  - Old `docker-build-push.yml` and `docker-image.yml` (pushed to Docker Hub) removed.
+  - New `ci.yml`: gated pipeline — lint → test → Docker build & push to GHCR (`ghcr.io/diybits/seekarr`). Docker stage skipped on pull requests.
+  - New `security.yml`: weekly pip-audit of `requirements.txt` + Trivy image scan with SARIF upload to GitHub Security tab.
 
 ### Security
 
