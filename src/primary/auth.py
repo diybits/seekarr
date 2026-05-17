@@ -338,29 +338,12 @@ def authenticate_request():
             '192.168.'        # 192.168.0.0/16
         ]
         is_local = False
-        
-        # Check if request is coming through a proxy
-        forwarded_for = request.headers.get('X-Forwarded-For')
-        if forwarded_for:
-            logger.debug(f"X-Forwarded-For header detected: {forwarded_for}")
-            # Take the first IP in the chain which is typically the client's real IP
-            possible_client_ip = forwarded_for.split(',')[0].strip()
-            logger.debug(f"Checking if forwarded IP {possible_client_ip} is local")
-            
-            # Check if this forwarded IP is a local network IP
-            for network in local_networks:
-                if possible_client_ip == network or (network.endswith('.') and possible_client_ip.startswith(network)):
-                    is_local = True
-                    logger.info(f"Forwarded IP {possible_client_ip} is a local network IP (matches {network})")
-                    break
-        
-        # Check if direct remote_addr is a local network IP if not already determined
-        if not is_local:
-            for network in local_networks:
-                if remote_addr == network or (network.endswith('.') and remote_addr.startswith(network)):
-                    is_local = True
-                    logger.info(f"Direct IP {remote_addr} is a local network IP (matches {network})")
-                    break
+
+        for network in local_networks:
+            if remote_addr == network or (network.endswith('.') and remote_addr.startswith(network)):
+                is_local = True
+                logger.info(f"Direct IP {remote_addr} is a local network IP (matches {network})")
+                break
                     
         if is_local:
             logger.info(f"Local network access from {remote_addr} - Authentication bypassed! (Local Bypass Mode)")

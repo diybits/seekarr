@@ -7,7 +7,7 @@ Review date: 2026-05-17
 | # | Severity | File | Line | Issue | Status |
 |---|----------|------|------|-------|--------|
 | 1 | HIGH | src/primary/web_server.py | 120 | Hardcoded fallback Flask secret key | ✅ Fixed 2026-05-17 |
-| 2 | HIGH | src/primary/auth.py | 343–355 | X-Forwarded-For spoofing bypasses local auth | ⏳ Pending |
+| 2 | HIGH | src/primary/auth.py | 343–355 | X-Forwarded-For spoofing bypasses local auth | ✅ Fixed 2026-05-17 |
 | 3 | MEDIUM | src/primary/web_server.py | 828–856 | Unauthenticated stats-reset public endpoint | ⏳ Pending |
 | 4 | MEDIUM | src/primary/auth.py | 75–80 | Weak SHA-256 password hashing | ⏳ Pending |
 
@@ -27,12 +27,12 @@ Flask uses the secret key to sign session cookies with HMAC. The fallback `'dev_
 
 ---
 
-## Finding 2 — X-Forwarded-For Spoofing Bypasses Local Network Auth
+## Finding 2 — X-Forwarded-For Spoofing Bypasses Local Network Auth ✅ FIXED 2026-05-17
 **Severity**: High | **File**: `src/primary/auth.py:343–355`
 
-When "Local Bypass" mode is enabled, `authenticate_request()` reads the attacker-controlled `X-Forwarded-For` header and grants unauthenticated access if the first IP looks local. Any external client can send `X-Forwarded-For: 127.0.0.1` to bypass authentication.
+When "Local Bypass" mode is enabled, `authenticate_request()` read the attacker-controlled `X-Forwarded-For` header and granted unauthenticated access if the first IP looked local. Any external client could send `X-Forwarded-For: 127.0.0.1` to bypass authentication.
 
-**Fix**: Remove the `X-Forwarded-For` block entirely. Check only `request.remote_addr` (OS-level TCP peer, cannot be spoofed) for the local-network bypass decision.
+**Resolution**: Removed the entire `X-Forwarded-For` block (lines 342–355). The local-bypass decision now checks only `request.remote_addr`, the OS-level TCP peer address which cannot be forged by a remote client.
 
 ---
 
