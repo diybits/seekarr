@@ -6,7 +6,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
-## [Unreleased]
+## [7.0.0] — 2026-05-17
+
+### ⚠️ Breaking Changes
+
+- **Session cookie renamed** (`huntarr_session` → `seekarr_session`) — all users must log in again after upgrading.
+- **Docker volume renamed** (`huntarr-config` → `seekarr-config`) — migrate data before upgrading:
+  ```bash
+  docker volume create seekarr-config
+  docker run --rm -v huntarr-config:/from -v seekarr-config:/to alpine sh -c "cp -av /from/. /to/"
+  docker volume rm huntarr-config
+  ```
+- **`/api/stats/reset_public` removed** — use the authenticated `/api/stats/reset` endpoint instead.
+- **Environment variable renamed** (`HUNTARR_RUN_MIGRATION` → `SEEKARR_RUN_MIGRATION`).
 
 ### Changed (Rebrand: Huntarr → Seekarr)
 
@@ -49,6 +61,6 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
-## [6.6.3] — previous release
+## [6.6.3] — upstream baseline
 
-See [GitHub Releases](https://github.com/diybits/seekarr/releases) for earlier version history.
+Last upstream Huntarr release before the Seekarr fork. See the [upstream release history](https://github.com/plexguide/Huntarr.io/releases) for changes prior to 7.0.0.

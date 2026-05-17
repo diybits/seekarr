@@ -1,4 +1,4 @@
-# Security Findings — Huntarr
+# Security Findings — Seekarr
 
 Review date: 2026-05-17
 
