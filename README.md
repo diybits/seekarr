@@ -8,8 +8,6 @@
 
 <h2 align="center">Want to Help? Click the Star in the Upper-Right Corner! ⭐</h2> 
 
-<img src="https://github.com/user-attachments/assets/1ea6ca9c-0909-4b6a-b573-f778b65af8b2" width="100%"/>
- 
 | Application | Status        |
 | :---------- | :------------ |
 | Sonarr      | **✅ Ready**  |
@@ -25,8 +23,6 @@ Keep in mind this is very early in program development. If you have a very speci
 
 ## Table of Contents
 - [Overview](#overview)
-- [Community](#community)
-- [Indexers Approving of Seekarr](#indexers-approving-of-seekarr)
 - [How It Works](#how-it-works)
 - [Web Interface](#web-interface)
   - [How to Access](#how-to-access)
@@ -46,19 +42,6 @@ Keep in mind this is very early in program development. If you have a very speci
 This application continually searches your media libraries for missing content and items that need quality upgrades. It automatically triggers searches for both missing items and those below your quality cutoff. It's designed to run continuously while being gentle on your indexers, helping you gradually complete your media collection with the best available quality.
 
 For detailed documentation, please visit our [Wiki](https://github.com/diybits/seekarr/wiki).
-
-## Community
-
-<p align="center">
-  Join the community on Discord!
-  <br>
-  <a href="https://discord.com/invite/PGJJjR5Cww" target="_blank">
-    <img src="frontend/static/images/discord.png" alt="Discord" width="48" height="48">
-  </a>
-</p>
-
-## Indexers Approving of Seekarr:
-* https://ninjacentral.co.za
 
 ## How It Works
 
@@ -93,7 +76,7 @@ For detailed documentation, please visit our [Wiki](https://github.com/diybits/s
 Seekarr's live homepage will provide you statics about how many hunts have been pursed regarding missing media and upgrade searches! Note: Numbers reflected are but all required for testing. 
 
 <p align="center">
-  <img width="100%" alt="image" src="https://github.com/user-attachments/assets/1ffeb7f1-7dec-484c-9073-02d460953f99" />
+  <img width="100%" alt="Homepage" src="docs/images/home.png" />
   <br>
   <em>Homepage</em>
 </p>
@@ -101,7 +84,7 @@ Seekarr's live homepage will provide you statics about how many hunts have been 
 Seekarr includes a real-time log viewer and settings management web interface that allows you to monitor and configure its operation directly from your browser.
 
 <p align="center">
-  <img width="100%" alt="image" src="https://github.com/user-attachments/assets/93c1a5d3-e82a-416a-8d41-0379ea221d7a" />
+  <img width="100%" alt="Logger UI" src="docs/images/logs.png" />
   <br>
   <em>Logger UI</em>
 </p>
@@ -121,7 +104,7 @@ The URL will be displayed in the logs when Seekarr starts, using the same hostna
 The web interface allows you to configure all of Seekarr's settings:
 
 <p align="center">
-  <img width="930" alt="image" src="https://github.com/user-attachments/assets/e87867f8-0a8c-48d8-b6ef-234caa33e41f" />
+  <img width="930" alt="Settings UI" src="docs/images/settings.png" />
   <br>
   <em>Settings UI</em>
 </p>
