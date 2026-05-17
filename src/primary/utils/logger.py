@@ -15,7 +15,7 @@ LOG_DIR = pathlib.Path("/config/logs") # Changed path
 LOG_DIR.mkdir(parents=True, exist_ok=True)
 
 # Default log file for general messages
-MAIN_LOG_FILE = LOG_DIR / "huntarr.log"
+MAIN_LOG_FILE = LOG_DIR / "seekarr.log"
 
 # App-specific log files
 APP_LOG_FILES = {
@@ -35,7 +35,7 @@ app_loggers: Dict[str, logging.Logger] = {}
 def setup_main_logger(debug_mode=None):
     """Set up the main Huntarr logger."""
     global logger
-    log_name = "huntarr"
+    log_name = "seekarr"
     log_file = MAIN_LOG_FILE
 
     # Determine debug mode safely
@@ -70,7 +70,7 @@ def setup_main_logger(debug_mode=None):
     file_handler.setLevel(logging.DEBUG if use_debug_mode else logging.INFO)
 
     # Set format for the main logger
-    log_format = "%(asctime)s - huntarr - %(levelname)s - %(message)s"
+    log_format = "%(asctime)s - seekarr - %(levelname)s - %(message)s"
     formatter = logging.Formatter(log_format, datefmt="%Y-%m-%d %H:%M:%S")
     console_handler.setFormatter(formatter)
     file_handler.setFormatter(formatter)
@@ -104,7 +104,7 @@ def get_logger(app_type: str) -> logging.Logger:
         assert logger is not None
         return logger
 
-    log_name = f"huntarr.{app_type}"
+    log_name = f"seekarr.{app_type}"
     if log_name in app_loggers:
         # Return cached logger instance
         return app_loggers[log_name]
@@ -139,7 +139,7 @@ def get_logger(app_type: str) -> logging.Logger:
     file_handler.setLevel(logging.DEBUG if debug_mode else logging.INFO)
     
     # Set a distinct format for this app log
-    log_format = f"%(asctime)s - huntarr.{app_type} - %(levelname)s - %(message)s"
+    log_format = f"%(asctime)s - seekarr.{app_type} - %(levelname)s - %(message)s"
     formatter = logging.Formatter(log_format, datefmt="%Y-%m-%d %H:%M:%S")
     
     console_handler.setFormatter(formatter)
