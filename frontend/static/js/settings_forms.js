@@ -1279,7 +1279,7 @@ const SettingsForms = {
                     </select>
                     <p class="setting-help" style="margin-left: -3ch !important;">
                         <strong>Login Mode:</strong> Standard login required for all connections<br>
-                        <strong>Local Bypass Mode:</strong> Only local network connections (192.168.x.x, 10.x.x.x) bypass login<br>
+                        <strong>Local Bypass Mode:</strong> Only connections whose direct IP address is on a local network (192.168.x.x, 10.x.x.x, 172.16–31.x.x) bypass login. Proxy headers are ignored — this mode requires Huntarr to be directly reachable from your local network, not via a reverse proxy.<br>
                         <strong>No Login Mode:</strong> Completely disable authentication when running behind your own reverse proxy
                     </p>
                     <p class="setting-help warning" style="color: #ff6b6b; margin-left: -3ch !important;"><strong>Warning:</strong> Only use No Login Mode if your reverse proxy (e.g., Cloudflare, Nginx) is properly securing access!</p>

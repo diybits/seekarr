@@ -8,7 +8,7 @@ Review date: 2026-05-17
 |---|----------|------|------|-------|--------|
 | 1 | HIGH | src/primary/web_server.py | 120 | Hardcoded fallback Flask secret key | ✅ Fixed 2026-05-17 |
 | 2 | HIGH | src/primary/auth.py | 343–355 | X-Forwarded-For spoofing bypasses local auth | ✅ Fixed 2026-05-17 |
-| 3 | MEDIUM | src/primary/web_server.py | 828–856 | Unauthenticated stats-reset public endpoint | ⏳ Pending |
+| 3 | MEDIUM | src/primary/web_server.py | 828–856 | Unauthenticated stats-reset public endpoint | ✅ Fixed 2026-05-17 |
 | 4 | MEDIUM | src/primary/auth.py | 75–80 | Weak SHA-256 password hashing | ⏳ Pending |
 
 ---
@@ -36,12 +36,12 @@ When "Local Bypass" mode is enabled, `authenticate_request()` read the attacker-
 
 ---
 
-## Finding 3 — Unauthenticated Stats-Reset Public Endpoint
+## Finding 3 — Unauthenticated Stats-Reset Public Endpoint ✅ FIXED 2026-05-17
 **Severity**: Medium | **File**: `src/primary/web_server.py:828–856`
 
-`/api/stats/reset_public` has no authentication check (labelled "public endpoint without auth" in a comment). Anyone who can reach the server can wipe all media statistics.
+`/api/stats/reset_public` had no authentication check (labelled "public endpoint without auth" in a comment). Anyone who could reach the server could wipe all media statistics.
 
-**Fix**: Delete the route. The authenticated `/api/stats/reset` in `src/primary/routes/common.py` already covers this.
+**Resolution**: Route deleted entirely. The authenticated `/api/stats/reset` endpoint in `src/primary/routes/common.py` already provides this functionality with proper session verification.
 
 ---
 

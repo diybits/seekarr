@@ -40,6 +40,7 @@ Keep in mind this is very early in program development. If you have a very speci
 - [Tips](#tips)
 - [Troubleshooting](#troubleshooting)
 - [Change Log](#change-log)
+- [Security](#security)
 
 ## Overview
 
@@ -284,6 +285,10 @@ Learn more about **Cleanuperr** at [https://github.com/flmorg/cleanuperr](https:
 - **Session Secret Key**: Huntarr automatically generates a unique, cryptographically random session key on first start and stores it at `/config/secret_key` (readable only by the process owner). No action is required. If you prefer to supply your own key, set the `SECRET_KEY` environment variable — it takes precedence over the auto-generated file.
 - **Two-Factor Authentication**: Enable TOTP-based 2FA in the user profile settings for an additional layer of protection.
 - **Authentication Modes**: Three modes are available — standard login, local-network bypass, and no-login mode. Local-network bypass and no-login mode are intended for trusted private networks only.
+- **Local Network Bypass**: When local-network bypass mode is enabled, authentication is skipped only for requests whose TCP source address (`remote_addr`) falls within a private IP range. Proxy headers such as `X-Forwarded-For` are intentionally ignored for this check and cannot be used to spoof a local address. This mode requires Huntarr to be directly reachable on your local network — do not use it when Huntarr sits behind a reverse proxy; use No Login Mode instead.
+- **Stats Reset**: The `/api/stats/reset` endpoint requires an authenticated session. The former unauthenticated `/api/stats/reset_public` endpoint has been removed — if you were calling it directly, switch to `/api/stats/reset` with a valid session cookie.
 
 ## Change Log
-Visit: https://github.com/plexguide/Huntarr.io/releases/
+See [CHANGELOG.md](CHANGELOG.md) for a detailed history of security fixes and breaking changes.
+
+For full release notes visit: https://github.com/plexguide/Huntarr.io/releases/

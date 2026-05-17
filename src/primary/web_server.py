@@ -836,36 +836,6 @@ def api_get_hourly_caps():
             "message": "Error retrieving hourly API caps."
         }), 500
 
-@app.route('/api/stats/reset_public', methods=['POST'])
-def api_reset_stats_public():
-    """Reset the media statistics for all apps or a specific app - public endpoint without auth"""
-    try:
-        data = request.json or {}
-        app_type = data.get('app_type')
-        
-        # Get logger for logging the reset action
-        web_logger = get_logger("web_server")
-        
-        # Import the reset_stats function
-        from src.primary.stats_manager import reset_stats
-        
-        if app_type:
-            web_logger.info(f"Resetting statistics for app (public): {app_type}")
-            reset_success = reset_stats(app_type)
-        else:
-            web_logger.info("Resetting all media statistics (public)")
-            reset_success = reset_stats(None)
-        
-        if reset_success:
-            return jsonify({"success": True, "message": "Statistics reset successfully"}), 200
-        else:
-            return jsonify({"success": False, "error": "Failed to reset statistics"}), 500
-        
-    except Exception as e:
-        web_logger = get_logger("web_server")
-        web_logger.error(f"Error resetting statistics (public): {str(e)}")
-        return jsonify({"success": False, "error": str(e)}), 500
-
 @app.route('/version.txt')
 def version_txt():
     """Serve version.txt file directly"""
