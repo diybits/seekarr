@@ -25,8 +25,6 @@ Keep in mind this is very early in program development. If you have a very speci
 
 ## Table of Contents
 - [Overview](#overview)
-- [Community](#community)
-- [Indexers Approving of Seekarr](#indexers-approving-of-seekarr)
 - [How It Works](#how-it-works)
 - [Web Interface](#web-interface)
   - [How to Access](#how-to-access)
@@ -46,19 +44,6 @@ Keep in mind this is very early in program development. If you have a very speci
 This application continually searches your media libraries for missing content and items that need quality upgrades. It automatically triggers searches for both missing items and those below your quality cutoff. It's designed to run continuously while being gentle on your indexers, helping you gradually complete your media collection with the best available quality.
 
 For detailed documentation, please visit our [Wiki](https://github.com/diybits/seekarr/wiki).
-
-## Community
-
-<p align="center">
-  Join the community on Discord!
-  <br>
-  <a href="https://discord.com/invite/PGJJjR5Cww" target="_blank">
-    <img src="frontend/static/images/discord.png" alt="Discord" width="48" height="48">
-  </a>
-</p>
-
-## Indexers Approving of Seekarr:
-* https://ninjacentral.co.za
 
 ## How It Works
 
