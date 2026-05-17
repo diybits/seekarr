@@ -277,6 +277,13 @@ Learn more about **Cleanuperr** at [https://github.com/flmorg/cleanuperr](https:
 - **Consistent Log Filtering**: If app-specific logs show mixed content, reduce historical data from 5KB to 1KB
 - **Swaparr Issues**: Ensure proper handling of non-dictionary records in queue data
 - **App-Specific Problems**: Check GitHub Issues for known problems and solutions
+- **Session Errors After Migration**: If you move your `/config` volume and sessions stop working, delete `/config/secret_key` and restart — a new key will be generated (all existing sessions will be invalidated)
+
+## Security
+
+- **Session Secret Key**: Huntarr automatically generates a unique, cryptographically random session key on first start and stores it at `/config/secret_key` (readable only by the process owner). No action is required. If you prefer to supply your own key, set the `SECRET_KEY` environment variable — it takes precedence over the auto-generated file.
+- **Two-Factor Authentication**: Enable TOTP-based 2FA in the user profile settings for an additional layer of protection.
+- **Authentication Modes**: Three modes are available — standard login, local-network bypass, and no-login mode. Local-network bypass and no-login mode are intended for trusted private networks only.
 
 ## Change Log
 Visit: https://github.com/plexguide/Huntarr.io/releases/

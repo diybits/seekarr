@@ -117,7 +117,18 @@ def debug_template_rendering():
     
 debug_template_rendering()
 
-app.secret_key = os.environ.get('SECRET_KEY', 'dev_key_for_sessions')
+_secret_key_path = "/config/secret_key"
+if os.environ.get('SECRET_KEY'):
+    app.secret_key = os.environ['SECRET_KEY']
+else:
+    if not os.path.exists(_secret_key_path):
+        import secrets as _secrets
+        os.makedirs(os.path.dirname(_secret_key_path), exist_ok=True)
+        with open(_secret_key_path, 'w') as _f:
+            _f.write(_secrets.token_hex(32))
+        os.chmod(_secret_key_path, 0o600)
+    with open(_secret_key_path, 'r') as _f:
+        app.secret_key = _f.read().strip()
 
 # Register blueprints
 app.register_blueprint(common_bp)

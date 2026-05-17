@@ -4,34 +4,26 @@ Review date: 2026-05-17
 
 ## Summary
 
-| # | Severity | File | Line | Issue |
-|---|----------|------|------|-------|
-| 1 | HIGH | src/primary/web_server.py | 120 | Hardcoded fallback Flask secret key |
-| 2 | HIGH | src/primary/auth.py | 343–355 | X-Forwarded-For spoofing bypasses local auth |
-| 3 | MEDIUM | src/primary/web_server.py | 828–856 | Unauthenticated stats-reset public endpoint |
-| 4 | MEDIUM | src/primary/auth.py | 75–80 | Weak SHA-256 password hashing |
+| # | Severity | File | Line | Issue | Status |
+|---|----------|------|------|-------|--------|
+| 1 | HIGH | src/primary/web_server.py | 120 | Hardcoded fallback Flask secret key | ✅ Fixed 2026-05-17 |
+| 2 | HIGH | src/primary/auth.py | 343–355 | X-Forwarded-For spoofing bypasses local auth | ⏳ Pending |
+| 3 | MEDIUM | src/primary/web_server.py | 828–856 | Unauthenticated stats-reset public endpoint | ⏳ Pending |
+| 4 | MEDIUM | src/primary/auth.py | 75–80 | Weak SHA-256 password hashing | ⏳ Pending |
 
 ---
 
-## Finding 1 — Hardcoded Fallback Flask Secret Key
+## Finding 1 — Hardcoded Fallback Flask Secret Key ✅ FIXED 2026-05-17
 **Severity**: High | **File**: `src/primary/web_server.py:120`
 
 ```python
+# Before (vulnerable)
 app.secret_key = os.environ.get('SECRET_KEY', 'dev_key_for_sessions')
 ```
 
 Flask uses the secret key to sign session cookies with HMAC. The fallback `'dev_key_for_sessions'` is committed to source, so anyone who reads the code can forge valid session cookies and bypass authentication in deployments where `SECRET_KEY` is not explicitly set.
 
-**Fix**: Generate a persistent random key at first run; remove the insecure fallback.
-
-```python
-secret_key_path = "/config/secret_key"
-if not os.path.exists(secret_key_path):
-    import secrets
-    key = secrets.token_hex(32)
-    open(secret_key_path, 'w').write(key)
-app.secret_key = open(secret_key_path).read().strip()
-```
+**Resolution**: If `SECRET_KEY` env var is set it is used directly (no behaviour change for existing deployments). Otherwise a 32-byte random hex key is generated once at startup, persisted to `/config/secret_key` with mode `0o600`, and reloaded on every subsequent start. The hardcoded fallback has been removed.
 
 ---
 
