@@ -16,6 +16,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - **Fixed (MEDIUM)** — Removed the unauthenticated `/api/stats/reset_public` endpoint. This endpoint allowed any client that could reach the server to wipe all media statistics without authentication. The authenticated `/api/stats/reset` endpoint continues to provide this functionality. **Breaking change**: anything calling `/api/stats/reset_public` directly must switch to `/api/stats/reset` with a valid session. (`src/primary/web_server.py`)
 
+- **Fixed (MEDIUM)** — Replaced SHA-256 password hashing with bcrypt. SHA-256 is a general-purpose hash optimised for speed and is vulnerable to GPU-accelerated brute-force attacks if the credential file is stolen. bcrypt is purpose-built for passwords and includes a cost factor that makes brute-force computationally expensive. **Existing accounts are migrated automatically** — on next successful login the stored hash is transparently upgraded to bcrypt with no action required from the user. The credentials file permissions have also been tightened from `0o644` to `0o600`. (`src/primary/auth.py`)
+
 ---
 
 ## [6.6.3] — previous release

@@ -16,6 +16,7 @@ import io
 import qrcode
 import pyotp # Ensure pyotp is imported
 import re # Import the re module for regex
+import bcrypt
 from typing import Dict, Any, Optional, Tuple
 from flask import request, redirect, url_for, session
 from .utils.logger import logger # Ensure logger is imported
@@ -60,8 +61,8 @@ def save_user_data(user_data: Dict[str, Any]) -> bool:
         
         # Set permissions after writing
         try:
-            os.chmod(USER_FILE, 0o644)
-            logger.debug(f"Set permissions 0o644 on {USER_FILE}")
+            os.chmod(USER_FILE, 0o600)
+            logger.debug(f"Set permissions 0o600 on {USER_FILE}")
         except Exception as e_perm:
             logger.warning(f"Could not set permissions on file {USER_FILE}: {e_perm}")
             
@@ -73,15 +74,20 @@ def save_user_data(user_data: Dict[str, Any]) -> bool:
 # --- End Helper functions ---
 
 def hash_password(password: str) -> str:
-    """Hash a password for storage"""
-    # Use SHA-256 with a salt
-    salt = secrets.token_hex(16)
-    pw_hash = hashlib.sha256((password + salt).encode()).hexdigest()
-    return f"{salt}:{pw_hash}"
+    """Hash a password using bcrypt."""
+    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
 def verify_password(stored_password: str, provided_password: str) -> bool:
-    """Verify a password against its hash"""
+    """Verify a password against its hash.
+
+    Supports both bcrypt hashes (new) and legacy SHA-256 salt:hash pairs so
+    that existing accounts continue to work until their hash is migrated on
+    next successful login.
+    """
     try:
+        if stored_password.startswith('$2b$') or stored_password.startswith('$2a$'):
+            return bcrypt.checkpw(provided_password.encode('utf-8'), stored_password.encode('utf-8'))
+        # Legacy SHA-256 format: "<hex-salt>:<hex-hash>"
         salt, pw_hash = stored_password.split(':', 1)
         verify_hash = hashlib.sha256((provided_password + salt).encode()).hexdigest()
         return secrets.compare_digest(verify_hash, pw_hash)
@@ -149,7 +155,7 @@ def create_user(username: str, password: str) -> bool:
         # Set appropriate permissions on the file
         try:
             logger.info(f"Setting permissions on file: {USER_FILE}")
-            os.chmod(USER_FILE, 0o644)
+            os.chmod(USER_FILE, 0o600)
         except Exception as e:
             logger.warning(f"Could not set permissions on file {USER_FILE}: {e}")
         logger.info("User creation successful")
@@ -178,7 +184,13 @@ def verify_user(username: str, password: str, otp_code: str = None) -> Tuple[boo
         
         # Compare username and verify password
         if user_data.get("username") == username_hash:
-            if verify_password(user_data.get("password", ""), password):
+            stored_pw = user_data.get("password", "")
+            if verify_password(stored_pw, password):
+                # Silently upgrade legacy SHA-256 hash to bcrypt on successful login
+                if not (stored_pw.startswith('$2b$') or stored_pw.startswith('$2a$')):
+                    user_data["password"] = hash_password(password)
+                    save_user_data(user_data)
+                    logger.info(f"Migrated password hash to bcrypt for user '{username}'.")
                 # Check if 2FA is enabled
                 two_fa_enabled = user_data.get("2fa_enabled", False)
                 logger.debug(f"2FA enabled for user '{username}': {two_fa_enabled}")

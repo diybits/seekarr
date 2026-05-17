@@ -9,7 +9,7 @@ Review date: 2026-05-17
 | 1 | HIGH | src/primary/web_server.py | 120 | Hardcoded fallback Flask secret key | ✅ Fixed 2026-05-17 |
 | 2 | HIGH | src/primary/auth.py | 343–355 | X-Forwarded-For spoofing bypasses local auth | ✅ Fixed 2026-05-17 |
 | 3 | MEDIUM | src/primary/web_server.py | 828–856 | Unauthenticated stats-reset public endpoint | ✅ Fixed 2026-05-17 |
-| 4 | MEDIUM | src/primary/auth.py | 75–80 | Weak SHA-256 password hashing | ⏳ Pending |
+| 4 | MEDIUM | src/primary/auth.py | 75–80 | Weak SHA-256 password hashing | ✅ Fixed 2026-05-17 |
 
 ---
 
@@ -45,21 +45,9 @@ When "Local Bypass" mode is enabled, `authenticate_request()` read the attacker-
 
 ---
 
-## Finding 4 — Weak SHA-256 Password Hashing
+## Finding 4 — Weak SHA-256 Password Hashing ✅ FIXED 2026-05-17
 **Severity**: Medium | **File**: `src/primary/auth.py:75–80`
 
-Passwords are hashed with SHA-256 + salt. SHA-256 is designed for speed; GPUs can compute billions of hashes/second, making the credential file trivially brute-forceable if stolen. The file is also world-readable at mode `0o644`.
+Passwords were hashed with SHA-256 + salt. SHA-256 is designed for speed; GPUs can compute billions of hashes/second, making the credential file trivially brute-forceable if stolen. The credentials file was also world-readable at mode `0o644`.
 
-**Fix**: Replace with `bcrypt` (add to `requirements.txt`):
-
-```python
-import bcrypt
-
-def hash_password(password: str) -> str:
-    return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
-
-def verify_password(stored: str, provided: str) -> bool:
-    return bcrypt.checkpw(provided.encode(), stored.encode())
-```
-
-Also tighten `credentials.json` permissions to `0o600`.
+**Resolution**: Replaced `hash_password()` with bcrypt (`bcrypt` was already present in `requirements.txt`). `verify_password()` now detects the hash format by prefix — bcrypt hashes start with `$2b$` and are verified with `bcrypt.checkpw()`; legacy `salt:hash` pairs fall through to the original SHA-256 path so existing accounts keep working. On the first successful login after the upgrade, `verify_user()` silently re-hashes the stored password to bcrypt and saves it — no user action required. Credentials file permissions tightened to `0o600` in both `save_user_data()` and `create_user()`.

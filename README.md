@@ -287,6 +287,7 @@ Learn more about **Cleanuperr** at [https://github.com/flmorg/cleanuperr](https:
 - **Authentication Modes**: Three modes are available — standard login, local-network bypass, and no-login mode. Local-network bypass and no-login mode are intended for trusted private networks only.
 - **Local Network Bypass**: When local-network bypass mode is enabled, authentication is skipped only for requests whose TCP source address (`remote_addr`) falls within a private IP range. Proxy headers such as `X-Forwarded-For` are intentionally ignored for this check and cannot be used to spoof a local address. This mode requires Huntarr to be directly reachable on your local network — do not use it when Huntarr sits behind a reverse proxy; use No Login Mode instead.
 - **Stats Reset**: The `/api/stats/reset` endpoint requires an authenticated session. The former unauthenticated `/api/stats/reset_public` endpoint has been removed — if you were calling it directly, switch to `/api/stats/reset` with a valid session cookie.
+- **Password Storage**: Passwords are hashed with bcrypt, a purpose-built algorithm with a tunable cost factor that makes brute-force attacks computationally expensive. Existing accounts are migrated to bcrypt automatically on next login — no action required.
 
 ## Change Log
 See [CHANGELOG.md](CHANGELOG.md) for a detailed history of security fixes and breaking changes.
