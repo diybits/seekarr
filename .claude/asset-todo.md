@@ -7,16 +7,11 @@
 
 ## Important — quality/spec gaps
 
-- [ ] Regenerate `frontend/static/logo/seekarr.ico` to include 16, 32, and 48px frames (current file only has 16 and 32)
-  - Source: `frontend/static/logo/Seekarr.svg`
-- [ ] `frontend/static/logo/apple-touch-icon.png` — 180×180 PNG, solid background, no rounded corners
-  - Current `<apple-touch-icon>` points at 128px; Apple spec is 180px
-  - Update `head.html:31` to reference the new file after creating
-- [ ] `frontend/static/logo/192.png` — 192×192 PNG
-- [ ] `frontend/static/site.webmanifest` — references 192×192 and 512×512 icons
-  - No manifest exists; add `<link rel="manifest" href="/static/site.webmanifest">` to `head.html`
-- [ ] Fix `frontend/static/logo/40.png` — filename says 40px but actual dimensions are 48×48 (duplicate of `48.png`)
-  - Verify no references (`grep -r "40\.png" frontend/`) then delete or regenerate at true 40×40
+- [x] ~~Regenerate `seekarr.ico`~~ — already contains 16, 32, 48, 64, 128, 256px frames; no action needed
+- [x] `frontend/static/logo/apple-touch-icon.png` — created 180×180, `head.html` updated
+- [x] `frontend/static/logo/192.png` — created 192×192
+- [x] `frontend/static/site.webmanifest` — created; `<link rel="manifest">` added to `head.html`
+- [x] ~~Fix `40.png`~~ — confirmed true 40×40; no action needed
 
 ## Nice to have
 
