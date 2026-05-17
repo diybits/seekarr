@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Authentication module for Huntarr
+Authentication module for Seekarr
 Handles user creation, verification, and session management
 Including two-factor authentication
 """
@@ -28,7 +28,7 @@ USER_FILE = USER_DIR / "credentials.json"
 
 # Session settings
 SESSION_EXPIRY = 60 * 60 * 24 * 7  # 1 week in seconds
-SESSION_COOKIE_NAME = "huntarr_session"
+SESSION_COOKIE_NAME = "seekarr_session"
 
 # Store active sessions
 active_sessions = {}
@@ -411,7 +411,7 @@ def generate_2fa_secret(username: str) -> Tuple[str, str]:
     totp = pyotp.TOTP(secret)
     
     # Get the provisioning URI - Use the actual username here
-    uri = totp.provisioning_uri(name=username, issuer_name="Huntarr")
+    uri = totp.provisioning_uri(name=username, issuer_name="Seekarr")
     
     # Generate QR code
     qr = qrcode.QRCode(
