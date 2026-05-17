@@ -48,6 +48,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Old `docker-build-push.yml` and `docker-image.yml` (pushed to Docker Hub) removed.
   - New `ci.yml`: gated pipeline — lint → test → Docker build & push to GHCR (`ghcr.io/diybits/seekarr`). Docker stage skipped on pull requests.
   - New `security.yml`: weekly pip-audit of `requirements.txt` + Trivy image scan with SARIF upload to GitHub Security tab.
+- Static asset files renamed: `huntarr-logo.png` → `seekarr-logo.png`, `Huntarr.svg` → `Seekarr.svg`, `huntarr.ico` → `seekarr.ico`. PNG artwork (16–864px) retains existing images pending new Seekarr artwork.
 
 ### Security
 

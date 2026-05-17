@@ -100,11 +100,11 @@ Files: `README.md`, `CHANGELOG.md`, `docs/README.md`, `.claude/security-findings
 - CHANGELOG: add [7.0.0] section with breaking changes + volume migration command
 - GitHub Pages: diybits.github.io/seekarr
 
-### Task #12 — Static assets (rename now; artwork later) ⏳
-- docs/images/huntarr-logo.png → seekarr-logo.png
-- frontend/static/logo/Huntarr.svg → Seekarr.svg
-- frontend/static/logo/huntarr.ico → seekarr.ico
-- Update all HTML references to renamed files
+### Task #12 — Static assets (rename now; artwork later) ✅
+- docs/images/huntarr-logo.png → seekarr-logo.png ✅
+- frontend/static/logo/Huntarr.svg → Seekarr.svg ✅
+- frontend/static/logo/huntarr.ico → seekarr.ico ✅
+- All HTML/JS references updated in Tasks #7 and #8 ✅
 - PNG set (16–864px) awaiting new artwork
 
 ### Task #13 — 2FA issuer name ⏳
@@ -127,11 +127,11 @@ File: `src/primary/auth.py`
 
 ---
 
-## Logo / Asset Files Awaiting New Artwork
+## Logo / Asset Files
 
-| Current file | New filename | Status |
-|---|---|---|
-| `docs/images/huntarr-logo.png` | `seekarr-logo.png` | ⏳ Awaiting artwork |
-| `frontend/static/logo/Huntarr.svg` | `Seekarr.svg` | ⏳ Awaiting artwork |
-| `frontend/static/logo/huntarr.ico` | `seekarr.ico` | ⏳ Awaiting artwork |
-| `frontend/static/logo/*.png` (16–864px) | same names | ⏳ Awaiting artwork |
+| File | Status |
+|---|---|
+| `docs/images/seekarr-logo.png` | ✅ Renamed — artwork pending |
+| `frontend/static/logo/Seekarr.svg` | ✅ Renamed — artwork pending |
+| `frontend/static/logo/seekarr.ico` | ✅ Renamed — artwork pending |
+| `frontend/static/logo/*.png` (16–864px) | ⏳ Awaiting new artwork (keep existing Huntarr images for now) |
