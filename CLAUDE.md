@@ -14,6 +14,8 @@ pip install -r requirements.txt
 python3 main.py
 # Debug mode (Flask dev server + verbose logs):
 DEBUG=true python3 main.py
+# Behind a reverse proxy (enables ProxyFix + Secure cookie):
+TRUST_PROXY=1 python3 main.py
 ```
 
 **Lint (must use a venv — system Python is externally managed):**
