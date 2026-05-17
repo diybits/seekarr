@@ -2118,7 +2118,7 @@ let seekarrUI = {
         try {
             const requestBody = appType ? { app_type: appType } : {};
             
-            SeekarrUtils.fetchWithTimeout('/api/stats/reset_public', {
+            SeekarrUtils.fetchWithTimeout('/api/stats/reset', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
