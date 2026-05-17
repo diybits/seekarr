@@ -300,10 +300,6 @@ def authenticate_request():
         from src.primary.settings_manager import load_settings
         from src.primary import settings_manager
         
-        # Ensure we're getting fresh settings by clearing any cache
-        if hasattr(settings_manager, 'settings_cache'):
-            settings_manager.settings_cache = {}
-            
         settings = load_settings("general")  # Specify 'general' as the app_type
         general_settings = settings
         local_access_bypass = general_settings.get("local_access_bypass", False)

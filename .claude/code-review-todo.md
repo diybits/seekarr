@@ -23,8 +23,7 @@ Started: 2026-05-17
 
 - [x] **#6 Remove `print()` startup statements** — removed all debug `print()` calls from `web_server.py` startup
 
-- [ ] **#7 Fix settings cache wipe on every request** — `auth.py:304–305` clears `settings_cache` on every authenticated request, defeating the 5s TTL and causing a disk read per request
-  - Remove the manual cache clear; the TTL is sufficient
+- [x] **#7 Fix settings cache wipe on every request** — removed manual `settings_cache = {}` clear in `auth.py`; TTL handles freshness
 
 ## 🟢 Nice to have
 
