@@ -23,6 +23,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - GitHub API calls in `new-main.js` updated to `api.github.com/repos/diybits/seekarr`; sponsors link updated to `github.com/sponsors/diybits`.
 - `github-sponsors.js`: `sponsorsUsername` updated to `'diybits'`.
 - 50 in-app help links updated from `huntarr.io/threads/*` to `seekarr.io/threads/*` (placeholders until seekarr.io is live).
+- `Dockerfile`: added OCI image labels (title, description, url, source, authors, license).
+- **Breaking** — Docker named volume renamed from `huntarr-config` to `seekarr-config`. Migrate existing data before upgrading:
+  ```bash
+  docker volume create seekarr-config
+  docker run --rm -v huntarr-config:/from -v seekarr-config:/to alpine sh -c "cp -av /from/. /to/"
+  docker volume rm huntarr-config
+  ```
+- `docker-compose.yml`: service name, container name, and volume updated to `seekarr`; image set to `ghcr.io/diybits/seekarr:latest`.
 
 ### Security
 
