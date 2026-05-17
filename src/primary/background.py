@@ -531,7 +531,6 @@ def shutdown_threads():
     logger.info("Waiting for all app threads to stop...")
     
     # Stop the hourly API cap scheduler
-    global hourly_cap_scheduler_thread
     if hourly_cap_scheduler_thread and hourly_cap_scheduler_thread.is_alive():
         # The thread should exit naturally due to the stop_event being set
         logger.info("Waiting for hourly API cap scheduler to stop...")

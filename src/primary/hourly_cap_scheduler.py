@@ -131,8 +131,6 @@ def stop_scheduler():
     """
     Stop the hourly API cap scheduler thread
     """
-    global scheduler_thread
-    
     if not scheduler_thread or not scheduler_thread.is_alive():
         logger.info("Hourly API cap scheduler not running")
         return

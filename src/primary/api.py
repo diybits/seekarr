@@ -7,6 +7,7 @@ Handles all communication with the Arr API
 import requests
 import time
 from typing import List, Dict, Any, Optional, Union
+from flask import jsonify, request
 from primary.utils.logger import logger, debug_log
 from primary.config import API_KEY, API_URL, API_TIMEOUT, COMMAND_WAIT_DELAY, COMMAND_WAIT_ATTEMPTS, APP_TYPE
 from src.primary.stats_manager import get_stats, reset_stats

@@ -236,7 +236,7 @@ def check_hourly_reset():
     """
     Check if we need to reset hourly caps based on the current hour
     """
-    global last_hour_checked, next_reset_check
+    global last_hour_checked
     
     current_time = datetime.datetime.now()
     current_hour = current_time.hour

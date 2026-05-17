@@ -101,8 +101,6 @@ def load_settings(app_type, use_cache=True):
     Returns:
         Dict containing the app settings
     """
-    global settings_cache
-    
     # Only log unexpected app types that are not 'general'
     if app_type not in KNOWN_APP_TYPES and app_type != "general":
         settings_logger.warning(f"load_settings called with unexpected app_type: {app_type}")
