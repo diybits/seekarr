@@ -1,5 +1,5 @@
 /**
- * Cleanuperr - Information display component for Huntarr
+ * Cleanuperr - Information display component for Seekarr
  * Provides information about the Cleanuperr project by Flaminel
  */
 

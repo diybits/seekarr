@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Main entry point for Huntarr
+Main entry point for Seekarr
 Starts both the web server and the background processing tasks.
 """
 
@@ -18,8 +18,8 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), 'src'
 # Basic logging to capture early errors during import or setup
 log_level = logging.DEBUG if os.environ.get('DEBUG', 'false').lower() == 'true' else logging.INFO
 logging.basicConfig(level=log_level, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-root_logger = logging.getLogger("HuntarrRoot") # Specific logger for this entry point
-root_logger.info("--- Huntarr Main Process Starting ---")
+root_logger = logging.getLogger("SeekarrRoot") # Specific logger for this entry point
+root_logger.info("--- Seekarr Main Process Starting ---")
 root_logger.info(f"Python sys.path: {sys.path}")
 
 # Check for Windows service commands
@@ -49,7 +49,7 @@ if sys.platform == 'win32' and len(sys.argv) > 1:
     elif sys.argv[1] in ['--start', '--stop', '--restart', '--debug', '--update']:
         try:
             import win32serviceutil
-            service_name = "Huntarr"
+            service_name = "Seekarr"
             if sys.argv[1] == '--start':
                 win32serviceutil.StartService(service_name)
                 print(f"Started {service_name} service")
@@ -61,8 +61,8 @@ if sys.platform == 'win32' and len(sys.argv) > 1:
                 print(f"Restarted {service_name} service")
             elif sys.argv[1] == '--debug':
                 # Run the service in debug mode directly
-                from src.primary.windows_service import HuntarrService
-                win32serviceutil.HandleCommandLine(HuntarrService)
+                from src.primary.windows_service import SeekarrService
+                win32serviceutil.HandleCommandLine(SeekarrService)
             elif sys.argv[1] == '--update':
                 # Update the service
                 win32serviceutil.StopService(service_name)
@@ -82,15 +82,15 @@ try:
     # Import the Flask app instance
     from primary.web_server import app
     # Import the background task starter function and shutdown helpers from the renamed file
-    from primary.background import start_huntarr, stop_event, shutdown_threads
+    from primary.background import start_seekarr, stop_event, shutdown_threads
     # Configure logging first
     import logging
     sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
     from primary.utils.logger import setup_main_logger, get_logger
     
     # Initialize main logger
-    huntarr_logger = setup_main_logger()
-    huntarr_logger.info("Successfully imported application components.")
+    seekarr_logger = setup_main_logger()
+    seekarr_logger.info("Successfully imported application components.")
 except ImportError as e:
     root_logger.critical(f"Fatal Error: Failed to import application components: {e}", exc_info=True)
     root_logger.critical("Please ensure the application structure is correct, dependencies are installed (`pip install -r requirements.txt`), and the script is run from the project root.")
@@ -101,15 +101,15 @@ except Exception as e:
 
 
 def run_background_tasks():
-    """Runs the Huntarr background processing."""
-    bg_logger = get_logger("HuntarrBackground") # Use app's logger
+    """Runs the Seekarr background processing."""
+    bg_logger = get_logger("SeekarrBackground") # Use app's logger
     try:
-        bg_logger.info("Starting Huntarr background tasks...")
-        start_huntarr() # This function contains the main loop and shutdown logic
+        bg_logger.info("Starting Seekarr background tasks...")
+        start_seekarr() # This function contains the main loop and shutdown logic
     except Exception as e:
-        bg_logger.exception(f"Critical error in Huntarr background tasks: {e}")
+        bg_logger.exception(f"Critical error in Seekarr background tasks: {e}")
     finally:
-        bg_logger.info("Huntarr background tasks stopped.")
+        bg_logger.info("Seekarr background tasks stopped.")
 
 def run_web_server():
     """Runs the Flask web server using Waitress in production."""
@@ -156,7 +156,7 @@ def run_web_server():
 
 def main_shutdown_handler(signum, frame):
     """Gracefully shut down the application."""
-    huntarr_logger.warning(f"Received signal {signal.Signals(signum).name}. Initiating shutdown...")
+    seekarr_logger.warning(f"Received signal {signal.Signals(signum).name}. Initiating shutdown...")
     if not stop_event.is_set():
         stop_event.set()
     # The rest of the cleanup happens after run_web_server() returns or in the finally block.
@@ -171,7 +171,7 @@ if __name__ == '__main__':
         # Start background tasks in a daemon thread
         # Daemon threads exit automatically if the main thread exits unexpectedly,
         # but we'll try to join() them for a graceful shutdown.
-        background_thread = threading.Thread(target=run_background_tasks, name="HuntarrBackground", daemon=True)
+        background_thread = threading.Thread(target=run_background_tasks, name="SeekarrBackground", daemon=True)
         background_thread.start()
 
         # Start the web server in the main thread (blocking)
@@ -179,39 +179,39 @@ if __name__ == '__main__':
         run_web_server()
 
     except KeyboardInterrupt:
-        huntarr_logger.info("KeyboardInterrupt received in main thread. Shutting down...")
+        seekarr_logger.info("KeyboardInterrupt received in main thread. Shutting down...")
         if not stop_event.is_set():
             stop_event.set()
     except Exception as e:
-        huntarr_logger.exception(f"An unexpected error occurred in the main execution block: {e}")
+        seekarr_logger.exception(f"An unexpected error occurred in the main execution block: {e}")
         if not stop_event.is_set():
             stop_event.set() # Ensure shutdown is triggered on unexpected errors
     finally:
         # --- Cleanup ---
-        huntarr_logger.info("Web server has stopped. Initiating final shutdown sequence...")
+        seekarr_logger.info("Web server has stopped. Initiating final shutdown sequence...")
 
         # Ensure the stop event is set (might already be set by signal handler or error)
         if not stop_event.is_set():
-             huntarr_logger.warning("Stop event was not set before final cleanup. Setting now.")
+             seekarr_logger.warning("Stop event was not set before final cleanup. Setting now.")
              stop_event.set()
 
         # Wait for the background thread to finish cleanly
         if background_thread and background_thread.is_alive():
-            huntarr_logger.info("Waiting for background tasks to complete...")
+            seekarr_logger.info("Waiting for background tasks to complete...")
             background_thread.join(timeout=30) # Wait up to 30 seconds
 
             if background_thread.is_alive():
-                huntarr_logger.warning("Background thread did not stop gracefully within the timeout.")
+                seekarr_logger.warning("Background thread did not stop gracefully within the timeout.")
         elif background_thread:
-             huntarr_logger.info("Background thread already stopped.")
+             seekarr_logger.info("Background thread already stopped.")
         else:
-             huntarr_logger.info("Background thread was not started.")
+             seekarr_logger.info("Background thread was not started.")
 
         # Call the shutdown_threads function from primary.main (if it does more than just join)
-        # This might be redundant if start_huntarr handles its own cleanup via stop_event
-        # huntarr_logger.info("Calling shutdown_threads()...")
+        # This might be redundant if start_seekarr handles its own cleanup via stop_event
+        # seekarr_logger.info("Calling shutdown_threads()...")
         # shutdown_threads() # Uncomment if primary.main.shutdown_threads() does more cleanup
 
-        huntarr_logger.info("--- Huntarr Main Process Exiting ---")
+        seekarr_logger.info("--- Seekarr Main Process Exiting ---")
         # Use os._exit(0) for a more forceful exit if necessary, but sys.exit(0) is generally preferred
         sys.exit(0)

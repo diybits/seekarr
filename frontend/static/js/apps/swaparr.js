@@ -2,7 +2,7 @@
 
 (function(app) {
     if (!app) {
-        console.error("Huntarr App core is not loaded!");
+        console.error("Seekarr App core is not loaded!");
         return;
     }
 
@@ -42,7 +42,7 @@
         },
 
         setupLogProcessor: function() {
-            // Setup a listener for custom event from huntarrUI's log processing
+            // Setup a listener for custom event from seekarrUI's log processing
             document.addEventListener('swaparrLogReceived', (event) => {
                 console.log('[Swaparr Module] Received log event:', event.detail.logData.substring(0, 100) + '...');
                 this.processLogLine(event.detail.logData);
@@ -378,4 +378,4 @@
         }
     });
 
-})(window.huntarrUI); // Pass the global UI object
+})(window.seekarrUI); // Pass the global UI object

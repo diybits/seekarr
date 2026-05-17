@@ -1,9 +1,9 @@
 /**
- * Huntarr - New UI Implementation
+ * Seekarr - New UI Implementation
  * Main JavaScript file for handling UI interactions and API communication
  */
 
-let huntarrUI = {
+let seekarrUI = {
     // Current state
     eventSources: {},
     currentSection: 'home', // Default section
@@ -62,7 +62,7 @@ let huntarrUI = {
         // this.setupStatefulResetButton();
         
         // Apply any preloaded theme immediately to avoid flashing
-        const prefersDarkMode = localStorage.getItem('huntarr-dark-mode') === 'true';
+        const prefersDarkMode = localStorage.getItem('seekarr-dark-mode') === 'true';
         if (prefersDarkMode) {
             document.body.classList.add('dark-theme');
         }
@@ -75,7 +75,7 @@ let huntarrUI = {
             });
         }
         // Ensure logo is visible immediately
-        this.logoUrl = localStorage.getItem('huntarr-logo-url') || this.logoUrl;
+        this.logoUrl = localStorage.getItem('seekarr-logo-url') || this.logoUrl;
         
         // Load media stats
         this.loadMediaStats(); // Load media statistics
@@ -370,13 +370,13 @@ let huntarrUI = {
         // Dark mode toggle
         const darkModeToggle = document.getElementById('darkModeToggle');
         if (darkModeToggle) {
-            const prefersDarkMode = localStorage.getItem('huntarr-dark-mode') === 'true';
+            const prefersDarkMode = localStorage.getItem('seekarr-dark-mode') === 'true';
             darkModeToggle.checked = prefersDarkMode;
             
             darkModeToggle.addEventListener('change', function() {
                 const isDarkMode = this.checked;
                 document.body.classList.toggle('dark-theme', isDarkMode);
-                localStorage.setItem('huntarr-dark-mode', isDarkMode);
+                localStorage.setItem('seekarr-dark-mode', isDarkMode);
             });
         }
         
@@ -489,7 +489,7 @@ let huntarrUI = {
         window.addEventListener('beforeunload', () => {
             // Store logo src in session storage to persist across page loads
             if (this.logoSrc) {
-                sessionStorage.setItem('huntarr-logo-src', this.logoSrc);
+                sessionStorage.setItem('seekarr-logo-src', this.logoSrc);
             }
         });
     },
@@ -675,7 +675,7 @@ let huntarrUI = {
             // Set the iframe source when switching to this section
             const sponsorsFrame = document.getElementById('sponsorsFrame');
             if (sponsorsFrame && (!sponsorsFrame.src || sponsorsFrame.src === 'about:blank')) { // Set src only if not already set or blank
-                sponsorsFrame.src = 'https://github.com/sponsors/plexguide';
+                sponsorsFrame.src = 'https://github.com/sponsors/diybits';
             }
             // Disconnect logs if switching away from logs
             this.disconnectAllEventSources();
@@ -725,7 +725,7 @@ let huntarrUI = {
         if (pageTitleElement) {
             pageTitleElement.textContent = newTitle;
         } else {
-            console.warn("[huntarrUI] currentPageTitle element not found during section switch.");
+            console.warn("[seekarrUI] currentPageTitle element not found during section switch.");
         }
     },
     
@@ -838,7 +838,7 @@ let huntarrUI = {
         }
         
         this.currentSettingsTab = app;
-        console.log(`[huntarrUI] Switched settings tab to: ${this.currentSettingsTab}`); // Added logging
+        console.log(`[seekarrUI] Switched settings tab to: ${this.currentSettingsTab}`); // Added logging
     },
     
     // Logs handling
@@ -873,8 +873,8 @@ let huntarrUI = {
                 try {
                     const logString = event.data;
                     // Regex to parse log lines: Optional [APP], Timestamp, Logger, Level, Message
-                    // Example: [SONARR] 2024-01-01 12:00:00 - huntarr.sonarr - INFO - Message content
-                    // Example: 2024-01-01 12:00:00 - huntarr - DEBUG - System message
+                    // Example: [SONARR] 2024-01-01 12:00:00 - seekarr.sonarr - INFO - Message content
+                    // Example: 2024-01-01 12:00:00 - seekarr - DEBUG - System message
                     const logRegex = /^(?:\\[(\\w+)\\]\\s)?([\\d\\-]+\\s[\\d:]+)\\s-\\s([\\w\\.]+)\\s-\\s(\\w+)\\s-\\s(.*)$/;
                     const match = logString.match(logRegex);
 
@@ -885,7 +885,7 @@ let huntarrUI = {
                         // If we have a match with app tag like [SONARR], use that
                         logAppType = match[1].toLowerCase();
                     } else if (match && match[3]) {
-                        // Otherwise try to determine from the logger name (e.g., huntarr.sonarr)
+                        // Otherwise try to determine from the logger name (e.g., seekarr.sonarr)
                         const loggerParts = match[3].split('.');
                         if (loggerParts.length > 1) {
                             const possibleApp = loggerParts[1].toLowerCase();
@@ -934,7 +934,7 @@ let huntarrUI = {
                             <span class="log-timestamp" title="${timestamp}">${timestamp.split(' ')[1]}</span> 
                             ${appName ? `<span class="log-app" title="Source: ${appName}">[${appName}]</span>` : ''}
                             <span class="log-level log-level-${level.toLowerCase()}" title="Level: ${level}">${level}</span>
-                            <span class="log-logger" title="Logger: ${loggerName}">(${loggerName.replace('huntarr.', '')})</span>
+                            <span class="log-logger" title="Logger: ${loggerName}">(${loggerName.replace('seekarr.', '')})</span>
                             <span class="log-message">${message}</span>
                         `;
                         logEntry.classList.add(`log-${level.toLowerCase()}`);
@@ -968,12 +968,12 @@ let huntarrUI = {
                         this.elements.logsContainer.scrollTop = this.elements.logsContainer.scrollHeight;
                     }
                 } catch (error) {
-                    console.error('[huntarrUI] Error processing log message:', error, 'Data:', event.data);
+                    console.error('[seekarrUI] Error processing log message:', error, 'Data:', event.data);
                 }
             };
             
             eventSource.onerror = (err) => {
-                console.error(`[huntarrUI] EventSource error for app ${this.currentLogApp}:`, err);
+                console.error(`[seekarrUI] EventSource error for app ${this.currentLogApp}:`, err);
                 if (this.elements.logConnectionStatus) {
                     this.elements.logConnectionStatus.textContent = 'Error/Disconnected';
                     this.elements.logConnectionStatus.className = 'status-error'; // Use a specific error class
@@ -981,18 +981,18 @@ let huntarrUI = {
                 // Close the potentially broken connection
                 if (this.eventSources.logs) {
                     this.eventSources.logs.close();
-                    console.log(`[huntarrUI] Closed potentially broken log EventSource for ${this.currentLogApp}.`);
+                    console.log(`[seekarrUI] Closed potentially broken log EventSource for ${this.currentLogApp}.`);
                 }
                 // Attempt to reconnect after a delay, but only if still on the logs page
                 if (this.currentSection === 'logs') {
-                    console.log(`[huntarrUI] Attempting to reconnect log stream for ${this.currentLogApp} in 5 seconds...`);
+                    console.log(`[seekarrUI] Attempting to reconnect log stream for ${this.currentLogApp} in 5 seconds...`);
                     setTimeout(() => {
                         // Double-check if still on logs page before reconnecting
                         if (this.currentSection === 'logs') {
-                             console.log(`[huntarrUI] Reconnecting log stream for ${this.currentLogApp}.`);
+                             console.log(`[seekarrUI] Reconnecting log stream for ${this.currentLogApp}.`);
                              this.connectToLogs(); // Re-initiate connection
                         } else {
-                             console.log(`[huntarrUI] Log reconnect cancelled; user navigated away from logs section.`);
+                             console.log(`[seekarrUI] Log reconnect cancelled; user navigated away from logs section.`);
                         }
                     }, 5000); // 5-second delay
                 }
@@ -1000,7 +1000,7 @@ let huntarrUI = {
             
             this.eventSources.logs = eventSource; // Store the reference
         } catch (e) {
-            console.error(`[huntarrUI] Failed to create EventSource for app ${appType}:`, e);
+            console.error(`[seekarrUI] Failed to create EventSource for app ${appType}:`, e);
             if (this.elements.logConnectionStatus) {
                 this.elements.logConnectionStatus.textContent = 'Failed to connect';
                 this.elements.logConnectionStatus.className = 'status-error';
@@ -1015,12 +1015,12 @@ let huntarrUI = {
                  try {
                      if (source.readyState !== EventSource.CLOSED) {
                          source.close();
-                         console.log(`[huntarrUI] Closed event source for ${key}.`);
+                         console.log(`[seekarrUI] Closed event source for ${key}.`);
                      } else {
-                         console.log(`[huntarrUI] Event source for ${key} was already closed.`);
+                         console.log(`[seekarrUI] Event source for ${key} was already closed.`);
                      }
                  } catch (e) {
-                     console.error(`[huntarrUI] Error closing event source for ${key}:`, e);
+                     console.error(`[seekarrUI] Error closing event source for ${key}:`, e);
                  }
             }
             // Clear the reference
@@ -1179,7 +1179,7 @@ let huntarrUI = {
         this.settingsChanged = false;
         
         // Get all settings to populate forms
-        HuntarrUtils.fetchWithTimeout('/api/settings')
+        SeekarrUtils.fetchWithTimeout('/api/settings')
             .then(response => response.json())
             .then(data => {
                 console.log('Loaded settings:', data);
@@ -1228,14 +1228,14 @@ let huntarrUI = {
                     try {
                         SettingsForms.updateDurationDisplay();
                     } catch (e) {
-                        console.error(`[huntarrUI] Error updating duration display:`, e);
+                        console.error(`[seekarrUI] Error updating duration display:`, e);
                     }
                 }
             } else {
-                console.error(`[huntarrUI] Form generator function not found for app: ${app}`);
+                console.error(`[seekarrUI] Form generator function not found for app: ${app}`);
             }
         } else {
-            console.error('[huntarrUI] SettingsForms is not defined');
+            console.error('[seekarrUI] SettingsForms is not defined');
             return;
         }
     },
@@ -1243,7 +1243,7 @@ let huntarrUI = {
     // Called when any setting input changes in the active tab
     markSettingsAsChanged() {
         if (!this.settingsChanged) {
-            console.log("[huntarrUI] Settings marked as changed.");
+            console.log("[seekarrUI] Settings marked as changed.");
             this.settingsChanged = true;
             this.updateSaveResetButtonState(true); // Enable buttons
         }
@@ -1251,7 +1251,7 @@ let huntarrUI = {
 
     saveSettings: function() {
         const app = this.currentSettingsTab;
-        console.log(`[huntarrUI] saveSettings called for app: ${app}`);
+        console.log(`[seekarrUI] saveSettings called for app: ${app}`);
         
         // Clear the unsaved changes flag BEFORE sending the request
         // This prevents the "unsaved changes" dialog from appearing
@@ -1262,12 +1262,12 @@ let huntarrUI = {
         let settings = this.getFormSettings(app);
 
         if (!settings) {
-            console.error(`[huntarrUI] Failed to collect settings for app: ${app}`);
+            console.error(`[seekarrUI] Failed to collect settings for app: ${app}`);
             this.showNotification('Error collecting settings from form.', 'error');
             return;
         }
 
-        console.log(`[huntarrUI] Collected settings for ${app}:`, settings);
+        console.log(`[seekarrUI] Collected settings for ${app}:`, settings);
         
         // Check if this is general settings and if auth bypass settings are changed
         const isLocalAccessBypassChanged = app === 'general' && 
@@ -1281,15 +1281,15 @@ let huntarrUI = {
             this.originalSettings.general.proxy_auth_bypass !== settings.proxy_auth_bypass;
             
         // Log changes to authentication settings
-        console.log(`[huntarrUI] Local access bypass changed: ${isLocalAccessBypassChanged}`);
-        console.log(`[huntarrUI] Proxy auth bypass changed: ${isProxyAuthBypassChanged}`);
+        console.log(`[seekarrUI] Local access bypass changed: ${isLocalAccessBypassChanged}`);
+        console.log(`[seekarrUI] Proxy auth bypass changed: ${isProxyAuthBypassChanged}`);
 
-        console.log(`[huntarrUI] Sending settings payload for ${app}:`, settings);
+        console.log(`[seekarrUI] Sending settings payload for ${app}:`, settings);
 
         // Use the correct endpoint based on app type
         const endpoint = app === 'general' ? '/api/settings/general' : `/api/settings/${app}`;
         
-        HuntarrUtils.fetchWithTimeout(endpoint, {
+        SeekarrUtils.fetchWithTimeout(endpoint, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -1309,7 +1309,7 @@ let huntarrUI = {
             return response.json();
         })
         .then(savedConfig => {
-            console.log('[huntarrUI] Settings saved successfully. Full config received:', savedConfig);
+            console.log('[seekarrUI] Settings saved successfully. Full config received:', savedConfig);
             
             // If any authentication bypass setting was changed, reload the page
             if (isLocalAccessBypassChanged || isProxyAuthBypassChanged) {
@@ -1326,7 +1326,7 @@ let huntarrUI = {
             if (typeof savedConfig === 'object' && savedConfig !== null) {
                 this.originalSettings = JSON.parse(JSON.stringify(savedConfig));
             } else {
-                console.error('[huntarrUI] Invalid config received from backend after save:', savedConfig);
+                console.error('[seekarrUI] Invalid config received from backend after save:', savedConfig);
                 this.loadAllSettings();
                 return;
             }
@@ -1423,7 +1423,7 @@ let huntarrUI = {
         const settings = {};
         const form = document.getElementById(`${app}Settings`);
         if (!form) {
-            console.error(`[huntarrUI] Settings form for ${app} not found.`);
+            console.error(`[seekarrUI] Settings form for ${app} not found.`);
             return null;
         }
 
@@ -1448,7 +1448,7 @@ let huntarrUI = {
                 }
             });
             
-            console.log(`[huntarrUI] Collected Swaparr settings:`, settings);
+            console.log(`[seekarrUI] Collected Swaparr settings:`, settings);
             return settings;
         }
 
@@ -1459,7 +1459,7 @@ let huntarrUI = {
         
         // Check if multi-instance UI elements exist (like Sonarr)
         if (instanceItems.length > 0) {
-            console.log(`[huntarrUI] Found ${instanceItems.length} instance items for ${app}. Processing multi-instance mode.`);
+            console.log(`[seekarrUI] Found ${instanceItems.length} instance items for ${app}. Processing multi-instance mode.`);
             // Multi-instance logic (current Sonarr logic)
             instanceItems.forEach((item, index) => {
                 const instanceId = item.dataset.instanceId; // Assumes Sonarr uses data-instance-id
@@ -1479,7 +1479,7 @@ let huntarrUI = {
                 }
             });
         } else {
-            console.log(`[huntarrUI] No instance items found for ${app}. Processing single-instance mode.`);
+            console.log(`[seekarrUI] No instance items found for ${app}. Processing single-instance mode.`);
             // Single-instance logic (for Radarr, Lidarr, etc.)
             // Look for the standard IDs used in their forms
             const nameInput = form.querySelector(`#${app}_instance_name`); // Check for a specific name field
@@ -1500,7 +1500,7 @@ let huntarrUI = {
             }
         }
 
-        console.log(`[huntarrUI] Processed instances for ${app}:`, settings.instances);
+        console.log(`[seekarrUI] Processed instances for ${app}:`, settings.instances);
 
         // Now collect any OTHER settings NOT part of the instance structure
         const allInputs = form.querySelectorAll('input, select');
@@ -1562,7 +1562,7 @@ let huntarrUI = {
             }
         });
 
-        console.log(`[huntarrUI] Final collected settings for ${app}:`, settings);
+        console.log(`[seekarrUI] Final collected settings for ${app}:`, settings);
         return settings;
     },
 
@@ -1688,7 +1688,7 @@ let huntarrUI = {
         url = this.cleanUrlString(url);
         
         // Make the API request to test the connection
-        HuntarrUtils.fetchWithTimeout(`/api/${appName}/test-connection`, {
+        SeekarrUtils.fetchWithTimeout(`/api/${appName}/test-connection`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -1783,7 +1783,7 @@ let huntarrUI = {
     },
     
     checkAppConnection: function(app) {
-        HuntarrUtils.fetchWithTimeout(`/api/status/${app}`)
+        SeekarrUtils.fetchWithTimeout(`/api/status/${app}`)
             .then(response => response.json())
             .then(data => {
                 // Pass the whole data object for all apps
@@ -1807,7 +1807,7 @@ let huntarrUI = {
         const appBox = statusElement.closest('.app-stats-card'); // CORRECTED SELECTOR
         if (!appBox) {
             // If the card structure changes, this might fail. Log a warning.
-            console.warn(`[huntarrUI] Could not find parent '.app-stats-card' element for ${app}`);
+            console.warn(`[seekarrUI] Could not find parent '.app-stats-card' element for ${app}`);
         }
 
         let isConfigured = false;
@@ -1861,7 +1861,7 @@ let huntarrUI = {
     
     // User actions
     startHunt: function() {
-        HuntarrUtils.fetchWithTimeout('/api/hunt/start', { method: 'POST' })
+        SeekarrUtils.fetchWithTimeout('/api/hunt/start', { method: 'POST' })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
@@ -1877,7 +1877,7 @@ let huntarrUI = {
     },
     
     stopHunt: function() {
-        HuntarrUtils.fetchWithTimeout('/api/hunt/stop', { method: 'POST' })
+        SeekarrUtils.fetchWithTimeout('/api/hunt/stop', { method: 'POST' })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
@@ -1897,7 +1897,7 @@ let huntarrUI = {
         const usernameElement = document.getElementById('username');
         if (!usernameElement) return;
         
-        HuntarrUtils.fetchWithTimeout('/api/user/info')
+        SeekarrUtils.fetchWithTimeout('/api/user/info')
             .then(response => response.json())
             .then(data => {
                 if (data.username) {
@@ -1918,7 +1918,7 @@ let huntarrUI = {
     // Check if local access bypass is enabled and update UI accordingly
     checkLocalAccessBypassStatus: function() {
         console.log("Checking local access bypass status...");
-        HuntarrUtils.fetchWithTimeout('/api/get_local_access_bypass_status') // Corrected URL
+        SeekarrUtils.fetchWithTimeout('/api/get_local_access_bypass_status') // Corrected URL
             .then(response => {
                 if (!response.ok) {
                     // Log error if response is not OK (e.g., 404, 500)
@@ -2002,8 +2002,8 @@ let huntarrUI = {
     
     logout: function(e) { // Added logout function
         e.preventDefault(); // Prevent default link behavior
-        console.log('[huntarrUI] Logging out...');
-        HuntarrUtils.fetchWithTimeout('/logout', { // Use the correct endpoint defined in Flask
+        console.log('[seekarrUI] Logging out...');
+        SeekarrUtils.fetchWithTimeout('/logout', { // Use the correct endpoint defined in Flask
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -2012,10 +2012,10 @@ let huntarrUI = {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                console.log('[huntarrUI] Logout successful, redirecting to login.');
+                console.log('[seekarrUI] Logout successful, redirecting to login.');
                 window.location.href = '/login'; // Redirect to login page
             } else {
-                console.error('[huntarrUI] Logout failed:', data.message);
+                console.error('[seekarrUI] Logout failed:', data.message);
                 this.showNotification('Logout failed. Please try again.', 'error');
             }
         })
@@ -2027,7 +2027,7 @@ let huntarrUI = {
     
     // Media statistics handling
     loadMediaStats: function() {
-        HuntarrUtils.fetchWithTimeout('/api/stats')
+        SeekarrUtils.fetchWithTimeout('/api/stats')
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -2118,7 +2118,7 @@ let huntarrUI = {
         try {
             const requestBody = appType ? { app_type: appType } : {};
             
-            HuntarrUtils.fetchWithTimeout('/api/stats/reset_public', {
+            SeekarrUtils.fetchWithTimeout('/api/stats/reset_public', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -2182,7 +2182,7 @@ let huntarrUI = {
 
     // Load current version from version.txt
     loadCurrentVersion: function() {
-        HuntarrUtils.fetchWithTimeout('/version.txt')
+        SeekarrUtils.fetchWithTimeout('/version.txt')
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Failed to load version.txt');
@@ -2206,7 +2206,7 @@ let huntarrUI = {
 
     // Load latest version from GitHub releases
     loadLatestVersion: function() {
-        HuntarrUtils.fetchWithTimeout('https://api.github.com/repos/plexguide/Huntarr.io/releases/latest')
+        SeekarrUtils.fetchWithTimeout('https://api.github.com/repos/diybits/seekarr/releases/latest')
             .then(response => {
                 if (!response.ok) {
                     // Handle rate limiting or other errors
@@ -2238,7 +2238,7 @@ let huntarrUI = {
     
     // Load latest beta version from GitHub tags
     loadBetaVersion: function() {
-        HuntarrUtils.fetchWithTimeout('https://api.github.com/repos/plexguide/Huntarr.io/tags?per_page=100')
+        SeekarrUtils.fetchWithTimeout('https://api.github.com/repos/diybits/seekarr/tags?per_page=100')
             .then(response => {
                 if (!response.ok) {
                     // Handle rate limiting or other errors
@@ -2261,10 +2261,10 @@ let huntarrUI = {
                         betaVersionElement.textContent = betaTag.name;
                         // Store in localStorage for future reference
                         try {
-                            const versionInfo = localStorage.getItem('huntarr-version-info') || '{}';
+                            const versionInfo = localStorage.getItem('seekarr-version-info') || '{}';
                             const parsedInfo = JSON.parse(versionInfo);
                             parsedInfo.betaVersion = betaTag.name;
-                            localStorage.setItem('huntarr-version-info', JSON.stringify(parsedInfo));
+                            localStorage.setItem('seekarr-version-info', JSON.stringify(parsedInfo));
                         } catch (e) {
                             console.error('Error saving beta version to localStorage:', e);
                         }
@@ -2292,9 +2292,9 @@ let huntarrUI = {
         starsElement.textContent = 'Loading...';
         
         // GitHub API endpoint for repository information
-        const apiUrl = 'https://api.github.com/repos/plexguide/huntarr';
+        const apiUrl = 'https://api.github.com/repos/diybits/seekarr';
         
-        HuntarrUtils.fetchWithTimeout(apiUrl)
+        SeekarrUtils.fetchWithTimeout(apiUrl)
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`GitHub API error: ${response.status}`);
@@ -2312,7 +2312,7 @@ let huntarrUI = {
                         stars: data.stargazers_count,
                         timestamp: Date.now()
                     };
-                    localStorage.setItem('huntarr-github-stars', JSON.stringify(cacheData));
+                    localStorage.setItem('seekarr-github-stars', JSON.stringify(cacheData));
                 } else {
                     throw new Error('Star count not found in response');
                 }
@@ -2321,7 +2321,7 @@ let huntarrUI = {
                 console.error('Error fetching GitHub stars:', error);
                 
                 // Try to load from cache if we have it
-                const cachedData = localStorage.getItem('huntarr-github-stars');
+                const cachedData = localStorage.getItem('seekarr-github-stars');
                 if (cachedData) {
                     try {
                         const parsed = JSON.parse(cachedData);
@@ -2352,7 +2352,7 @@ let huntarrUI = {
 
     // Add updateHomeConnectionStatus if it doesn't exist or needs adjustment
     updateHomeConnectionStatus: function() {
-        console.log('[huntarrUI] Updating home connection statuses...');
+        console.log('[seekarrUI] Updating home connection statuses...');
         // This function should ideally call checkAppConnection for all relevant apps
         // or use the stored configuredApps status if checkAppConnection updates it.
         this.checkAppConnections(); // Re-check all connections after a save might be simplest
@@ -2377,7 +2377,7 @@ let huntarrUI = {
         }
         
         // First check if we have cached data in localStorage that we can use immediately
-        const cachedStatefulData = localStorage.getItem('huntarr-stateful-data');
+        const cachedStatefulData = localStorage.getItem('seekarr-stateful-data');
         if (!skipCache && cachedStatefulData && attempts === 0) {
             try {
                 const parsedData = JSON.parse(cachedStatefulData);
@@ -2413,7 +2413,7 @@ let huntarrUI = {
         }
         
         // Always fetch fresh data from the server
-        HuntarrUtils.fetchWithTimeout('/api/stateful/info', { 
+        SeekarrUtils.fetchWithTimeout('/api/stateful/info', { 
             cache: 'no-cache',
             headers: {
                 'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -2430,7 +2430,7 @@ let huntarrUI = {
         .then(data => {
             if (data.success) {
                 // Cache the response with a timestamp for future use
-                localStorage.setItem('huntarr-stateful-data', JSON.stringify({
+                localStorage.setItem('seekarr-stateful-data', JSON.stringify({
                     ...data,
                     timestamp: Date.now()
                 }));
@@ -2507,7 +2507,7 @@ let huntarrUI = {
             }
             
             // Use cached data as fallback if available
-            const cachedStatefulData = localStorage.getItem('huntarr-stateful-data');
+            const cachedStatefulData = localStorage.getItem('seekarr-stateful-data');
             if (cachedStatefulData) {
                 try {
                     console.log('[StatefulInfo] Using cached data as fallback after failed fetch');
@@ -2607,7 +2607,7 @@ let huntarrUI = {
         // Add debug logging
         console.log("Sending reset request to /api/stateful/reset");
         
-        HuntarrUtils.fetchWithTimeout('/api/stateful/reset', {
+        SeekarrUtils.fetchWithTimeout('/api/stateful/reset', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -2673,7 +2673,7 @@ let huntarrUI = {
         const url = '/api/stateful/update-expiration';
         const cleanedUrl = this.cleanUrlString(url);
         
-        HuntarrUtils.fetchWithTimeout(cleanedUrl, {
+        SeekarrUtils.fetchWithTimeout(cleanedUrl, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -2690,7 +2690,7 @@ let huntarrUI = {
         })
         .then(data => {
             if (data.success) {
-                console.log('[huntarrUI] Stateful expiration updated successfully:', data);
+                console.log('[seekarrUI] Stateful expiration updated successfully:', data);
                 
                 // Get updated info to show proper dates
                 this.loadStatefulInfo(0, true);
@@ -2717,14 +2717,14 @@ let huntarrUI = {
     // Add the updateStatefulExpiration method
     updateStatefulExpiration: function(hours) {
         if (!hours || typeof hours !== 'number' || hours <= 0) {
-            console.error('[huntarrUI] Invalid hours value for updateStatefulExpiration:', hours);
+            console.error('[seekarrUI] Invalid hours value for updateStatefulExpiration:', hours);
             return;
         }
         
-        console.log(`[huntarrUI] Directly updating stateful expiration to ${hours} hours`);
+        console.log(`[seekarrUI] Directly updating stateful expiration to ${hours} hours`);
         
         // Make a direct API call to update the stateful expiration
-        HuntarrUtils.fetchWithTimeout('/api/stateful/update-expiration', {
+        SeekarrUtils.fetchWithTimeout('/api/stateful/update-expiration', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -2738,7 +2738,7 @@ let huntarrUI = {
             return response.json();
         })
         .then(data => {
-            console.log('[huntarrUI] Stateful expiration updated successfully:', data);
+            console.log('[seekarrUI] Stateful expiration updated successfully:', data);
             // Update the expiration date display
             const expiresDateEl = document.getElementById('stateful_expires_date');
             if (expiresDateEl && data.expires_date) {
@@ -2746,7 +2746,7 @@ let huntarrUI = {
             }
         })
         .catch(error => {
-            console.error('[huntarrUI] Error updating stateful expiration:', error);
+            console.error('[seekarrUI] Error updating stateful expiration:', error);
         });
     },
     
@@ -2834,7 +2834,7 @@ let huntarrUI = {
         return originalJSON !== currentJSON;
     },
     
-    // Add resetAppCycle function to the huntarrUI object
+    // Add resetAppCycle function to the seekarrUI object
     resetAppCycle: function(app, button) {
         // Show spinner and disable button
         const originalButtonText = button.innerHTML;
@@ -2879,8 +2879,8 @@ let huntarrUI = {
 
 // Initialize when document is ready
 document.addEventListener('DOMContentLoaded', () => {
-    huntarrUI.init();
+    seekarrUI.init();
 });
 
-// Expose huntarrUI to the global scope for access by app modules
-window.huntarrUI = huntarrUI;
+// Expose seekarrUI to the global scope for access by app modules
+window.seekarrUI = seekarrUI;

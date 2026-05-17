@@ -1,7 +1,7 @@
-<h2 align="center">Huntarr - Find Missing & Upgrade Media Items</h2> 
+<h2 align="center">Seekarr - Find Missing & Upgrade Media Items</h2> 
 
 <p align="center">
-  <img src="frontend/static/logo/128.png" alt="Huntarr Logo" width="100" height="100">
+  <img src="frontend/static/logo/128.png" alt="Seekarr Logo" width="100" height="100">
 </p>
 
 ---
@@ -25,9 +25,8 @@ Keep in mind this is very early in program development. If you have a very speci
 
 ## Table of Contents
 - [Overview](#overview)
-- [Other Projects](#other-projects)
 - [Community](#community)
-- [Indexers Approving of Huntarr](#indexers-approving-of-huntarr)
+- [Indexers Approving of Seekarr](#indexers-approving-of-seekarr)
 - [How It Works](#how-it-works)
 - [Web Interface](#web-interface)
   - [How to Access](#how-to-access)
@@ -40,17 +39,13 @@ Keep in mind this is very early in program development. If you have a very speci
 - [Tips](#tips)
 - [Troubleshooting](#troubleshooting)
 - [Change Log](#change-log)
+- [Security](#security)
 
 ## Overview
 
 This application continually searches your media libraries for missing content and items that need quality upgrades. It automatically triggers searches for both missing items and those below your quality cutoff. It's designed to run continuously while being gentle on your indexers, helping you gradually complete your media collection with the best available quality.
 
-For detailed documentation, please visit our [Wiki](https://github.com/plexguide/Huntarr.io/wiki).
-
-## Other Projects
-
-* [Unraid Intel ARC Deployment](https://github.com/plexguide/Unraid_Intel-ARC_Deployment) - Convert videos to AV1 Format (I've saved 325TB encoding to AV1)
-* Visit [PlexGuide](https://plexguide.com) for more great scripts
+For detailed documentation, please visit our [Wiki](https://github.com/diybits/seekarr/wiki).
 
 ## Community
 
@@ -62,13 +57,7 @@ For detailed documentation, please visit our [Wiki](https://github.com/plexguide
   </a>
 </p>
 
-## PayPal Donations – For My Daughter's College Fund
-
-My 12-year-old daughter is passionate about singing, dancing, and exploring STEM. She consistently earns A-B honors! Every donation goes directly into her college fund!
-
-[![Donate with PayPal button](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/donate?hosted_button_id=58AYJ68VVMGSC)
-
-## Indexers Approving of Huntarr:
+## Indexers Approving of Seekarr:
 * https://ninjacentral.co.za
 
 ## How It Works
@@ -76,7 +65,7 @@ My 12-year-old daughter is passionate about singing, dancing, and exploring STEM
 ### 🔄 Continuous Automation Cycle
 
 #### 1️⃣ Connect & Analyze
-🔌 Huntarr connects to your Sonarr/Radarr/Lidarr/Readarr/Whisparr/Eros instances and analyzes your media libraries to identify both missing content and potential quality upgrades.
+🔌 Seekarr connects to your Sonarr/Radarr/Lidarr/Readarr/Whisparr/Eros instances and analyzes your media libraries to identify both missing content and potential quality upgrades.
 
 #### 2️⃣ Hunt Missing Content
 - 🔍 **Efficient Refreshing:** Skip metadata refresh to reduce disk I/O and database load
@@ -93,15 +82,15 @@ My 12-year-old daughter is passionate about singing, dancing, and exploring STEM
 #### 4️⃣ API Management
 - 🛡️ **Rate Protection:** Hourly caps prevent overloading your indexers
 - ⏲️ **Universal Timeouts:** Consistent API timeouts (120s) across all applications
-- 🔄 **Consistent Headers:** Identifies as Huntarr to all Arr applications
+- 🔄 **Consistent Headers:** Identifies as Seekarr to all Arr applications
 - 📊 **Intelligent Monitoring:** Visual indicators show API usage limits
 
 #### 5️⃣ Repeat & Rest
-💤 Huntarr waits for your configured interval (adjustable in settings) before starting the next cycle, ensuring your indexers aren't overloaded while maintaining continuous improvement of your library.
+💤 Seekarr waits for your configured interval (adjustable in settings) before starting the next cycle, ensuring your indexers aren't overloaded while maintaining continuous improvement of your library.
 
 ## Web Interface
 
-Huntarr's live homepage will provide you statics about how many hunts have been pursed regarding missing media and upgrade searches! Note: Numbers reflected are but all required for testing. 
+Seekarr's live homepage will provide you statics about how many hunts have been pursed regarding missing media and upgrade searches! Note: Numbers reflected are but all required for testing. 
 
 <p align="center">
   <img width="100%" alt="image" src="https://github.com/user-attachments/assets/1ffeb7f1-7dec-484c-9073-02d460953f99" />
@@ -109,7 +98,7 @@ Huntarr's live homepage will provide you statics about how many hunts have been 
   <em>Homepage</em>
 </p>
 
-Huntarr includes a real-time log viewer and settings management web interface that allows you to monitor and configure its operation directly from your browser.
+Seekarr includes a real-time log viewer and settings management web interface that allows you to monitor and configure its operation directly from your browser.
 
 <p align="center">
   <img width="100%" alt="image" src="https://github.com/user-attachments/assets/93c1a5d3-e82a-416a-8d41-0379ea221d7a" />
@@ -125,11 +114,11 @@ The web interface is available on port 9705. Simply navigate to:
 http://YOUR_SERVER_IP:9705
 ```
 
-The URL will be displayed in the logs when Huntarr starts, using the same hostname you configured for your API_URL.
+The URL will be displayed in the logs when Seekarr starts, using the same hostname you configured for your API_URL.
 
 ### Web UI Settings
 
-The web interface allows you to configure all of Huntarr's settings:
+The web interface allows you to configure all of Seekarr's settings:
 
 <p align="center">
   <img width="930" alt="image" src="https://github.com/user-attachments/assets/e87867f8-0a8c-48d8-b6ef-234caa33e41f" />
@@ -142,7 +131,7 @@ The web interface allows you to configure all of Huntarr's settings:
 To ensure data persistence, make sure you map the `/config` directory to a persistent volume on your host system:
 
 ```bash
--v /your-path/appdata/huntarr:/config
+-v /your-path/appdata/seekarr:/config
 ```
 
 ---
@@ -151,29 +140,20 @@ To ensure data persistence, make sure you map the `/config` directory to a persi
 
 ### Docker Run
 
-The simplest way to run Huntarr is via Docker (all configuration is done via the web UI):
+The simplest way to run Seekarr is via Docker (all configuration is done via the web UI):
 
 ```bash
-# Option 1: DockerHub
-docker run -d --name huntarr \
+docker run -d --name seekarr \
   --restart always \
   -p 9705:9705 \
-  -v /your-path/huntarr:/config \
+  -v /your-path/seekarr:/config \
   -e TZ=America/New_York \
-  huntarr/huntarr:latest
-
-# Option 2: GitHub Container Registry
-docker run -d --name huntarr \
-  --restart always \
-  -p 9705:9705 \
-  -v /your-path/huntarr:/config \
-  -e TZ=America/New_York \
-  ghcr.io/plexguide/huntarr:latest
+  ghcr.io/diybits/seekarr:latest
 ```
 
 To check on the status of the program, you can use the web interface at http://YOUR_SERVER_IP:9705 or check the logs with:
 ```bash
-docker logs huntarr
+docker logs seekarr
 ```
 
 ### Docker Compose
@@ -182,17 +162,14 @@ For those who prefer Docker Compose, add this to your `docker-compose.yml` file:
 
 ```yaml
 services:
-  huntarr:
-    # Option 1: DockerHub
-    image: huntarr/huntarr:latest
-    # Option 2: GitHub Container Registry
-    # image: ghcr.io/plexguide/huntarr:latest
-    container_name: huntarr
+  seekarr:
+    image: ghcr.io/diybits/seekarr:latest
+    container_name: seekarr
     restart: always
     ports:
       - "9705:9705"
     volumes:
-      - /your-path/huntarr:/config
+      - /your-path/seekarr:/config
     environment:
       - TZ=America/New_York
 ```
@@ -200,52 +177,23 @@ services:
 Then run:
 
 ```bash
-docker-compose up -d huntarr
+docker-compose up -d seekarr
 ```
 
 ### Unraid Users
 
-You can install Huntarr using the Unraid App Store.
+You can install Seekarr using the Unraid App Store.
 
 If not, you can run this from Command Line in Unraid:
 
 ```bash
-# Option 1: DockerHub
-docker run -d --name huntarr \
+docker run -d --name seekarr \
   --restart always \
   -p 9705:9705 \
-  -v /mnt/user/appdata/huntarr:/config \
+  -v /mnt/user/appdata/seekarr:/config \
   -e TZ=America/New_York \
-  huntarr/huntarr:latest
-  
-# Option 2: GitHub Container Registry
-docker run -d --name huntarr \
-  --restart always \
-  -p 9705:9705 \
-  -v /mnt/user/appdata/huntarr:/config \
-  -e TZ=America/New_York \
-  ghcr.io/plexguide/huntarr:latest
+  ghcr.io/diybits/seekarr:latest
 ```
-
-## The Perfect Pair: Huntarr & Cleanuperr
-
-<p align="center">
-  <img src="https://github.com/plexguide/Huntarr.io/blob/main/frontend/static/logo/128.png?raw=true" alt="Huntarr" width="64" height="64">
-  <span style="font-size: 32px; margin: 0 15px;">+</span>
-  <img src="https://github.com/flmorg/cleanuperr/blob/main/Logo/128.png?raw=true" alt="Cleanuperr" width="64" height="64">
-</p>
-
-**Huntarr** is the compulsive librarian who finds missing media and upgrades your existing content. It fills in the blanks and improves what you already have.
-
-**Cleanuperr** ([![GitHub stars](https://img.shields.io/github/stars/flmorg/cleanuperr?style=social)](https://github.com/flmorg/cleanuperr/stargazers)) is the janitor of your server; it keeps your download queue spotless, removes clutter, and blocks malicious files.
-
-When combined, these tools create a powerful, self-sufficient media automation stack:
-
-- **Huntarr** hunts for content to add to your library
-- **Cleanuperr** ensures only clean downloads get through
-- Together, they create a reliable, hands-off media management system
-
-Learn more about **Cleanuperr** at [https://github.com/flmorg/cleanuperr](https://github.com/flmorg/cleanuperr)
 
 ## Tips
 
@@ -256,7 +204,7 @@ Learn more about **Cleanuperr** at [https://github.com/flmorg/cleanuperr](https:
 - **Queue Management**: Use Minimum Download Queue Size to pause searching when downloads are backed up
 - **Skip Processing**: Enable Skip Series/Movie/Artist Refresh to significantly reduce disk I/O and database load
 - **Future Content**: Keep Skip Future Items enabled to avoid searching for unreleased content
-- **Authentication**: Enable two-factor authentication for additional security on your Huntarr instance
+- **Authentication**: Enable two-factor authentication for additional security on your Seekarr instance
 - **API Rate Limits**: Configure hourly API caps to prevent rate limiting by your indexers
 - **Universal Timeouts**: All apps use consistent 120s timeouts for reliable command completion
 - **Monitored Only**: Filter searches to focus only on content you've marked as monitored
@@ -277,6 +225,18 @@ Learn more about **Cleanuperr** at [https://github.com/flmorg/cleanuperr](https:
 - **Consistent Log Filtering**: If app-specific logs show mixed content, reduce historical data from 5KB to 1KB
 - **Swaparr Issues**: Ensure proper handling of non-dictionary records in queue data
 - **App-Specific Problems**: Check GitHub Issues for known problems and solutions
+- **Session Errors After Migration**: If you move your `/config` volume and sessions stop working, delete `/config/secret_key` and restart — a new key will be generated (all existing sessions will be invalidated)
+
+## Security
+
+- **Session Secret Key**: Seekarr automatically generates a unique, cryptographically random session key on first start and stores it at `/config/secret_key` (readable only by the process owner). No action is required. If you prefer to supply your own key, set the `SECRET_KEY` environment variable — it takes precedence over the auto-generated file.
+- **Two-Factor Authentication**: Enable TOTP-based 2FA in the user profile settings for an additional layer of protection.
+- **Authentication Modes**: Three modes are available — standard login, local-network bypass, and no-login mode. Local-network bypass and no-login mode are intended for trusted private networks only.
+- **Local Network Bypass**: When local-network bypass mode is enabled, authentication is skipped only for requests whose TCP source address (`remote_addr`) falls within a private IP range. Proxy headers such as `X-Forwarded-For` are intentionally ignored for this check and cannot be used to spoof a local address. This mode requires Seekarr to be directly reachable on your local network — do not use it when Seekarr sits behind a reverse proxy; use No Login Mode instead.
+- **Stats Reset**: The `/api/stats/reset` endpoint requires an authenticated session. The former unauthenticated `/api/stats/reset_public` endpoint has been removed — if you were calling it directly, switch to `/api/stats/reset` with a valid session cookie.
+- **Password Storage**: Passwords are hashed with bcrypt, a purpose-built algorithm with a tunable cost factor that makes brute-force attacks computationally expensive. Existing accounts are migrated to bcrypt automatically on next login — no action required.
 
 ## Change Log
-Visit: https://github.com/plexguide/Huntarr.io/releases/
+See [CHANGELOG.md](CHANGELOG.md) for a detailed history of security fixes and breaking changes.
+
+For full release notes visit: https://github.com/diybits/seekarr/releases/

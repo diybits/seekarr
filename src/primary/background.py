@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Huntarr - Main entry point for the application
+Seekarr - Main entry point for the application
 Supports multiple Arr applications running concurrently
 """
 
@@ -133,7 +133,7 @@ def app_specific_loop(app_type: str) -> None:
         return # Exit thread if essential modules fail to load
 
     # Create app-specific logger using provided function
-    app_logger = logging.getLogger(f"huntarr.{app_type}")
+    app_logger = logging.getLogger(f"seekarr.{app_type}")
     
     while not stop_event.is_set():
         # --- Load Settings for this Cycle --- #
@@ -531,7 +531,6 @@ def shutdown_threads():
     logger.info("Waiting for all app threads to stop...")
     
     # Stop the hourly API cap scheduler
-    global hourly_cap_scheduler_thread
     if hourly_cap_scheduler_thread and hourly_cap_scheduler_thread.is_alive():
         # The thread should exit naturally due to the stop_event being set
         logger.info("Waiting for hourly API cap scheduler to stop...")
@@ -661,12 +660,12 @@ def start_hourly_cap_scheduler():
     
     logger.info(f"Hourly API cap scheduler started. Thread is alive: {hourly_cap_scheduler_thread.is_alive()}")
 
-def start_huntarr():
-    """Main entry point for Huntarr background tasks."""
-    logger.info(f"--- Starting Huntarr Background Tasks v{__version__} --- ")
-    
+def start_seekarr():
+    """Main entry point for Seekarr background tasks."""
+    logger.info(f"--- Starting Seekarr Background Tasks v{__version__} --- ")
+
     # Perform initial settings migration if specified (e.g., via env var or arg)
-    if os.environ.get("HUNTARR_RUN_MIGRATION", "false").lower() == "true":
+    if os.environ.get("SEEKARR_RUN_MIGRATION", "false").lower() == "true":
         logger.info("Running settings migration from huntarr.json (if found)...")
         settings_manager.migrate_from_huntarr_json()
         
@@ -715,4 +714,4 @@ def start_huntarr():
         if not stop_event.is_set():
              stop_event.set() # Ensure stop is signaled if loop exited unexpectedly
         shutdown_threads()
-        logger.info("--- Huntarr Background Tasks stopped --- ")
+        logger.info("--- Seekarr Background Tasks stopped --- ")

@@ -1,5 +1,5 @@
 /**
- * Whisparr.js - Handles Whisparr settings and interactions in the Huntarr UI
+ * Whisparr.js - Handles Whisparr settings and interactions in the Seekarr UI
  */
 
 document.addEventListener("DOMContentLoaded", function() {
@@ -42,8 +42,8 @@ function setupWhisparrForm() {
         
         if (!apiUrl || !apiKey) {
             // Use the main UI notification system if available
-            if (typeof huntarrUI !== 'undefined' && huntarrUI.showNotification) {
-                huntarrUI.showNotification('Please enter both API URL and API Key for Whisparr', 'error');
+            if (typeof seekarrUI !== 'undefined' && seekarrUI.showNotification) {
+                seekarrUI.showNotification('Please enter both API URL and API Key for Whisparr', 'error');
             } else {
                 alert('Please enter both API URL and API Key for Whisparr');
             }
@@ -57,7 +57,7 @@ function setupWhisparrForm() {
         }
         
         // Direct connection test - let the backend handle version checking
-        HuntarrUtils.fetchWithTimeout('/api/whisparr/test-connection', {
+        SeekarrUtils.fetchWithTimeout('/api/whisparr/test-connection', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -73,15 +73,15 @@ function setupWhisparrForm() {
                 if (data.success) {
                     whisparrStatusIndicator.className = 'connection-status success';
                     whisparrStatusIndicator.textContent = 'Connected';
-                    if (typeof huntarrUI !== 'undefined' && huntarrUI.showNotification) {
-                         huntarrUI.showNotification('Successfully connected to Whisparr V2', 'success');
+                    if (typeof seekarrUI !== 'undefined' && seekarrUI.showNotification) {
+                         seekarrUI.showNotification('Successfully connected to Whisparr V2', 'success');
                     }
                     getWhisparrVersion(); // Fetch version after successful connection
                 } else {
                     whisparrStatusIndicator.className = 'connection-status failure';
                     whisparrStatusIndicator.textContent = 'Failed';
-                     if (typeof huntarrUI !== 'undefined' && huntarrUI.showNotification) {
-                        huntarrUI.showNotification('Connection to Whisparr failed: ' + data.message, 'error');
+                     if (typeof seekarrUI !== 'undefined' && seekarrUI.showNotification) {
+                        seekarrUI.showNotification('Connection to Whisparr failed: ' + data.message, 'error');
                     }
                 }
             }
@@ -91,8 +91,8 @@ function setupWhisparrForm() {
                 whisparrStatusIndicator.className = 'connection-status failure';
                 whisparrStatusIndicator.textContent = 'Error';
             }
-            if (typeof huntarrUI !== 'undefined' && huntarrUI.showNotification) {
-                huntarrUI.showNotification('Error testing Whisparr connection: ' + error, 'error');
+            if (typeof seekarrUI !== 'undefined' && seekarrUI.showNotification) {
+                seekarrUI.showNotification('Error testing Whisparr connection: ' + error, 'error');
             }
         })
         .finally(() => {
@@ -109,19 +109,19 @@ function setupWhisparrForm() {
         (!whisparrVersionDisplay.textContent || whisparrVersionDisplay.textContent === 'Unknown')) {
         
         // Set a flag to prevent automatic version checks from triggering unsaved changes
-        const wasSettingsChanged = typeof huntarrUI !== 'undefined' ? huntarrUI.settingsChanged : false;
+        const wasSettingsChanged = typeof seekarrUI !== 'undefined' ? seekarrUI.settingsChanged : false;
         
         getWhisparrVersion();
         
         // Restore the original settingsChanged state after the version check
-        if (typeof huntarrUI !== 'undefined' && huntarrUI.settingsChanged !== wasSettingsChanged) {
+        if (typeof seekarrUI !== 'undefined' && seekarrUI.settingsChanged !== wasSettingsChanged) {
             setTimeout(() => {
-                huntarrUI.settingsChanged = wasSettingsChanged;
+                seekarrUI.settingsChanged = wasSettingsChanged;
                 console.log("[whisparr.js] Restored settingsChanged state after version check");
                 
                 // If there are no actual changes, update the save button state
-                if (!wasSettingsChanged && typeof huntarrUI.updateSaveResetButtonState === 'function') {
-                    huntarrUI.updateSaveResetButtonState(false);
+                if (!wasSettingsChanged && typeof seekarrUI.updateSaveResetButtonState === 'function') {
+                    seekarrUI.updateSaveResetButtonState(false);
                 }
             }, 100);
         }
@@ -131,9 +131,9 @@ function setupWhisparrForm() {
     function getWhisparrVersion() {
         if (!whisparrVersionDisplay) return; // Check if element exists
 
-        const wasSettingsChanged = typeof huntarrUI !== 'undefined' ? huntarrUI.settingsChanged : false;
+        const wasSettingsChanged = typeof seekarrUI !== 'undefined' ? seekarrUI.settingsChanged : false;
         
-        HuntarrUtils.fetchWithTimeout('/api/whisparr/get-versions')
+        SeekarrUtils.fetchWithTimeout('/api/whisparr/get-versions')
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Failed to fetch Whisparr version');
@@ -150,13 +150,13 @@ function setupWhisparrForm() {
                         whisparrVersionDisplay.textContent = newContent; // Prepend 'v'
                         
                         // Restore settings changed state to prevent triggering the dialog
-                        if (typeof huntarrUI !== 'undefined') {
+                        if (typeof seekarrUI !== 'undefined') {
                             setTimeout(() => {
-                                huntarrUI.settingsChanged = wasSettingsChanged;
+                                seekarrUI.settingsChanged = wasSettingsChanged;
                                 
                                 // If there are no actual changes, update the save button state
-                                if (!wasSettingsChanged && typeof huntarrUI.updateSaveResetButtonState === 'function') {
-                                    huntarrUI.updateSaveResetButtonState(false);
+                                if (!wasSettingsChanged && typeof seekarrUI.updateSaveResetButtonState === 'function') {
+                                    seekarrUI.updateSaveResetButtonState(false);
                                 }
                             }, 50);
                         }
@@ -171,12 +171,12 @@ function setupWhisparrForm() {
             })
             .finally(() => {
                 // Final safety check to restore settings state
-                if (typeof huntarrUI !== 'undefined' && huntarrUI.settingsChanged !== wasSettingsChanged) {
+                if (typeof seekarrUI !== 'undefined' && seekarrUI.settingsChanged !== wasSettingsChanged) {
                     setTimeout(() => {
-                        huntarrUI.settingsChanged = wasSettingsChanged;
+                        seekarrUI.settingsChanged = wasSettingsChanged;
                         // If there are no actual changes, update the save button state
-                        if (!wasSettingsChanged && typeof huntarrUI.updateSaveResetButtonState === 'function') {
-                            huntarrUI.updateSaveResetButtonState(false);
+                        if (!wasSettingsChanged && typeof seekarrUI.updateSaveResetButtonState === 'function') {
+                            seekarrUI.updateSaveResetButtonState(false);
                         }
                     }, 100);
                 }

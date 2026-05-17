@@ -1,5 +1,12 @@
 FROM python:3.9-slim
 
+LABEL org.opencontainers.image.title="Seekarr" \
+      org.opencontainers.image.description="Automated media collection management for Arr apps" \
+      org.opencontainers.image.url="https://github.com/diybits/seekarr" \
+      org.opencontainers.image.source="https://github.com/diybits/seekarr" \
+      org.opencontainers.image.authors="diybits" \
+      org.opencontainers.image.licenses="GPL-3.0"
+
 WORKDIR /app
 
 # Install system dependencies including net-tools for health checks

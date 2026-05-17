@@ -2,7 +2,7 @@
 
 (function(app) {
     if (!app) {
-        console.error("Huntarr App core is not loaded!");
+        console.error("Seekarr App core is not loaded!");
         return;
     }
 
@@ -79,4 +79,4 @@
     // Add the Sonarr module to the app for reference if needed elsewhere
     app.sonarrModule = sonarrModule;
 
-})(window.huntarrUI); // Use the new global object name
+})(window.seekarrUI); // Use the new global object name

@@ -1,5 +1,5 @@
 /**
- * Huntarr - User Settings Page
+ * Seekarr - User Settings Page
  * Handles user profile management functionality
  */
 

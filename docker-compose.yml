@@ -1,17 +1,18 @@
 services:
-  huntarr:
+  seekarr:
+    image: ghcr.io/diybits/seekarr:latest
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: huntarr
+    container_name: seekarr
     ports:
       - "9705:9705"
     volumes:
-      - huntarr-config:/config
+      - seekarr-config:/config
     environment:
       - TZ=America/New_York
     restart: unless-stopped
 
 volumes:
-  huntarr-config:
-    name: huntarr-config
+  seekarr-config:
+    name: seekarr-config

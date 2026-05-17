@@ -97,7 +97,6 @@ def get_logger(app_type: str) -> logging.Logger:
     """
     if app_type not in APP_LOG_FILES:
         # Fallback to main logger if the app type is not recognized
-        global logger
         if logger is None:
             # Ensure main logger is initialized if accessed before module-level setup
             setup_main_logger()

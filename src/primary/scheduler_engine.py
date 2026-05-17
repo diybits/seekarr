@@ -531,8 +531,6 @@ def start_scheduler():
 
 def stop_scheduler():
     """Stop the scheduler engine"""
-    global scheduler_thread
-    
     if not scheduler_thread or not scheduler_thread.is_alive():
         scheduler_logger.info("Scheduler not running")
         return

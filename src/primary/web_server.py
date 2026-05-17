@@ -117,7 +117,18 @@ def debug_template_rendering():
     
 debug_template_rendering()
 
-app.secret_key = os.environ.get('SECRET_KEY', 'dev_key_for_sessions')
+_secret_key_path = "/config/secret_key"
+if os.environ.get('SECRET_KEY'):
+    app.secret_key = os.environ['SECRET_KEY']
+else:
+    if not os.path.exists(_secret_key_path):
+        import secrets as _secrets
+        os.makedirs(os.path.dirname(_secret_key_path), exist_ok=True)
+        with open(_secret_key_path, 'w') as _f:
+            _f.write(_secrets.token_hex(32))
+        os.chmod(_secret_key_path, 0o600)
+    with open(_secret_key_path, 'r') as _f:
+        app.secret_key = _f.read().strip()
 
 # Register blueprints
 app.register_blueprint(common_bp)
@@ -824,36 +835,6 @@ def api_get_hourly_caps():
             "success": False,
             "message": "Error retrieving hourly API caps."
         }), 500
-
-@app.route('/api/stats/reset_public', methods=['POST'])
-def api_reset_stats_public():
-    """Reset the media statistics for all apps or a specific app - public endpoint without auth"""
-    try:
-        data = request.json or {}
-        app_type = data.get('app_type')
-        
-        # Get logger for logging the reset action
-        web_logger = get_logger("web_server")
-        
-        # Import the reset_stats function
-        from src.primary.stats_manager import reset_stats
-        
-        if app_type:
-            web_logger.info(f"Resetting statistics for app (public): {app_type}")
-            reset_success = reset_stats(app_type)
-        else:
-            web_logger.info("Resetting all media statistics (public)")
-            reset_success = reset_stats(None)
-        
-        if reset_success:
-            return jsonify({"success": True, "message": "Statistics reset successfully"}), 200
-        else:
-            return jsonify({"success": False, "error": "Failed to reset statistics"}), 500
-        
-    except Exception as e:
-        web_logger = get_logger("web_server")
-        web_logger.error(f"Error resetting statistics (public): {str(e)}")
-        return jsonify({"success": False, "error": str(e)}), 500
 
 @app.route('/version.txt')
 def version_txt():

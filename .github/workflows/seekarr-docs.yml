@@ -1,4 +1,4 @@
-name: Deploy Huntarr Documentation
+name: Deploy Seekarr Documentation
 
 on:
   push:
