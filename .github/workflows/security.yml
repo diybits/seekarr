@@ -40,7 +40,7 @@ jobs:
         run: docker build -t seekarr:scan .
 
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@0.36.0
         with:
           image-ref: 'seekarr:scan'
           format: 'sarif'
