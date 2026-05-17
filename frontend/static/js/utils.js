@@ -4,13 +4,20 @@
  */
 
 const SeekarrUtils = {
-    /**
-     * Fetch with timeout using the global settings
-     * @param {string} url - The URL to fetch
-     * @param {Object} options - Fetch options
-     * @returns {Promise} - Fetch promise with timeout handling
-     */
+    basePath: (function() {
+        const meta = document.querySelector('meta[name="seekarr-base"]');
+        return meta ? meta.content.replace(/\/$/, '') : '';
+    })(),
+
+    prependBase: function(url) {
+        if (url && url.startsWith('/') && !url.startsWith('//')) {
+            return this.basePath + url;
+        }
+        return url;
+    },
+
     fetchWithTimeout: function(url, options = {}) {
+        url = this.prependBase(url);
         // Get the API timeout from global settings, default to 120 seconds if not set
         let apiTimeout = 120000; // Default 120 seconds in milliseconds
         

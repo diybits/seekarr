@@ -15,10 +15,7 @@ Started: 2026-05-17
 
 - [x] **#3 Session cookie security flags** — done alongside #1; `HttpOnly` and `SameSite=Lax` always set, `Secure` when `TRUST_PROXY=1`
 
-- [ ] **#4 Hardcoded absolute JS paths** — all `fetch('/api/...')` calls break under subpath deployments
-  - Inject base path via `<meta name="seekarr-base">` in `head.html`
-  - Update `utils.js` `fetchWithTimeout` to prefix base path
-  - Fix `window.location.href = '/'` (`new-main.js:1318`) and `window.location.href = '/login'` (`new-main.js:2016`)
+- [x] **#4 Hardcoded absolute JS paths** — injected `<meta name="seekarr-base" content="{{ request.script_root }}">` in `head.html`; `utils.js` `fetchWithTimeout` now prepends base path to all `/`-relative URLs; fixed two `window.location.href` redirects in `new-main.js`
 
 ## 🟡 Polish
 
