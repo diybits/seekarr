@@ -105,19 +105,10 @@
                             <span class="link-description">Chat via GITHUB</span>
                         </div>
                     </a>
-                    <a href="https://donate.plex.one" target="_blank" class="support-link donate">
-                        <div class="icon-container donate-icon">
-                            <i class="fas fa-heart"></i>
-                        </div>
-                        <div class="link-details">
-                            <span class="link-title">Donate</span>
-                            <span class="link-description">Daughter's College Fund!</span>
-                        </div>
-                    </a>
                 </div>
             </div>
         </div>
-        
+
         <!-- Community & Resources Hub (redesigned links section) -->
         <div class="card community-hub-card">
             <div class="card-header">
@@ -125,22 +116,6 @@
             </div>
             <div class="community-resources-container">
                 <div class="community-links-grid">
-                    <a href="https://discord.com/invite/PGJJjR5Cww" target="_blank" class="community-link discord">
-                        <div class="icon-container discord-icon">
-                            <i class="fab fa-discord"></i>
-                        </div>
-                        <div class="link-details">
-                            <span class="link-title">Discord</span>
-                        </div>
-                    </a>
-                    <a href="https://www.reddit.com/r/seekarr/" target="_blank" class="community-link reddit">
-                        <div class="icon-container reddit-icon">
-                            <i class="fab fa-reddit"></i>
-                        </div>
-                        <div class="link-details">
-                            <span class="link-title">Reddit</span>
-                        </div>
-                    </a>
                     <a href="https://github.com/diybits/seekarr/issues" target="_blank" class="community-link issues">
                         <div class="icon-container issues-icon">
                             <i class="fas fa-bug"></i>
@@ -409,10 +384,6 @@
         justify-content: center;
         align-items: center;
         text-align: center;
-    }
-
-    .donation-icon {
-        color: #ff6b6b;
     }
 
     .star-icon {
@@ -1230,16 +1201,6 @@
     }
     
     /* Icon styles for each link type with glass effect */
-    .icon-container.discord-icon {
-        background: linear-gradient(135deg, #5865F2, #404EED);
-        box-shadow: 0 0 10px rgba(88, 101, 242, 0.5);
-    }
-    
-    .icon-container.reddit-icon {
-        background: linear-gradient(135deg, #FF4500, #FF6A33);
-        box-shadow: 0 0 10px rgba(255, 69, 0, 0.5);
-    }
-    
     .icon-container.issues-icon {
         background: linear-gradient(135deg, #2D3436, #636E72);
         box-shadow: 0 0 10px rgba(45, 52, 54, 0.5);
@@ -1382,22 +1343,9 @@
         /* No animation, static glow */
     }
     
-    /* Donation icon styling */
-    .support-link .icon-container.donate-icon {
-        background: linear-gradient(135deg, #d63031, #e84393);
-        color: #ffffff;
-        box-shadow: 0 0 15px rgba(255, 107, 107, 0.5);
-        animation: pulse-donate 2s infinite alternate;
-    }
-    
     @keyframes pulse-github {
         0% { box-shadow: 0 0 10px rgba(255, 193, 7, 0.4); }
         100% { box-shadow: 0 0 20px rgba(255, 193, 7, 0.7); }
-    }
-    
-    @keyframes pulse-donate {
-        0% { box-shadow: 0 0 10px rgba(255, 107, 107, 0.4); }
-        100% { box-shadow: 0 0 20px rgba(255, 107, 107, 0.7); }
     }
     
     .support-link .link-details {
