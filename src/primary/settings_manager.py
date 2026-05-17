@@ -77,6 +77,7 @@ def _ensure_config_exists(app_name: str) -> None:
         if default_file.exists():
             try:
                 shutil.copyfile(default_file, settings_file)
+                os.chmod(settings_file, 0o600)
                 settings_logger.info(f"Created default settings file for {app_name} at {settings_file}")
             except Exception as e:
                 settings_logger.error(f"Error copying default settings for {app_name}: {e}")
@@ -86,6 +87,7 @@ def _ensure_config_exists(app_name: str) -> None:
             try:
                 with open(settings_file, 'w') as f:
                     json.dump({}, f)
+                os.chmod(settings_file, 0o600)
             except Exception as e:
                 settings_logger.error(f"Error creating empty settings file for {app_name}: {e}")
 
@@ -179,11 +181,15 @@ def save_settings(app_name: str, settings_data: Dict[str, Any]) -> bool:
         # Write the provided settings data directly
         with open(settings_file, 'w') as f:
             json.dump(settings_data, f, indent=2)
+        try:
+            os.chmod(settings_file, 0o600)
+        except OSError:
+            pass
         settings_logger.info(f"Settings saved successfully for {app_name} to {settings_file}")
-        
+
         # Clear cache for this app to ensure fresh reads
         clear_cache(app_name)
-        
+
         return True
     except Exception as e:
         settings_logger.error(f"Error saving settings for {app_name} to {settings_file}: {e}")
