@@ -1,5 +1,5 @@
 /**
- * Eros.js - Handles Eros settings and interactions in the Huntarr UI
+ * Eros.js - Handles Eros settings and interactions in the Seekarr UI
  */
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -41,8 +41,8 @@ function setupErosForm() {
         
         // Basic validation
         if (!apiUrlInput.value || !apiKeyInput.value) {
-            if (typeof huntarrUI !== 'undefined') {
-                huntarrUI.showNotification('Please enter both API URL and API Key for Eros', 'error');
+            if (typeof seekarrUI !== 'undefined') {
+                seekarrUI.showNotification('Please enter both API URL and API Key for Eros', 'error');
             } else {
                 alert('Please enter both API URL and API Key for Eros');
             }
@@ -57,7 +57,7 @@ function setupErosForm() {
         }
         
         // Call API to test connection
-        HuntarrUtils.fetchWithTimeout('/api/eros/test-connection', {
+        SeekarrUtils.fetchWithTimeout('/api/eros/test-connection', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -77,15 +77,15 @@ function setupErosForm() {
                 if (data.success) {
                     erosStatusIndicator.className = 'connection-status success';
                     erosStatusIndicator.textContent = 'Connected';
-                    if (typeof huntarrUI !== 'undefined') {
-                         huntarrUI.showNotification('Successfully connected to Eros', 'success');
+                    if (typeof seekarrUI !== 'undefined') {
+                         seekarrUI.showNotification('Successfully connected to Eros', 'success');
                     }
                     getErosVersion(); // Fetch version after successful connection
                 } else {
                     erosStatusIndicator.className = 'connection-status failure';
                     erosStatusIndicator.textContent = 'Failed';
-                    if (typeof huntarrUI !== 'undefined') {
-                        huntarrUI.showNotification(data.message || 'Failed to connect to Eros', 'error');
+                    if (typeof seekarrUI !== 'undefined') {
+                        seekarrUI.showNotification(data.message || 'Failed to connect to Eros', 'error');
                     } else {
                         alert(data.message || 'Failed to connect to Eros');
                     }
@@ -101,8 +101,8 @@ function setupErosForm() {
                 erosStatusIndicator.textContent = 'Error';
             }
             
-            if (typeof huntarrUI !== 'undefined') {
-                huntarrUI.showNotification('Error testing connection: ' + error.message, 'error');
+            if (typeof seekarrUI !== 'undefined') {
+                seekarrUI.showNotification('Error testing connection: ' + error.message, 'error');
             } else {
                 alert('Error testing connection: ' + error.message);
             }
@@ -134,7 +134,7 @@ function getErosVersion() {
     }
     
     // Endpoint to get version info - using the test endpoint since it returns version
-    HuntarrUtils.fetchWithTimeout('/api/eros/test-connection', {
+    SeekarrUtils.fetchWithTimeout('/api/eros/test-connection', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

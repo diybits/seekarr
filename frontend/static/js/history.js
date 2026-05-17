@@ -1,5 +1,5 @@
 /**
- * Huntarr - History Module
+ * Seekarr - History Module
  * Handles displaying and managing history entries for all media apps
  */
 
@@ -21,7 +21,7 @@ const historyModule = {
         this.setupEventListeners();
         
         // Initial load if history is active section
-        if (huntarrUI && huntarrUI.currentSection === 'history') {
+        if (seekarrUI && seekarrUI.currentSection === 'history') {
             this.loadHistory();
         }
     },
@@ -414,9 +414,9 @@ const historyModule = {
     
     // Show error
     showError: function(message) {
-        // Use huntarrUI's notification system if available
-        if (typeof huntarrUI !== 'undefined' && typeof huntarrUI.showNotification === 'function') {
-            huntarrUI.showNotification(message, 'error');
+        // Use seekarrUI's notification system if available
+        if (typeof seekarrUI !== 'undefined' && typeof seekarrUI.showNotification === 'function') {
+            seekarrUI.showNotification(message, 'error');
         } else {
             alert(message);
         }
@@ -469,18 +469,18 @@ const historyModule = {
     }
 };
 
-// Initialize when huntarrUI is ready
+// Initialize when seekarrUI is ready
 document.addEventListener('DOMContentLoaded', () => {
     historyModule.init();
     
     // Connect with main app
-    if (typeof huntarrUI !== 'undefined') {
+    if (typeof seekarrUI !== 'undefined') {
         // Add loadHistory to the section switch handler
-        const originalSwitchSection = huntarrUI.switchSection;
+        const originalSwitchSection = seekarrUI.switchSection;
         
-        huntarrUI.switchSection = function(section) {
+        seekarrUI.switchSection = function(section) {
             // Call original function
-            originalSwitchSection.call(huntarrUI, section);
+            originalSwitchSection.call(seekarrUI, section);
             
             // Load history data when switching to history section
             if (section === 'history') {

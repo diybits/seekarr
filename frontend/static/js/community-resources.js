@@ -1,5 +1,5 @@
 /**
- * Huntarr - Community Resources Module
+ * Seekarr - Community Resources Module
  * Handles showing/hiding the Community Resources section on the home page
  * based on user settings.
  */

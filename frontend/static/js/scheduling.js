@@ -1,11 +1,11 @@
 /**
- * Scheduling functionality for Huntarr
+ * Scheduling functionality for Seekarr
  * Implements a SABnzbd-style scheduler for controlling Arr application behavior
  */
 
 // Define the schedules object in the global window scope to prevent redeclaration errors
 // This ensures the variable is only declared once no matter how many times the script loads
-window.huntarrSchedules = window.huntarrSchedules || {
+window.seekarrSchedules = window.seekarrSchedules || {
     global: [],
     sonarr: [],
     radarr: [],
@@ -16,7 +16,7 @@ window.huntarrSchedules = window.huntarrSchedules || {
 // Use an immediately invoked function expression to create a new scope
 (function() {
     // Reference the global schedules object
-    const schedules = window.huntarrSchedules;
+    const schedules = window.seekarrSchedules;
     
     /**
      * Capitalize the first letter of a string
@@ -113,7 +113,7 @@ function setupEventListeners() {
     
     // Only set up the event handler during initialization, not on every page render
     // Use a closure to ensure event listener is registered only once
-    if (!window.huntarrSchedulerInitialized) {
+    if (!window.seekarrSchedulerInitialized) {
         // Document level listener to catch delete actions regardless of when items are added
         document.addEventListener('click', function(e) {
             // Only react to delete buttons
@@ -134,7 +134,7 @@ function setupEventListeners() {
         });
         
         // Flag to prevent duplicate initialization
-        window.huntarrSchedulerInitialized = true;
+        window.seekarrSchedulerInitialized = true;
         console.debug('Scheduler event handlers initialized once');
     }
 }
@@ -480,8 +480,8 @@ function saveSchedules() {
                 if (data.success) {
                     console.debug('Schedules saved successfully');
                     // Show success toast notification
-                    if (window.huntarrUI && typeof window.huntarrUI.showNotification === 'function') {
-                        huntarrUI.showNotification('Schedules saved successfully!', 'success');
+                    if (window.seekarrUI && typeof window.seekarrUI.showNotification === 'function') {
+                        seekarrUI.showNotification('Schedules saved successfully!', 'success');
                     } else {
                         alert('Schedules saved successfully!'); // Fallback
                     }
@@ -734,8 +734,8 @@ function addSchedule() {
     
     // Validate form inputs (basic validation)
     if (isNaN(hour) || isNaN(minute)) {
-        if (window.huntarrUI && typeof window.huntarrUI.showNotification === 'function') {
-            huntarrUI.showNotification('Please enter a valid hour and minute.', 'error');
+        if (window.seekarrUI && typeof window.seekarrUI.showNotification === 'function') {
+            seekarrUI.showNotification('Please enter a valid hour and minute.', 'error');
         } else {
             alert('Please enter a valid hour and minute.'); // Fallback
         }
@@ -743,9 +743,9 @@ function addSchedule() {
     }
     
     if (!anyDaySelected) {
-        // Assuming huntarrUI is globally available
-        if (window.huntarrUI && typeof window.huntarrUI.showNotification === 'function') {
-            huntarrUI.showNotification('Please select at least one day to save the schedule.', 'error');
+        // Assuming seekarrUI is globally available
+        if (window.seekarrUI && typeof window.seekarrUI.showNotification === 'function') {
+            seekarrUI.showNotification('Please select at least one day to save the schedule.', 'error');
         } else {
             alert('Please select at least one day to save the schedule.'); // Fallback
         }

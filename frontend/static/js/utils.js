@@ -1,9 +1,9 @@
 /**
- * Huntarr - Utility Functions
+ * Seekarr - Utility Functions
  * Shared functions for use across the application
  */
 
-const HuntarrUtils = {
+const SeekarrUtils = {
     /**
      * Fetch with timeout using the global settings
      * @param {string} url - The URL to fetch
@@ -14,11 +14,11 @@ const HuntarrUtils = {
         // Get the API timeout from global settings, default to 120 seconds if not set
         let apiTimeout = 120000; // Default 120 seconds in milliseconds
         
-        // Try to get timeout from huntarrUI if available
-        if (window.huntarrUI && window.huntarrUI.originalSettings && 
-            window.huntarrUI.originalSettings.general && 
-            window.huntarrUI.originalSettings.general.api_timeout) {
-            apiTimeout = window.huntarrUI.originalSettings.general.api_timeout * 1000;
+        // Try to get timeout from seekarrUI if available
+        if (window.seekarrUI && window.seekarrUI.originalSettings && 
+            window.seekarrUI.originalSettings.general && 
+            window.seekarrUI.originalSettings.general.api_timeout) {
+            apiTimeout = window.seekarrUI.originalSettings.general.api_timeout * 1000;
         }
         
         // Create abort controller for timeout
@@ -55,10 +55,10 @@ const HuntarrUtils = {
         let timeout = 120;
         
         // Try to get from global settings
-        if (window.huntarrUI && window.huntarrUI.originalSettings && 
-            window.huntarrUI.originalSettings.general && 
-            window.huntarrUI.originalSettings.general.api_timeout) {
-            timeout = window.huntarrUI.originalSettings.general.api_timeout;
+        if (window.seekarrUI && window.seekarrUI.originalSettings && 
+            window.seekarrUI.originalSettings.general && 
+            window.seekarrUI.originalSettings.general.api_timeout) {
+            timeout = window.seekarrUI.originalSettings.general.api_timeout;
         }
         
         return timeout;
@@ -67,5 +67,5 @@ const HuntarrUtils = {
 
 // If running in Node.js environment
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = HuntarrUtils;
+    module.exports = SeekarrUtils;
 }
