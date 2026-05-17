@@ -16,6 +16,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Background entry point renamed `start_huntarr()` → `start_seekarr()`; migration env var renamed `HUNTARR_RUN_MIGRATION` → `SEEKARR_RUN_MIGRATION`. (`src/primary/background.py`)
 - TOTP 2FA provisioning issuer updated from `"Huntarr"` to `"Seekarr"`. Existing enrolled authenticators are unaffected. (`src/primary/auth.py`)
 - HTTP `User-Agent` header updated from `Huntarr/1.0 (https://github.com/plexguide/Huntarr.io)` to `Seekarr/7.0.0 (https://github.com/diybits/seekarr)` across all six Arr app API modules.
+- All HTML templates and documentation pages rebranded: titles, headings, footers, GitHub links, Docker image references, and version badges updated to Seekarr/7.0.0.
+- Sidebar "Become A Sponsor" link updated to `github.com/sponsors/diybits`; original developer's personal Unraid link replaced with Seekarr GitHub link.
+- `localStorage` key prefix changed from `huntarr-*` to `seekarr-*`; CSS class `.huntarr-logo` renamed to `.seekarr-logo`.
 
 ### Security
 

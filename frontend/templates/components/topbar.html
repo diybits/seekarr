@@ -8,22 +8,22 @@
         <div class="version-bar">
             <div class="version-item">
                 <i class="fas fa-code-branch version-icon"></i>
-                <span>Version <a href="https://github.com/plexguide/Huntarr.io/releases" target="_blank"><span id="version-value">6.2.1</span></a></span>
+                <span>Version <a href="https://github.com/diybits/seekarr/releases" target="_blank"><span id="version-value">6.2.1</span></a></span>
             </div>
             <div class="version-divider"></div>
             <div class="version-item">
                 <i class="fas fa-cloud-download-alt version-icon"></i>
-                <span>Latest: <a href="https://github.com/plexguide/Huntarr.io/releases" target="_blank"><span id="latest-version-value">6.2.1</span></a></span>
+                <span>Latest: <a href="https://github.com/diybits/seekarr/releases" target="_blank"><span id="latest-version-value">6.2.1</span></a></span>
             </div>
             <div class="version-divider"></div>
             <div class="version-item">
                 <i class="fas fa-star version-icon star-icon"></i>
-                <span><a href="https://github.com/plexguide/huntarr" target="_blank"><span id="github-stars-value">764</span></a></span>
+                <span><a href="https://github.com/diybits/seekarr" target="_blank"><span id="github-stars-value">764</span></a></span>
             </div>
             <div class="version-divider"></div>
             <div class="version-item">
                 <i class="fas fa-code version-icon"></i>
-                <span class="developer-credit">Developer: <a href="https://github.com/Admin9705/" target="_blank">Admin9705</a></span>
+                <span class="developer-credit">Developer: <a href="https://github.com/diybits" target="_blank">diybits</a></span>
             </div>
         </div>
     </div>
@@ -373,7 +373,7 @@
         function updateVersionInfo() {
             // Version
             try {
-                const versionInfo = localStorage.getItem('huntarr-version-info');
+                const versionInfo = localStorage.getItem('seekarr-version-info');
                 if (versionInfo) {
                     const parsedInfo = JSON.parse(versionInfo);
                     if (parsedInfo.currentVersion) {
@@ -391,7 +391,7 @@
                 }
                 
                 // Stars
-                const starsInfo = localStorage.getItem('huntarr-github-stars');
+                const starsInfo = localStorage.getItem('seekarr-github-stars');
                 if (starsInfo) {
                     starsElement.textContent = starsInfo;
                 }
@@ -405,7 +405,7 @@
         
         // Watch for changes (in case the home page updates values)
         window.addEventListener('storage', function(e) {
-            if (e.key === 'huntarr-version-info' || e.key === 'huntarr-github-stars') {
+            if (e.key === 'seekarr-version-info' || e.key === 'seekarr-github-stars') {
                 updateVersionInfo();
             }
         });

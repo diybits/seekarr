@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>User Settings - Huntarr</title>
+    <title>User Settings - Seekarr</title>
     {% include 'components/head.html' %}
     <style>
         .user-section {
@@ -456,7 +456,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Apply dark theme
             document.body.classList.add('dark-theme');
-            localStorage.setItem('huntarr-dark-mode', 'true');
+            localStorage.setItem('seekarr-dark-mode', 'true');
             
             // Update server setting to dark mode
             fetch('/api/settings/theme', {

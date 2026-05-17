@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Huntarr Login</title>
+    <title>Seekarr Login</title>
     <!-- Inline script to prevent theme flashing -->
     <script>
         // Check theme preference immediately before any rendering
         (function() {
-            var prefersDarkMode = localStorage.getItem('huntarr-dark-mode') === 'true';
+            var prefersDarkMode = localStorage.getItem('seekarr-dark-mode') === 'true';
             if (prefersDarkMode || window.matchMedia('(prefers-color-scheme: dark)').matches) {
                 document.documentElement.classList.add('dark-theme');
                 // Add inline styles to prevent flash
@@ -215,8 +215,8 @@
 <body class="login-page">
     <div class="login-container">
         <div class="login-header">
-            <img src="/static/logo/256.png" alt="Huntarr Logo" class="login-logo" onload="this.classList.add('loaded')">
-            <h1>Huntarr</h1>
+            <img src="/static/logo/256.png" alt="Seekarr Logo" class="login-logo" onload="this.classList.add('loaded')">
+            <h1>Seekarr</h1>
         </div>
         <div class="login-form">
             <h2>Log in to your account</h2>
