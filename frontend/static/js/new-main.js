@@ -1315,7 +1315,7 @@ let seekarrUI = {
             if (isLocalAccessBypassChanged || isProxyAuthBypassChanged) {
                 this.showNotification('Settings saved successfully. Reloading page to apply authentication changes...', 'success');
                 setTimeout(() => {
-                    window.location.href = '/'; // Redirect to home page after a brief delay
+                    window.location.href = SeekarrUtils.basePath + '/'; // Redirect to home page after a brief delay
                 }, 1500);
                 return;
             }
@@ -2013,7 +2013,7 @@ let seekarrUI = {
         .then(data => {
             if (data.success) {
                 console.log('[seekarrUI] Logout successful, redirecting to login.');
-                window.location.href = '/login'; // Redirect to login page
+                window.location.href = SeekarrUtils.basePath + '/login'; // Redirect to login page
             } else {
                 console.error('[seekarrUI] Logout failed:', data.message);
                 this.showNotification('Logout failed. Please try again.', 'error');
@@ -2118,7 +2118,7 @@ let seekarrUI = {
         try {
             const requestBody = appType ? { app_type: appType } : {};
             
-            SeekarrUtils.fetchWithTimeout('/api/stats/reset_public', {
+            SeekarrUtils.fetchWithTimeout('/api/stats/reset', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
