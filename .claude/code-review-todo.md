@@ -7,7 +7,7 @@ Started: 2026-05-17
 
 ## 🔴 Critical
 
-- [x] **#1 Add ProxyFix middleware** — done; gated on `TRUST_PROXY=1`; session cookie flags added; README + CLAUDE.md updated
+- [x] **#1 Trusted proxy middleware** — `TrustedProxyMiddleware` in `utils/proxy.py`; validates `REMOTE_ADDR` against `TRUSTED_PROXIES` (IPs, CIDRs, or `*`) before trusting forwarded headers; strips headers from untrusted connections; `SESSION_COOKIE_SECURE` when `TRUSTED_PROXIES` is set; `docker-compose.yml` + `README.md` updated
 
 - [ ] **#2 Fix dead `/api/stats/reset_public` JS call** — endpoint was removed server-side (security fix) but `new-main.js:2121` still calls it; stats reset button silently 404s
   - Update call to `/api/stats/reset` (authenticated endpoint)

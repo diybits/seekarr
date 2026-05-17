@@ -89,12 +89,8 @@ else:
 # Create Flask app with additional debug logging
 app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 
-# Trust reverse proxy headers when TRUST_PROXY=1 is set.
-# Only enable this when Seekarr sits behind a known trusted proxy — never in
-# direct/public deployments, as it would allow clients to spoof their IP.
-if os.environ.get('TRUST_PROXY', '').lower() in ('1', 'true'):
-    from werkzeug.middleware.proxy_fix import ProxyFix
-    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
+from src.primary.utils.proxy import TrustedProxyMiddleware
+app.wsgi_app = TrustedProxyMiddleware(app.wsgi_app)
 
 # Add debug logging for template rendering
 def debug_template_rendering():
@@ -138,7 +134,7 @@ else:
 # Session cookie hardening
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
-if os.environ.get('TRUST_PROXY', '').lower() in ('1', 'true'):
+if os.environ.get('TRUSTED_PROXIES', '').strip():
     app.config['SESSION_COOKIE_SECURE'] = True
 
 # Register blueprints

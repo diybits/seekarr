@@ -11,10 +11,11 @@ services:
       - seekarr-config:/config
     environment:
       - TZ=America/New_York
-      # Set TRUST_PROXY=1 when running behind a reverse proxy (Nginx, Traefik, Caddy, etc.)
-      # This enables ProxyFix so real client IPs are forwarded correctly and the session
-      # cookie gets the Secure flag. Do NOT set this for direct/public-facing deployments.
-      # - TRUST_PROXY=1
+      # Set TRUSTED_PROXIES when running behind a reverse proxy (Nginx, Traefik, Caddy, etc.)
+      # Value: "*" to trust any upstream, or a comma-separated list of proxy IPs/CIDRs.
+      # This rewrites REMOTE_ADDR from X-Forwarded-For and sets the Secure cookie flag.
+      # Do NOT set this for direct/public-facing deployments — it would allow IP spoofing.
+      # - TRUSTED_PROXIES=*
     restart: unless-stopped
 
 volumes:
