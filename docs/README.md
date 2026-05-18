@@ -1,6 +1,6 @@
 # Seekarr Documentation
 
-This directory contains the official documentation for the Seekarr project, which is automatically published to [https://diybits.github.io/seekarr/docs](https://diybits.github.io/seekarr/docs).
+This directory contains the official documentation for the Seekarr project, which is automatically published to [https://diybits.github.io/seekarr/](https://diybits.github.io/seekarr/).
 
 ## Structure
 
@@ -25,17 +25,15 @@ python -m http.server 8000
 
 Then open your browser to `http://localhost:8000`.
 
-## Documentation Plan
+## Coverage
 
-This documentation will eventually include:
+The docs currently include:
 
-- Installation guides
-- Configuration instructions
-- Feature documentation for all apps (Sonarr, Radarr, Lidarr, Readarr, Whisparr, etc.)
-- Frequently Asked Questions
-- Troubleshooting tips
-- API documentation
+- Installation and quick-setup guides
+- Configuration reference
+- Integration settings pages for all supported apps (Sonarr, Radarr, Lidarr, Readarr, Whisparr, Whisparr V3/Eros)
+- General and app-level settings reference
 
 ## Contact
 
-If you have questions about the documentation, please open an issue on GitHub.
+If you have questions about the documentation, please open an issue or start a discussion on GitHub.
