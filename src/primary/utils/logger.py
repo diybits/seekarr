@@ -12,7 +12,10 @@ from typing import Dict, Optional
 
 # Create log directory
 LOG_DIR = pathlib.Path("/config/logs") # Changed path
-LOG_DIR.mkdir(parents=True, exist_ok=True)
+try:
+    LOG_DIR.mkdir(parents=True, exist_ok=True)
+except (PermissionError, OSError):
+    pass
 
 # Default log file for general messages
 MAIN_LOG_FILE = LOG_DIR / "seekarr.log"
@@ -65,19 +68,22 @@ def setup_main_logger(debug_mode=None):
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setLevel(logging.DEBUG if use_debug_mode else logging.INFO)
 
-    # Create file handler
-    file_handler = logging.FileHandler(log_file)
-    file_handler.setLevel(logging.DEBUG if use_debug_mode else logging.INFO)
+    # Create file handler (skip silently if log directory is not writable)
+    file_handler = None
+    try:
+        file_handler = logging.FileHandler(log_file)
+        file_handler.setLevel(logging.DEBUG if use_debug_mode else logging.INFO)
+    except (OSError, FileNotFoundError):
+        pass
 
     # Set format for the main logger
     log_format = "%(asctime)s - seekarr - %(levelname)s - %(message)s"
     formatter = logging.Formatter(log_format, datefmt="%Y-%m-%d %H:%M:%S")
     console_handler.setFormatter(formatter)
-    file_handler.setFormatter(formatter)
-
-    # Add handlers to the main logger
     current_logger.addHandler(console_handler)
-    current_logger.addHandler(file_handler)
+    if file_handler is not None:
+        file_handler.setFormatter(formatter)
+        current_logger.addHandler(file_handler)
 
     if use_debug_mode:
         current_logger.debug("Debug logging enabled for main logger")

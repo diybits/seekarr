@@ -24,7 +24,10 @@ from .utils.logger import logger # Ensure logger is imported
 
 # User directory setup
 USER_DIR = pathlib.Path("/config/user")
-USER_DIR.mkdir(parents=True, exist_ok=True)
+try:
+    USER_DIR.mkdir(parents=True, exist_ok=True)
+except (PermissionError, OSError):
+    pass
 USER_FILE = USER_DIR / "credentials.json"
 
 # Session settings
