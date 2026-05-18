@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Installation Guide - Seekarr Documentation</title>
+    <title>Quick Setup - Seekarr Documentation</title>
     <link rel="stylesheet" href="../css/main.css">
     <script src="../js/main.js" defer></script>
 </head>
@@ -27,8 +27,8 @@
             <div class="sidebar-section">
                 <h3 class="sidebar-section-title">Getting Started</h3>
                 <ul>
-                    <li class="active"><a href="installation.html"><svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"></path></svg> Installation</a></li>
-                    <li><a href="quick-setup.html"><svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"></path></svg> Quick Setup</a></li>
+                    <li><a href="installation.html"><svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"></path></svg> Installation</a></li>
+                    <li class="active"><a href="quick-setup.html"><svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"></path></svg> Quick Setup</a></li>
                     <li><a href="configuration.html"><svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path></svg> Configuration</a></li>
                 </ul>
             </div>
@@ -45,120 +45,90 @@
 
     <div class="main-content">
         <div class="container">
-            <h1>Installation Guide</h1>
+            <h1>Quick Setup</h1>
 
             <section>
-                <p>Seekarr runs as a Docker container. All configuration is done through the web UI — no config files need to be edited manually. Choose the method that best fits your setup.</p>
+                <p>Get Seekarr running and connected to your first app in under five minutes.</p>
             </section>
 
             <section>
-                <h2>Docker Run</h2>
-                <p>The quickest way to get started:</p>
+                <h2>Step 1 — Start Seekarr</h2>
+                <p>If you haven't installed Seekarr yet, the fastest way is a single Docker command:</p>
                 <pre><code>docker run -d --name seekarr \
   --restart always \
   -p 9705:9705 \
   -v /your-path/seekarr:/config \
   -e TZ=America/New_York \
   ghcr.io/diybits/seekarr:latest</code></pre>
-
-                <p>Replace <code>/your-path/seekarr</code> with a directory on your host where Seekarr should store its configuration and state. Replace <code>America/New_York</code> with your own timezone.</p>
-
-                <p>Check the logs after starting:</p>
-                <pre><code>docker logs seekarr --follow</code></pre>
+                <p>See the <a href="installation.html">Installation Guide</a> for Docker Compose and Unraid instructions.</p>
             </section>
 
             <section>
-                <h2>Docker Compose</h2>
-                <p>Add the following service to your <code>docker-compose.yml</code>:</p>
-                <pre><code>services:
-  seekarr:
-    image: ghcr.io/diybits/seekarr:latest
-    container_name: seekarr
-    restart: always
-    ports:
-      - "9705:9705"
-    volumes:
-      - /your-path/seekarr:/config
-    environment:
-      - TZ=America/New_York
-      # Uncomment if running behind a reverse proxy:
-      # - TRUSTED_PROXIES=*</code></pre>
-
-                <p>Then start it:</p>
-                <pre><code>docker compose up -d seekarr</code></pre>
+                <h2>Step 2 — Open the Web UI</h2>
+                <p>Navigate to <code>http://YOUR_SERVER_IP:9705</code> in your browser. On first launch you will be prompted to create an admin account.</p>
+                <ul>
+                    <li>Choose a username and a strong password.</li>
+                    <li>Optionally enable two-factor authentication (TOTP) — you can do this later from your profile.</li>
+                </ul>
             </section>
 
             <section>
-                <h2>Unraid</h2>
-                <p>Seekarr is available in the Unraid Community App Store. Search for <strong>Seekarr</strong> and install from there.</p>
-                <p>Alternatively, run from the Unraid terminal:</p>
-                <pre><code>docker run -d --name seekarr \
-  --restart always \
-  -p 9705:9705 \
-  -v /mnt/user/appdata/seekarr:/config \
-  -e TZ=America/New_York \
-  ghcr.io/diybits/seekarr:latest</code></pre>
-            </section>
-
-            <section>
-                <h2>Volume Mapping</h2>
-                <p>The <code>/config</code> volume is where Seekarr stores everything — app settings, state, sessions, and logs. Map it to a persistent location on your host so data survives container updates.</p>
-
+                <h2>Step 3 — Connect Your First App</h2>
+                <p>Go to <strong>Settings</strong> and select the app you want to connect (Sonarr, Radarr, Lidarr, Readarr, or Whisparr).</p>
+                <p>For each app you need:</p>
                 <table>
                     <tr>
-                        <th>Container path</th>
-                        <th>Purpose</th>
+                        <th>Field</th>
+                        <th>Where to find it</th>
                     </tr>
                     <tr>
-                        <td><code>/config</code></td>
-                        <td>All persistent data. <strong>Required.</strong></td>
+                        <td>API URL</td>
+                        <td>The base URL of your app, e.g. <code>http://10.0.0.5:8989</code>. Omit the trailing slash.</td>
+                    </tr>
+                    <tr>
+                        <td>API Key</td>
+                        <td>In your app: <strong>Settings → General → Security → API Key</strong></td>
                     </tr>
                 </table>
+                <p>Click <strong>Test Connection</strong> to verify, then <strong>Save</strong>.</p>
             </section>
 
             <section>
-                <h2>Environment Variables</h2>
-
+                <h2>Step 4 — Configure Hunt Settings</h2>
+                <p>Within each app's settings, configure how aggressively Seekarr searches:</p>
                 <table>
                     <tr>
-                        <th>Variable</th>
-                        <th>Required</th>
-                        <th>Description</th>
+                        <th>Setting</th>
+                        <th>Recommended starting value</th>
                     </tr>
                     <tr>
-                        <td><code>TZ</code></td>
-                        <td>Recommended</td>
-                        <td>Timezone for log timestamps, e.g. <code>America/New_York</code>. Defaults to UTC.</td>
+                        <td>Hunt Missing Items</td>
+                        <td><code>1</code> — search for 1 missing item per cycle</td>
                     </tr>
                     <tr>
-                        <td><code>TRUSTED_PROXIES</code></td>
-                        <td>If behind a proxy</td>
-                        <td>Set to <code>*</code> or a comma-separated list of proxy IPs/CIDRs when Seekarr runs behind Nginx, Traefik, Caddy, etc. See the <a href="configuration.html">Configuration Reference</a>.</td>
+                        <td>Hunt Upgrade Items</td>
+                        <td><code>1</code> — search for 1 quality upgrade per cycle</td>
                     </tr>
                     <tr>
-                        <td><code>SECRET_KEY</code></td>
-                        <td>Optional</td>
-                        <td>Custom Flask session key. Auto-generated on first start if not set.</td>
+                        <td>Sleep Duration</td>
+                        <td><code>900</code> seconds (15 minutes) between cycles</td>
+                    </tr>
+                    <tr>
+                        <td>Monitored Only</td>
+                        <td>Enabled — only process items marked as monitored</td>
                     </tr>
                 </table>
+                <p>Start conservative and increase the values once you are happy with the load on your indexers.</p>
             </section>
 
             <section>
-                <h2>Updating</h2>
-                <p>Pull the latest image and recreate the container — your <code>/config</code> volume is preserved:</p>
-                <pre><code># Docker Run
-docker pull ghcr.io/diybits/seekarr:latest
-docker stop seekarr && docker rm seekarr
-# re-run the original docker run command
-
-# Docker Compose
-docker compose pull seekarr
-docker compose up -d seekarr</code></pre>
+                <h2>Step 5 — Watch It Work</h2>
+                <p>Return to the <strong>Home</strong> page to see live hunt statistics, or go to <strong>Logs</strong> to watch Seekarr process items in real time. That's it — Seekarr will now run continuously in the background.</p>
             </section>
 
-            <div class="section-nav">
-                <a href="../index.html">← Back to Home</a>
-                <a href="quick-setup.html">Quick Setup →</a>
+            <div class="next-steps">
+                <h2>Next Steps</h2>
+                <a href="configuration.html">Full Configuration Reference →</a>
             </div>
         </div>
     </div>

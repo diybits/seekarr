@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sonarr - Seekarr Documentation</title>
+    <title>Whisparr - Seekarr Documentation</title>
     <link rel="stylesheet" href="../css/main.css">
     <script src="../js/main.js" defer></script>
 </head>
@@ -27,11 +27,11 @@
             <div class="sidebar-section">
                 <h3 class="sidebar-section-title">Applications</h3>
                 <ul>
-                    <li class="active"><a href="sonarr.html"><svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"></path></svg> Sonarr</a></li>
+                    <li><a href="sonarr.html"><svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"></path></svg> Sonarr</a></li>
                     <li><a href="radarr.html"><svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"></path></svg> Radarr</a></li>
                     <li><a href="lidarr.html"><svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 5h-3v5.5c0 1.38-1.12 2.5-2.5 2.5S10 13.88 10 12.5s1.12-2.5 2.5-2.5c.57 0 1.08.19 1.5.51V5h4v2zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6z"></path></svg> Lidarr</a></li>
                     <li><a href="readarr.html"><svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"></path></svg> Readarr</a></li>
-                    <li><a href="whisparr.html"><svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z"></path></svg> Whisparr</a></li>
+                    <li class="active"><a href="whisparr.html"><svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z"></path></svg> Whisparr</a></li>
                 </ul>
             </div>
 
@@ -47,11 +47,11 @@
 
     <div class="main-content">
         <div class="container">
-            <h1>Sonarr</h1>
+            <h1>Whisparr</h1>
 
             <section>
-                <p>Sonarr manages TV show libraries — tracking series, seasons, and episodes, and automatically searching for missing or below-cutoff content. Seekarr connects to Sonarr via its API to drive those searches on a continuous schedule.</p>
-                <p>Default Sonarr port: <code>8989</code></p>
+                <p>Whisparr manages adult content libraries — tracking scenes and automatically searching for missing or below-cutoff content. Seekarr supports both Whisparr v2 and v3. Seekarr connects to Whisparr via its API to drive those searches on a continuous schedule.</p>
+                <p>Default Whisparr ports: <code>6969</code> (v2) / <code>6970</code> (v3)</p>
             </section>
 
             <section>
@@ -61,8 +61,8 @@
             </section>
 
             <section>
-                <h2>Connecting Sonarr to Seekarr</h2>
-                <p>Go to <strong>Settings → Sonarr</strong> in the Seekarr web UI and fill in the following:</p>
+                <h2>Connecting Whisparr to Seekarr</h2>
+                <p>Go to <strong>Settings → Whisparr</strong> in the Seekarr web UI and fill in the following:</p>
 
                 <table>
                     <tr>
@@ -71,11 +71,11 @@
                     </tr>
                     <tr>
                         <td>API URL</td>
-                        <td>Base URL of your Sonarr instance, e.g. <code>http://10.0.0.5:8989</code>. No trailing slash.</td>
+                        <td>Base URL of your Whisparr instance, e.g. <code>http://10.0.0.5:6969</code>. No trailing slash.</td>
                     </tr>
                     <tr>
                         <td>API Key</td>
-                        <td>In Sonarr: <strong>Settings → General → Security → API Key</strong></td>
+                        <td>In Whisparr: <strong>Settings → General → Security → API Key</strong></td>
                     </tr>
                 </table>
 
@@ -94,7 +94,7 @@
                     <tr>
                         <td>Hunt Missing Items</td>
                         <td><code>1</code></td>
-                        <td>Episodes/seasons searched per cycle. Increase gradually once you know your indexer can handle the load.</td>
+                        <td>Scenes searched per cycle. Increase gradually once you know your indexer can handle the load.</td>
                     </tr>
                     <tr>
                         <td>Hunt Upgrade Items</td>
@@ -109,22 +109,22 @@
                     <tr>
                         <td>Monitored Only</td>
                         <td>Enabled</td>
-                        <td>Only process episodes marked as monitored in Sonarr.</td>
+                        <td>Only process items marked as monitored in Whisparr.</td>
                     </tr>
                     <tr>
                         <td>Skip Future Items</td>
                         <td>Enabled</td>
-                        <td>Skip episodes with a future air date to avoid unnecessary searches.</td>
+                        <td>Skip items with a future release date to avoid unnecessary searches.</td>
                     </tr>
                     <tr>
-                        <td>Skip Series Refresh</td>
+                        <td>Skip Refresh</td>
                         <td>Enabled</td>
                         <td>Skip metadata refresh before searching. Reduces disk I/O and database load significantly.</td>
                     </tr>
                     <tr>
                         <td>Minimum Download Queue Size</td>
                         <td><code>0</code></td>
-                        <td>Pause hunting when Sonarr's download queue reaches this count. <code>0</code> disables the check.</td>
+                        <td>Pause hunting when Whisparr's download queue reaches this count. <code>0</code> disables the check.</td>
                     </tr>
                     <tr>
                         <td>Hourly API Cap</td>
@@ -150,8 +150,8 @@
             </div>
 
             <div class="section-nav">
-                <a href="index.html">← All Apps</a>
-                <a href="radarr.html">Radarr →</a>
+                <a href="readarr.html">← Readarr</a>
+                <a href="index.html">All Apps →</a>
             </div>
         </div>
     </div>
