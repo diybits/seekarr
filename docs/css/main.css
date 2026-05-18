@@ -645,6 +645,37 @@ footer {
     border-bottom: 2px solid var(--whisparr-color);
 }
 
+/* App page header with logo + title */
+.page-app-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid var(--highlight-color);
+}
+
+.page-app-header h1 {
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+.page-app-logo {
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+    border-radius: 10px;
+    margin: 0;
+}
+
+.sonarr-page .page-app-header { border-bottom-color: var(--sonarr-color); }
+.radarr-page .page-app-header { border-bottom-color: var(--radarr-color); }
+.lidarr-page .page-app-header  { border-bottom-color: var(--lidarr-color); }
+.readarr-page .page-app-header { border-bottom-color: var(--readarr-color); }
+.whisparr-page .page-app-header { border-bottom-color: var(--whisparr-color); }
+
 /* SVG logo icon in app cards */
 .app-logo-icon {
     background-color: transparent !important;
