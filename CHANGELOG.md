@@ -34,7 +34,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - All JavaScript files rebranded: `HuntarrUtils` → `SeekarrUtils`, `huntarrUI` → `seekarrUI`, `window.huntarrSchedules` → `window.seekarrSchedules`.
 - GitHub API calls in `new-main.js` updated to `api.github.com/repos/diybits/seekarr`; sponsors link updated to `github.com/sponsors/diybits`.
 - `github-sponsors.js`: `sponsorsUsername` updated to `'diybits'`.
-- 50 in-app help links updated from `huntarr.io/threads/*` to `seekarr.io/threads/*` (placeholders until seekarr.io is live).
+- 76 in-app help icon links replaced with real per-app GitHub Pages docs URLs (`https://diybits.github.io/seekarr/apps/{app}.html`). Previously pointed to non-existent `huntarr.io/threads/*` and `seekarr.io/threads/*` paths. (`frontend/static/js/settings_forms.js`)
 - `Dockerfile`: added OCI image labels (title, description, url, source, authors, license).
 - **Breaking** — Docker named volume renamed from `huntarr-config` to `seekarr-config`. Migrate existing data before upgrading:
   ```bash
@@ -46,9 +46,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - GitHub Actions workflows replaced and added:
   - `huntarr-docs.yml` renamed to `seekarr-docs.yml` (GitHub Pages deploy).
   - Old `docker-build-push.yml` and `docker-image.yml` (pushed to Docker Hub) removed.
-  - New `ci.yml`: gated pipeline — lint → test → Docker build & push to GHCR (`ghcr.io/diybits/seekarr`). Docker stage skipped on pull requests.
+  - New `ci.yml`: gated pipeline — lint (flake8, errors and undefined names only) → test (pytest, skipped if no `tests/` directory). No Docker push — image publishing is handled exclusively by `docker-release.yml`.
   - New `security.yml`: weekly pip-audit of `requirements.txt` + Trivy image scan with SARIF upload to GitHub Security tab.
 - Static asset files renamed: `huntarr-logo.png` → `seekarr-logo.png`, `Huntarr.svg` → `Seekarr.svg`, `huntarr.ico` → `seekarr.ico`. PNG artwork (16–864px) retains existing images pending new Seekarr artwork.
+
+### Documentation
+
+- Built full GitHub Pages docs site deployed from `docs/` via `seekarr-docs.yml`.
+- App integration pages (Sonarr, Radarr, Lidarr, Readarr, Whisparr) redesigned with three-group settings layout matching the Seekarr UI: Instances / Search Settings / Additional Options.
+- Official app logos added throughout docs (SVG for Lidarr/Readarr/Whisparr; PNG for Sonarr/Radarr where SVG fills were invisible on dark theme).
+- Per-app accent colour theming applied to integration settings pages.
+- Integrations index and Settings index card headers made clickable links.
+- Getting Started section added to all page sidebars.
+- Fork attribution notice added to home page: credits Huntarr (v6.6.3) / PlexGuide team as the upstream foundation.
+- Dead GitHub wiki link in `README.md` replaced with live docs URL (`https://diybits.github.io/seekarr/`).
 
 ### Security
 
