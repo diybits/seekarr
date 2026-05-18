@@ -45,7 +45,7 @@ Keep in mind this is very early in program development. If you have a very speci
 
 This application continually searches your media libraries for missing content and items that need quality upgrades. It automatically triggers searches for both missing items and those below your quality cutoff. It's designed to run continuously while being gentle on your indexers, helping you gradually complete your media collection with the best available quality.
 
-For detailed documentation, please visit our [Wiki](https://github.com/diybits/seekarr/wiki).
+For detailed documentation, please visit the [Seekarr Docs](https://diybits.github.io/seekarr/).
 
 ## How It Works
 
