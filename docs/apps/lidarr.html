@@ -45,112 +45,94 @@
     </div>
 
     <div class="main-content">
-        <div class="container">
+        <div class="container lidarr-page">
             <h1>Lidarr</h1>
 
             <section>
                 <p>Lidarr manages music libraries — tracking artists and albums, and automatically searching for missing or below-cutoff content. Seekarr connects to Lidarr via its API to drive those searches on a continuous schedule.</p>
-                <p>Default Lidarr port: <code>8686</code></p>
+                <p>Default port: <code>8686</code></p>
             </section>
 
-            <section>
-                <div class="info-box">
-                    All Seekarr-supported apps (Sonarr, Radarr, Lidarr, Readarr, Whisparr) use <strong>identical connection and hunt settings</strong>. The table below applies to every app — only the API URL and default port differ.
-                </div>
-            </section>
-
-            <section>
-                <h2>Connecting Lidarr to Seekarr</h2>
-                <p>Go to <strong>Settings → Lidarr</strong> in the Seekarr web UI and fill in the following:</p>
-
+            <div class="settings-group">
+                <h3>Lidarr Instances</h3>
+                <p>Go to <strong>Settings &rarr; Lidarr</strong> in the Seekarr web UI and fill in the following for each instance:</p>
                 <table>
+                    <tr><th>Field</th><th>Details</th></tr>
                     <tr>
-                        <th>Field</th>
-                        <th>Where to find it</th>
-                    </tr>
-                    <tr>
-                        <td>API URL</td>
+                        <td>URL</td>
                         <td>Base URL of your Lidarr instance, e.g. <code>http://10.0.0.5:8686</code>. No trailing slash.</td>
                     </tr>
                     <tr>
                         <td>API Key</td>
-                        <td>In Lidarr: <strong>Settings → General → Security → API Key</strong></td>
+                        <td>In Lidarr: <strong>Settings &rarr; General &rarr; Security &rarr; API Key</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Enabled</td>
+                        <td>Toggle to enable or disable this instance without removing it.</td>
                     </tr>
                 </table>
+                <p>Click <strong>Test Connection</strong> to verify, then <strong>Save</strong>. You can add up to 9 instances per app.</p>
+            </div>
 
-                <p>Click <strong>Test Connection</strong> to verify, then <strong>Save</strong>.</p>
-            </section>
-
-            <section>
-                <h2>Hunt Settings</h2>
-
+            <div class="settings-group">
+                <h3>Search Settings</h3>
                 <table>
+                    <tr><th>Setting</th><th>Default</th><th>Description</th></tr>
+                    
                     <tr>
-                        <th>Setting</th>
-                        <th>Default</th>
-                        <th>Description</th>
+                        <td>Missing Search Mode</td>
+                        <td><code>artist</code></td>
+                        <td>Search by <strong>Artist</strong> (all missing albums for an artist at once) or <strong>Album</strong> (one album at a time).</td>
                     </tr>
                     <tr>
-                        <td>Hunt Missing Items</td>
+                        <td>Missing Search</td>
                         <td><code>1</code></td>
-                        <td>Albums searched per cycle. Increase gradually once you know your indexer can handle the load.</td>
+                        <td>Number of artists (or albums) with missing content to search per cycle. Set to <code>0</code> to disable.</td>
                     </tr>
                     <tr>
-                        <td>Hunt Upgrade Items</td>
-                        <td><code>1</code></td>
-                        <td>Items below your quality cutoff searched for upgrades per cycle.</td>
+                        <td>Upgrade Search</td>
+                        <td><code>0</code></td>
+                        <td>Number of below-cutoff albums to search for upgrades per cycle. Set to <code>0</code> to disable.</td>
                     </tr>
                     <tr>
                         <td>Sleep Duration</td>
                         <td><code>900</code></td>
-                        <td>Seconds between cycles. Lower values search more frequently but increase indexer load.</td>
+                        <td>Seconds between search cycles.</td>
                     </tr>
+                    <tr>
+                        <td>API Cap &mdash; Hourly</td>
+                        <td><code>20</code></td>
+                        <td>Maximum search API calls per hour. Setting this too high risks account bans.</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="settings-group">
+                <h3>Additional Options</h3>
+                <table>
+                    <tr><th>Setting</th><th>Default</th><th>Description</th></tr>
+                    
                     <tr>
                         <td>Monitored Only</td>
                         <td>Enabled</td>
-                        <td>Only process artists and albums marked as monitored in Lidarr.</td>
+                        <td>Only search for albums marked as monitored in Lidarr.</td>
                     </tr>
                     <tr>
-                        <td>Skip Future Items</td>
+                        <td>Skip Future Releases</td>
                         <td>Enabled</td>
-                        <td>Skip albums with a future release date to avoid unnecessary searches.</td>
-                    </tr>
-                    <tr>
-                        <td>Skip Artist Refresh</td>
-                        <td>Enabled</td>
-                        <td>Skip metadata refresh before searching. Reduces disk I/O and database load significantly.</td>
-                    </tr>
-                    <tr>
-                        <td>Minimum Download Queue Size</td>
-                        <td><code>0</code></td>
-                        <td>Pause hunting when Lidarr's download queue reaches this count. <code>0</code> disables the check.</td>
-                    </tr>
-                    <tr>
-                        <td>Hourly API Cap</td>
-                        <td><code>0</code></td>
-                        <td>Maximum search API calls per hour. <code>0</code> means no cap.</td>
-                    </tr>
-                    <tr>
-                        <td>State Reset Interval</td>
-                        <td><code>168</code></td>
-                        <td>Hours before processed item IDs are cleared so items can be re-hunted (default: 7 days).</td>
-                    </tr>
-                    <tr>
-                        <td>Random Selection</td>
-                        <td>Enabled</td>
-                        <td>Process items in random order to distribute searches evenly across your library.</td>
+                        <td>Skip albums whose release date is in the future.</td>
                     </tr>
                 </table>
-            </section>
+            </div>
 
             <div class="next-steps">
                 <h2>See Also</h2>
-                <a href="../getting-started/configuration.html">Full Configuration Reference →</a>
+                <a href="../getting-started/configuration.html">Full Configuration Reference &rarr;</a>
             </div>
 
             <div class="section-nav">
-                <a href="radarr.html">← Radarr</a>
-                <a href="readarr.html">Readarr →</a>
+                <a href="radarr.html">&larr; Radarr</a>
+                <a href="readarr.html">Readarr &rarr;</a>
             </div>
         </div>
     </div>

@@ -45,112 +45,94 @@
     </div>
 
     <div class="main-content">
-        <div class="container">
+        <div class="container radarr-page">
             <h1>Radarr</h1>
 
             <section>
-                <p>Radarr manages movie libraries — tracking films and automatically searching for missing or below-cutoff content. Seekarr connects to Radarr via its API to drive those searches on a continuous schedule.</p>
-                <p>Default Radarr port: <code>7878</code></p>
+                <p>Radarr manages movie libraries — monitoring your watchlist and automatically searching for missing movies or quality upgrades. Seekarr connects to Radarr via its API to drive those searches on a continuous schedule.</p>
+                <p>Default port: <code>7878</code></p>
             </section>
 
-            <section>
-                <div class="info-box">
-                    All Seekarr-supported apps (Sonarr, Radarr, Lidarr, Readarr, Whisparr) use <strong>identical connection and hunt settings</strong>. The table below applies to every app — only the API URL and default port differ.
-                </div>
-            </section>
-
-            <section>
-                <h2>Connecting Radarr to Seekarr</h2>
-                <p>Go to <strong>Settings → Radarr</strong> in the Seekarr web UI and fill in the following:</p>
-
+            <div class="settings-group">
+                <h3>Radarr Instances</h3>
+                <p>Go to <strong>Settings &rarr; Radarr</strong> in the Seekarr web UI and fill in the following for each instance:</p>
                 <table>
+                    <tr><th>Field</th><th>Details</th></tr>
                     <tr>
-                        <th>Field</th>
-                        <th>Where to find it</th>
-                    </tr>
-                    <tr>
-                        <td>API URL</td>
+                        <td>URL</td>
                         <td>Base URL of your Radarr instance, e.g. <code>http://10.0.0.5:7878</code>. No trailing slash.</td>
                     </tr>
                     <tr>
                         <td>API Key</td>
-                        <td>In Radarr: <strong>Settings → General → Security → API Key</strong></td>
+                        <td>In Radarr: <strong>Settings &rarr; General &rarr; Security &rarr; API Key</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Enabled</td>
+                        <td>Toggle to enable or disable this instance without removing it.</td>
                     </tr>
                 </table>
+                <p>Click <strong>Test Connection</strong> to verify, then <strong>Save</strong>. You can add up to 9 instances per app.</p>
+            </div>
 
-                <p>Click <strong>Test Connection</strong> to verify, then <strong>Save</strong>.</p>
-            </section>
-
-            <section>
-                <h2>Hunt Settings</h2>
-
+            <div class="settings-group">
+                <h3>Search Settings</h3>
                 <table>
+                    <tr><th>Setting</th><th>Default</th><th>Description</th></tr>
+                    
                     <tr>
-                        <th>Setting</th>
-                        <th>Default</th>
-                        <th>Description</th>
+                        <td>Missing Search</td>
+                        <td><code>1</code></td>
+                        <td>Number of missing movies to search per cycle. Set to <code>0</code> to disable.</td>
                     </tr>
                     <tr>
-                        <td>Hunt Missing Items</td>
-                        <td><code>1</code></td>
-                        <td>Movies searched per cycle. Increase gradually once you know your indexer can handle the load.</td>
-                    </tr>
-                    <tr>
-                        <td>Hunt Upgrade Items</td>
-                        <td><code>1</code></td>
-                        <td>Items below your quality cutoff searched for upgrades per cycle.</td>
+                        <td>Upgrade Search</td>
+                        <td><code>0</code></td>
+                        <td>Number of below-cutoff movies to search for upgrades per cycle. Set to <code>0</code> to disable.</td>
                     </tr>
                     <tr>
                         <td>Sleep Duration</td>
                         <td><code>900</code></td>
-                        <td>Seconds between cycles. Lower values search more frequently but increase indexer load.</td>
+                        <td>Seconds between search cycles.</td>
                     </tr>
+                    <tr>
+                        <td>API Cap &mdash; Hourly</td>
+                        <td><code>20</code></td>
+                        <td>Maximum search API calls per hour. Setting this too high risks account bans.</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="settings-group">
+                <h3>Additional Options</h3>
+                <table>
+                    <tr><th>Setting</th><th>Default</th><th>Description</th></tr>
+                    
                     <tr>
                         <td>Monitored Only</td>
                         <td>Enabled</td>
-                        <td>Only process movies marked as monitored in Radarr.</td>
+                        <td>Only search for movies marked as monitored in Radarr.</td>
                     </tr>
                     <tr>
-                        <td>Skip Future Items</td>
+                        <td>Skip Future Releases</td>
                         <td>Enabled</td>
-                        <td>Skip movies with a future release date to avoid unnecessary searches.</td>
+                        <td>Skip movies whose release date is in the future.</td>
                     </tr>
                     <tr>
-                        <td>Skip Movie Refresh</td>
-                        <td>Enabled</td>
-                        <td>Skip metadata refresh before searching. Reduces disk I/O and database load significantly.</td>
-                    </tr>
-                    <tr>
-                        <td>Minimum Download Queue Size</td>
-                        <td><code>0</code></td>
-                        <td>Pause hunting when Radarr's download queue reaches this count. <code>0</code> disables the check.</td>
-                    </tr>
-                    <tr>
-                        <td>Hourly API Cap</td>
-                        <td><code>0</code></td>
-                        <td>Maximum search API calls per hour. <code>0</code> means no cap.</td>
-                    </tr>
-                    <tr>
-                        <td>State Reset Interval</td>
-                        <td><code>168</code></td>
-                        <td>Hours before processed item IDs are cleared so items can be re-hunted (default: 7 days).</td>
-                    </tr>
-                    <tr>
-                        <td>Random Selection</td>
-                        <td>Enabled</td>
-                        <td>Process items in random order to distribute searches evenly across your library.</td>
+                        <td>Release Type for Future Status</td>
+                        <td><code>Physical</code></td>
+                        <td>Which release date to check when deciding if a movie is a future release: <strong>Digital</strong>, <strong>Physical</strong>, or <strong>Cinema</strong>.</td>
                     </tr>
                 </table>
-            </section>
+            </div>
 
             <div class="next-steps">
                 <h2>See Also</h2>
-                <a href="../getting-started/configuration.html">Full Configuration Reference →</a>
+                <a href="../getting-started/configuration.html">Full Configuration Reference &rarr;</a>
             </div>
 
             <div class="section-nav">
-                <a href="sonarr.html">← Sonarr</a>
-                <a href="lidarr.html">Lidarr →</a>
+                <a href="sonarr.html">&larr; Sonarr</a>
+                <a href="lidarr.html">Lidarr &rarr;</a>
             </div>
         </div>
     </div>

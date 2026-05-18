@@ -643,4 +643,57 @@ footer {
 .app-card.whisparr-card .app-card-header {
     background-color: rgba(155, 89, 182, 0.2);
     border-bottom: 2px solid var(--whisparr-color);
-} 
+}
+
+/* Settings group cards for app pages */
+.settings-group {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    padding: 20px 25px;
+    margin: 20px 0;
+    border-left: 4px solid var(--highlight-color);
+}
+
+.settings-group h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 1.05rem;
+    color: var(--highlight-color);
+}
+
+.settings-group table {
+    margin: 10px 0 0;
+}
+
+/* App-themed page accent colors */
+.sonarr-page h1 { border-bottom-color: var(--sonarr-color); }
+.sonarr-page .settings-group { border-left-color: var(--sonarr-color); }
+.sonarr-page .settings-group h3 { color: var(--sonarr-color); }
+
+.radarr-page h1 { border-bottom-color: var(--radarr-color); }
+.radarr-page .settings-group { border-left-color: var(--radarr-color); }
+.radarr-page .settings-group h3 { color: var(--radarr-color); }
+
+.lidarr-page h1 { border-bottom-color: var(--lidarr-color); }
+.lidarr-page .settings-group { border-left-color: var(--lidarr-color); }
+.lidarr-page .settings-group h3 { color: var(--lidarr-color); }
+
+.readarr-page h1 { border-bottom-color: var(--readarr-color); }
+.readarr-page .settings-group { border-left-color: var(--readarr-color); }
+.readarr-page .settings-group h3 { color: var(--readarr-color); }
+
+.whisparr-page h1 { border-bottom-color: var(--whisparr-color); }
+.whisparr-page .settings-group { border-left-color: var(--whisparr-color); }
+.whisparr-page .settings-group h3 { color: var(--whisparr-color); }
+
+.info-box {
+    background-color: rgba(52, 152, 219, 0.1);
+    border-left: 4px solid var(--sonarr-color);
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin: 15px 0;
+    font-size: 0.95rem;
+    color: var(--text-color);
+}
