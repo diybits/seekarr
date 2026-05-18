@@ -643,4 +643,134 @@ footer {
 .app-card.whisparr-card .app-card-header {
     background-color: rgba(155, 89, 182, 0.2);
     border-bottom: 2px solid var(--whisparr-color);
-} 
+}
+
+/* App page header with logo + title */
+.page-app-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid var(--highlight-color);
+}
+
+.page-app-header h1 {
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+.page-app-logo {
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+    border-radius: 10px;
+    margin: 0;
+}
+
+.sonarr-page .page-app-header { border-bottom-color: var(--sonarr-color); }
+.radarr-page .page-app-header { border-bottom-color: var(--radarr-color); }
+.lidarr-page .page-app-header  { border-bottom-color: var(--lidarr-color); }
+.readarr-page .page-app-header { border-bottom-color: var(--readarr-color); }
+.whisparr-page .page-app-header { border-bottom-color: var(--whisparr-color); }
+
+/* SVG logo icon in app cards */
+.app-logo-icon {
+    background-color: transparent !important;
+    padding: 2px;
+}
+
+.app-logo-icon img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    border-radius: 6px;
+    margin: 0;
+}
+
+/* Clickable card header */
+.app-card-header-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+
+.app-card-header-link:hover {
+    text-decoration: none;
+    opacity: 0.85;
+}
+
+.app-card-header-link:hover .app-card-title {
+    text-decoration: underline;
+    color: var(--link-color);
+}
+
+/* External app links inside card content */
+.app-external-links {
+    margin: 8px 0 0;
+    font-size: 0.85rem;
+    color: #999;
+}
+
+.app-external-links a {
+    color: #999;
+}
+
+.app-external-links a:hover {
+    color: var(--link-color);
+}
+
+/* Settings group cards for app pages */
+.settings-group {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    padding: 20px 25px;
+    margin: 20px 0;
+    border-left: 4px solid var(--highlight-color);
+}
+
+.settings-group h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 1.05rem;
+    color: var(--highlight-color);
+}
+
+.settings-group table {
+    margin: 10px 0 0;
+}
+
+/* App-themed page accent colors */
+.sonarr-page h1 { border-bottom-color: var(--sonarr-color); }
+.sonarr-page .settings-group { border-left-color: var(--sonarr-color); }
+.sonarr-page .settings-group h3 { color: var(--sonarr-color); }
+
+.radarr-page h1 { border-bottom-color: var(--radarr-color); }
+.radarr-page .settings-group { border-left-color: var(--radarr-color); }
+.radarr-page .settings-group h3 { color: var(--radarr-color); }
+
+.lidarr-page h1 { border-bottom-color: var(--lidarr-color); }
+.lidarr-page .settings-group { border-left-color: var(--lidarr-color); }
+.lidarr-page .settings-group h3 { color: var(--lidarr-color); }
+
+.readarr-page h1 { border-bottom-color: var(--readarr-color); }
+.readarr-page .settings-group { border-left-color: var(--readarr-color); }
+.readarr-page .settings-group h3 { color: var(--readarr-color); }
+
+.whisparr-page h1 { border-bottom-color: var(--whisparr-color); }
+.whisparr-page .settings-group { border-left-color: var(--whisparr-color); }
+.whisparr-page .settings-group h3 { color: var(--whisparr-color); }
+
+.info-box {
+    background-color: rgba(52, 152, 219, 0.1);
+    border-left: 4px solid var(--sonarr-color);
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin: 15px 0;
+    font-size: 0.95rem;
+    color: var(--text-color);
+}
