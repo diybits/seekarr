@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seekarr Applications Documentation</title>
+    <title>Integrations - Seekarr Documentation</title>
     <link rel="stylesheet" href="../css/main.css">
     <script src="../js/main.js" defer></script>
 </head>
@@ -13,7 +13,7 @@
             <img src="../images/seekarr-logo.png" alt="Seekarr Logo">
             <h2>Seekarr</h2>
         </div>
-        
+
         <nav class="sidebar-nav">
             <div class="sidebar-section">
                 <h3 class="sidebar-section-title">Core</h3>
@@ -23,7 +23,7 @@
                     <li><a href="../settings/index.html"><svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"></path></svg> Settings</a></li>
                 </ul>
             </div>
-            
+
             <div class="sidebar-section">
                 <h3 class="sidebar-section-title">Applications</h3>
                 <ul>
@@ -34,7 +34,7 @@
                     <li><a href="whisparr.html"><svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z"></path></svg> Whisparr</a></li>
                 </ul>
             </div>
-            
+
             <div class="sidebar-section">
                 <h3 class="sidebar-section-title">Resources</h3>
                 <ul>
@@ -46,97 +46,115 @@
 
     <div class="main-content">
         <div class="container">
-            <h1>Seekarr Applications</h1>
-            
-            <p>Seekarr provides a unified interface to manage your media automation applications. Each application has its own dedicated documentation page with setup instructions, configuration options, and usage guides.</p>
-            
-            <h2>Supported Applications</h2>
-            
+            <h1>Integrations</h1>
+
+            <p>Seekarr connects to each of your <em>Arr</em> apps via their API to drive automated searches for missing media and quality upgrades. Select an app below to configure its connection and hunt settings inside Seekarr.</p>
+
             <div class="app-card sonarr-card">
-                <div class="app-card-header">
-                    <div class="app-card-icon sonarr">S</div>
-                    <h3 class="app-card-title">Sonarr</h3>
-                </div>
+                <a href="sonarr.html" class="app-card-header-link">
+                    <div class="app-card-header">
+                        <div class="app-card-icon sonarr">S</div>
+                        <h3 class="app-card-title">Sonarr</h3>
+                    </div>
+                </a>
                 <div class="app-card-content">
-                    <p><strong>Purpose:</strong> Manage and automate TV show downloads.</p>
-                    <p><strong>Features:</strong> Calendar view, automatic searching, series management, quality profiles, and more.</p>
+                    <p>TV show library automation — tracks series, seasons, and episodes, and searches for missing or below-cutoff content.</p>
+                    <p class="app-external-links">
+                        <a href="https://sonarr.tv" target="_blank" rel="noopener noreferrer">sonarr.tv</a>
+                        &nbsp;&middot;&nbsp;
+                        <a href="https://github.com/Sonarr/Sonarr" target="_blank" rel="noopener noreferrer">GitHub</a>
+                    </p>
                 </div>
                 <div class="app-card-footer">
-                    <a href="sonarr.html">View Sonarr Documentation →</a>
+                    <a href="sonarr.html">Seekarr Integration Settings &rarr;</a>
                 </div>
             </div>
-            
+
             <div class="app-card radarr-card">
-                <div class="app-card-header">
-                    <div class="app-card-icon radarr">R</div>
-                    <h3 class="app-card-title">Radarr</h3>
-                </div>
+                <a href="radarr.html" class="app-card-header-link">
+                    <div class="app-card-header">
+                        <div class="app-card-icon radarr">R</div>
+                        <h3 class="app-card-title">Radarr</h3>
+                    </div>
+                </a>
                 <div class="app-card-content">
-                    <p><strong>Purpose:</strong> Manage and automate movie downloads.</p>
-                    <p><strong>Features:</strong> Automatic searching, movie management, quality profiles, and more.</p>
+                    <p>Movie library automation — monitors your watchlist and searches for missing movies or quality upgrades.</p>
+                    <p class="app-external-links">
+                        <a href="https://radarr.video" target="_blank" rel="noopener noreferrer">radarr.video</a>
+                        &nbsp;&middot;&nbsp;
+                        <a href="https://github.com/Radarr/Radarr" target="_blank" rel="noopener noreferrer">GitHub</a>
+                    </p>
                 </div>
                 <div class="app-card-footer">
-                    <a href="radarr.html">View Radarr Documentation →</a>
+                    <a href="radarr.html">Seekarr Integration Settings &rarr;</a>
                 </div>
             </div>
-            
+
             <div class="app-card lidarr-card">
-                <div class="app-card-header">
-                    <div class="app-card-icon lidarr">L</div>
-                    <h3 class="app-card-title">Lidarr</h3>
-                </div>
+                <a href="lidarr.html" class="app-card-header-link">
+                    <div class="app-card-header">
+                        <div class="app-card-icon lidarr">L</div>
+                        <h3 class="app-card-title">Lidarr</h3>
+                    </div>
+                </a>
                 <div class="app-card-content">
-                    <p><strong>Purpose:</strong> Manage and automate music downloads.</p>
-                    <p><strong>Features:</strong> Artist management, album tracking, quality profiles, and more.</p>
+                    <p>Music library automation — tracks artists and albums and searches for missing or below-cutoff content.</p>
+                    <p class="app-external-links">
+                        <a href="https://lidarr.audio" target="_blank" rel="noopener noreferrer">lidarr.audio</a>
+                        &nbsp;&middot;&nbsp;
+                        <a href="https://github.com/Lidarr/Lidarr" target="_blank" rel="noopener noreferrer">GitHub</a>
+                    </p>
                 </div>
                 <div class="app-card-footer">
-                    <a href="lidarr.html">View Lidarr Documentation →</a>
+                    <a href="lidarr.html">Seekarr Integration Settings &rarr;</a>
                 </div>
             </div>
-            
+
             <div class="app-card readarr-card">
-                <div class="app-card-header">
-                    <div class="app-card-icon readarr">R</div>
-                    <h3 class="app-card-title">Readarr</h3>
-                </div>
+                <a href="readarr.html" class="app-card-header-link">
+                    <div class="app-card-header">
+                        <div class="app-card-icon readarr">R</div>
+                        <h3 class="app-card-title">Readarr</h3>
+                    </div>
+                </a>
                 <div class="app-card-content">
-                    <p><strong>Purpose:</strong> Manage and automate ebook and audiobook downloads.</p>
-                    <p><strong>Features:</strong> Author management, book tracking, quality profiles, and more.</p>
+                    <p>Book and audiobook library automation — tracks authors and titles and searches for missing or below-cutoff content.</p>
+                    <p class="app-external-links">
+                        <a href="https://readarr.com" target="_blank" rel="noopener noreferrer">readarr.com</a>
+                        &nbsp;&middot;&nbsp;
+                        <a href="https://github.com/Readarr/Readarr" target="_blank" rel="noopener noreferrer">GitHub</a>
+                    </p>
                 </div>
                 <div class="app-card-footer">
-                    <a href="readarr.html">View Readarr Documentation →</a>
+                    <a href="readarr.html">Seekarr Integration Settings &rarr;</a>
                 </div>
             </div>
-            
+
             <div class="app-card whisparr-card">
-                <div class="app-card-header">
-                    <div class="app-card-icon whisparr">W</div>
-                    <h3 class="app-card-title">Whisparr</h3>
-                </div>
+                <a href="whisparr.html" class="app-card-header-link">
+                    <div class="app-card-header">
+                        <div class="app-card-icon whisparr">W</div>
+                        <h3 class="app-card-title">Whisparr</h3>
+                    </div>
+                </a>
                 <div class="app-card-content">
-                    <p><strong>Purpose:</strong> Manage and automate adult content downloads.</p>
-                    <p><strong>Features:</strong> Scene tracking, automatic searching, quality profiles, and more.</p>
+                    <p>Adult content library automation — tracks studios and scenes and searches for missing or below-cutoff content. Seekarr supports both Whisparr V2 and V3 (Eros).</p>
+                    <p class="app-external-links">
+                        <a href="https://github.com/Whisparr/Whisparr" target="_blank" rel="noopener noreferrer">GitHub (V2)</a>
+                        &nbsp;&middot;&nbsp;
+                        <a href="https://github.com/enymawse/whisparr-v3" target="_blank" rel="noopener noreferrer">GitHub (V3)</a>
+                    </p>
                 </div>
                 <div class="app-card-footer">
-                    <a href="whisparr.html">View Whisparr Documentation →</a>
+                    <a href="whisparr.html">Seekarr Integration Settings &rarr;</a>
                 </div>
             </div>
-            
-            <h2>Adding (i) Links to Your Seekarr UI</h2>
-            
-            <p>The information icon (<span class="info-link">i</span>) in the Seekarr user interface can be used to link directly to these documentation pages. When implementing the (i) links in your app's HTML, use the following format:</p>
-            
-            <pre><code>&lt;a href="https://diybits.github.io/seekarr/apps/sonarr.html" class="info-link" target="_blank"&gt;i&lt;/a&gt;</code></pre>
-            
+
             <div class="section-nav">
-                <a href="../index.html">← Back to Home</a>
-                <a href="../settings/index.html">Settings Documentation →</a>
+                <a href="../index.html">&larr; Home</a>
+                <a href="../settings/index.html">Settings &rarr;</a>
             </div>
-            
-            <footer>
-                Seekarr <span class="version-badge">v7.0.0</span> | Applications Documentation | Seekarr
-            </footer>
         </div>
     </div>
 </body>
-</html> 
+</html>
