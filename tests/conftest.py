@@ -18,11 +18,16 @@ import pytest
 _session_tmp = pathlib.Path(tempfile.mkdtemp(prefix="seekarr_test_"))
 os.environ["CONFIG_DIR"] = str(_session_tmp)
 
-# Import modules after env is set so state.py's init_state_files() uses
-# _session_tmp. settings_manager and auth fail their /config mkdir silently.
+# Set STATEFUL_DIR early — stateful_manager.py reads this at import time and
+# runs mkdir calls that would fail without a writable path.
+_stateful_tmp = pathlib.Path(tempfile.mkdtemp(prefix="seekarr_stateful_"))
+os.environ["STATEFUL_DIR"] = str(_stateful_tmp)
+
+# Import modules after env vars are set.
 import src.primary.auth as _auth_mod
 import src.primary.settings_manager as _sm_mod
 import src.primary.stats_manager as _stats_mod
+import src.primary.stateful_manager as _stateful_mod
 
 
 @pytest.fixture()
