@@ -84,7 +84,7 @@ def test_connection():
                 return jsonify({"success": False, "message": error_msg}), 400
             else:
                 # Connected to some other version, try next path
-                error_msg = f"Connected to unknown version {version}, but Huntarr requires Whisparr V2"
+                error_msg = f"Connected to unknown version {version}, but Seekarr requires Whisparr V2"
                 whisparr_logger.error(error_msg)
                 return jsonify({"success": False, "message": error_msg}), 400
                 

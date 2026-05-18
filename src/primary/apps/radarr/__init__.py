@@ -1,5 +1,5 @@
 """
-Radarr app module for Huntarr
+Radarr app module for Seekarr
 Contains functionality for missing movies and quality upgrades in Radarr
 """
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Common routes blueprint for Huntarr web interface
+Common routes blueprint for Seekarr web interface
 """
 
 import os

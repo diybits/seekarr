@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-State management module for Huntarr
+State management module for Seekarr
 Handles all persistence of program state
 """
 

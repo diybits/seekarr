@@ -174,11 +174,11 @@ def test_connection():
             })
         elif version and version.startswith('3'):
             # Detected Eros API (V3)
-            error_msg = f"Incompatible Whisparr version {version} detected. Huntarr requires Whisparr V2."
+            error_msg = f"Incompatible Whisparr version {version} detected. Seekarr requires Whisparr V2."
             whisparr_logger.error(error_msg)
             return jsonify({"success": False, "message": error_msg}), 400
         else:
-            error_msg = f"Unexpected Whisparr version {version} detected. Huntarr requires Whisparr V2."
+            error_msg = f"Unexpected Whisparr version {version} detected. Seekarr requires Whisparr V2."
             whisparr_logger.error(error_msg)
             return jsonify({"success": False, "message": error_msg}), 400
     except ValueError:
@@ -270,7 +270,7 @@ def get_versions():
                         results.append({
                             "name": instance_name,
                             "success": False,
-                            "message": f"Incompatible Whisparr version {version} detected. Huntarr requires Whisparr V2.",
+                            "message": f"Incompatible Whisparr version {version} detected. Seekarr requires Whisparr V2.",
                             "version": version
                         })
                     else:
@@ -278,7 +278,7 @@ def get_versions():
                         results.append({
                             "name": instance_name,
                             "success": False,
-                            "message": f"Unexpected Whisparr version {version} detected. Huntarr requires Whisparr V2.",
+                            "message": f"Unexpected Whisparr version {version} detected. Seekarr requires Whisparr V2.",
                             "version": version
                         })
                 else:

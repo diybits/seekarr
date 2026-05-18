@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Statistics Manager for Huntarr
+Statistics Manager for Seekarr
 Handles tracking, storing, and retrieving statistics about hunted and upgraded media
 and monitoring hourly API usage for rate limiting
 """
@@ -19,7 +19,7 @@ logger = get_logger("stats")
 # Path constants - Define multiple possible locations and check them in order
 STATS_DIRS = [
     "/config/tally",                                        # Docker default
-    os.path.join(os.path.expanduser("~"), ".huntarr/tally"), # User's home directory
+    os.path.join(os.path.expanduser("~"), ".seekarr/tally"), # User's home directory
     os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "data/tally") # Relative to script
 ]
 

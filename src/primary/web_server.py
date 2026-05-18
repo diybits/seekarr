@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Web server for Huntarr
+Web server for Seekarr
 Provides a web interface to view logs in real-time, manage settings, and includes authentication
 """
 
@@ -118,7 +118,7 @@ KNOWN_LOG_FILES = {
     "whisparr": APP_LOG_FILES.get("whisparr"),
     "eros": APP_LOG_FILES.get("eros"),  # Added Eros to known log files
     "swaparr": APP_LOG_FILES.get("swaparr"),  # Added Swaparr to known log files
-    "system": MAIN_LOG_FILE, # Map 'system' to the main huntarr log
+    "system": MAIN_LOG_FILE,
 }
 # Filter out None values if an app log file doesn't exist
 KNOWN_LOG_FILES = {k: v for k, v in KNOWN_LOG_FILES.items() if v}

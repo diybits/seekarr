@@ -119,11 +119,11 @@ def migrate_settings():
 
 if __name__ == "__main__":
     configure_logging()
-    logging.info("Starting Huntarr application")
+    logging.info("Starting Seekarr application")
     
     # Migrate settings to flat structure
     migrate_settings()
     
     # Using filtered logging
-    logging.info("Web interface available at http://localhost:8080")
+    logging.info("Web interface available at http://localhost:9705")
     logging.info("Application started")

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Stateful Manager for Huntarr
+Stateful Manager for Seekarr
 Handles storing and retrieving processed media IDs to prevent reprocessing
 """
 

@@ -24,7 +24,7 @@ def configure_logging(level=logging.INFO):
         handler.addFilter(SensitiveInfoFilter())
     
     # Individual loggers can also be configured here
-    logger = logging.getLogger('huntarr')
+    logger = logging.getLogger('seekarr')
     logger.setLevel(level)
     
     for handler in logger.handlers:

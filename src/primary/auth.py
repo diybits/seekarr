@@ -356,45 +356,30 @@ def authenticate_request():
         return None
     
     remote_addr = request.remote_addr
-    logger.info(f"Request IP address: {remote_addr}")
-    
-    if local_access_bypass:
-        # Common local network IP ranges
-        local_networks = [
-            '127.0.0.1',      # localhost
-            '::1',            # localhost IPv6
-            '10.',            # 10.0.0.0/8
-            '172.16.',        # 172.16.0.0/12
-            '172.17.',
-            '172.18.',
-            '172.19.',
-            '172.20.',
-            '172.21.',
-            '172.22.',
-            '172.23.',
-            '172.24.',
-            '172.25.',
-            '172.26.',
-            '172.27.',
-            '172.28.',
-            '172.29.',
-            '172.30.',
-            '172.31.',
-            '192.168.'        # 192.168.0.0/16
-        ]
-        is_local = False
+    logger.debug(f"Request IP address: {remote_addr}")
 
-        for network in local_networks:
-            if remote_addr == network or (network.endswith('.') and remote_addr.startswith(network)):
-                is_local = True
-                logger.info(f"Direct IP {remote_addr} is a local network IP (matches {network})")
-                break
-                    
+    if local_access_bypass:
+        import ipaddress as _ipaddress
+        _PRIVATE_NETWORKS = [
+            _ipaddress.ip_network('127.0.0.0/8'),
+            _ipaddress.ip_network('::1/128'),
+            _ipaddress.ip_network('10.0.0.0/8'),
+            _ipaddress.ip_network('172.16.0.0/12'),
+            _ipaddress.ip_network('192.168.0.0/16'),
+            _ipaddress.ip_network('fc00::/7'),
+            _ipaddress.ip_network('fe80::/10'),
+        ]
+        try:
+            ip = _ipaddress.ip_address(remote_addr)
+            is_local = any(ip in net for net in _PRIVATE_NETWORKS)
+        except ValueError:
+            is_local = False
+
         if is_local:
-            logger.info(f"Local network access from {remote_addr} - Authentication bypassed! (Local Bypass Mode)")
+            logger.info(f"Local network access from {remote_addr} - authentication bypassed (Local Bypass Mode)")
             return None
         else:
-            logger.warning(f"Access from {remote_addr} is not recognized as local network - Authentication required")
+            logger.warning(f"Access from {remote_addr} is not a local network address - authentication required")
     else:
         logger.info("Local Bypass Mode is DISABLED - Authentication required")
     

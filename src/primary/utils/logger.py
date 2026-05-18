@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Logging configuration for Huntarr
+Logging configuration for Seekarr
 Supports separate log files for each application type
 """
 
@@ -33,7 +33,7 @@ logger: Optional[logging.Logger] = None
 app_loggers: Dict[str, logging.Logger] = {}
 
 def setup_main_logger(debug_mode=None):
-    """Set up the main Huntarr logger."""
+    """Set up the main Seekarr logger."""
     global logger
     log_name = "seekarr"
     log_file = MAIN_LOG_FILE
@@ -112,7 +112,7 @@ def get_logger(app_type: str) -> logging.Logger:
     # If not cached, set up a new logger for this app type
     app_logger = logging.getLogger(log_name)
     
-    # Prevent propagation to the main 'huntarr' logger or root logger
+    # Prevent propagation to the main 'seekarr' logger or root logger
     app_logger.propagate = False
     
     # Determine debug mode setting safely

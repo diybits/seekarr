@@ -12,7 +12,7 @@ main_blueprint = Blueprint('main', __name__)
 @main_blueprint.route('/')
 def index():
     # Return the index page
-    return "Huntarr API"
+    return "Seekarr API"
 
 # Add new route for getting media statistics
 @main_blueprint.route('/api/stats', methods=['GET'])

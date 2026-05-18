@@ -81,7 +81,7 @@ def test_connection():
                 return jsonify({"success": False, "message": error_msg}), 400
             else:
                 # Connected to some other version, try next path
-                return jsonify({"success": False, "message": f"Connected to unknown version {version}, but Huntarr requires Eros V3"}), 400
+                return jsonify({"success": False, "message": f"Connected to unknown version {version}, but Seekarr requires Eros V3"}), 400
                 
         except ValueError:
             return jsonify({"success": False, "message": "Invalid JSON response from API"}), 400

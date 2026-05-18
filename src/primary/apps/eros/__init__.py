@@ -1,5 +1,5 @@
 """
-Eros app module for Huntarr
+Eros app module for Seekarr
 Contains functionality for missing items and quality upgrades in Eros
 
 Exclusively supports the v3 API.

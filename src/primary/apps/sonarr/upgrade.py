@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Sonarr cutoff upgrade processing module for Huntarr
+Sonarr cutoff upgrade processing module for Seekarr
 """
 
 import time

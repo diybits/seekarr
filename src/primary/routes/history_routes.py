@@ -3,7 +3,7 @@ import logging
 
 from src.primary.history_manager import get_history, clear_history, add_history_entry
 
-logger = logging.getLogger("huntarr")
+logger = logging.getLogger("seekarr")
 history_blueprint = Blueprint('history', __name__)
 
 @history_blueprint.route('/<app_type>', methods=['GET'])
