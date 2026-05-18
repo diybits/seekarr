@@ -645,6 +645,20 @@ footer {
     border-bottom: 2px solid var(--whisparr-color);
 }
 
+/* SVG logo icon in app cards */
+.app-logo-icon {
+    background-color: transparent !important;
+    padding: 2px;
+}
+
+.app-logo-icon img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    border-radius: 6px;
+    margin: 0;
+}
+
 /* Clickable card header */
 .app-card-header-link {
     display: block;
