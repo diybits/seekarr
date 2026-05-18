@@ -82,7 +82,7 @@ const SettingsForms = {
             <div class="settings-group">
                 <h3>Search Settings</h3>
                 <div class="setting-item">
-                    <label for="sonarr-hunt-missing-mode"><a href="https://diybits.github.io/seekarr/apps/sonarr.html" class="info-icon" title="Learn more about missing search modes" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Missing Search Mode:</label>
+                    <label for="sonarr-hunt-missing-mode"><a href="https://diybits.github.io/seekarr/apps/sonarr.html" class="info-icon" title="How Seekarr groups missing items when searching" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Missing Search Mode:</label>
                     <select id="sonarr-hunt-missing-mode" name="hunt_missing_mode">
                         <option value="episodes" ${settings.hunt_missing_mode === 'episodes' ? 'selected' : ''}>Episodes</option>
                         <option value="seasons_packs" ${settings.hunt_missing_mode === 'seasons_packs' ? 'selected' : ''}>Season Packs</option>
@@ -99,19 +99,19 @@ const SettingsForms = {
                     <p class="setting-help">How to search for Sonarr upgrades (Seasons/Shows modes upgrade entire seasons or shows at once)</p>
                 </div>
                 <div class="setting-item">
-                    <label for="sonarr-hunt-missing-items"><a href="https://diybits.github.io/seekarr/apps/sonarr.html" class="info-icon" title="Learn more about missing items search" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Missing Search:</label>
+                    <label for="sonarr-hunt-missing-items"><a href="https://diybits.github.io/seekarr/apps/sonarr.html" class="info-icon" title="How many missing items Seekarr searches each cycle (0 = disabled)" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Missing Search:</label>
                     <input type="number" id="sonarr-hunt-missing-items" name="hunt_missing_items" min="0" value="${settings.hunt_missing_items !== undefined ? settings.hunt_missing_items : 1}">
                     <p class="setting-help">Number of missing items to search per cycle (0 to disable)</p>
                 </div>
                 <div class="setting-item">
-                    <label for="sonarr-hunt-upgrade-items"><a href="https://diybits.github.io/seekarr/apps/sonarr.html" class="info-icon" title="Learn more about upgrade items search" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Upgrade Search:</label>
+                    <label for="sonarr-hunt-upgrade-items"><a href="https://diybits.github.io/seekarr/apps/sonarr.html" class="info-icon" title="How many items Seekarr checks for quality upgrades each cycle (0 = disabled)" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Upgrade Search:</label>
                     <input type="number" id="sonarr-hunt-upgrade-items" name="hunt_upgrade_items" min="0" value="${settings.hunt_upgrade_items !== undefined ? settings.hunt_upgrade_items : 0}">
                     <p class="setting-help">Number of episodes to upgrade per cycle (0 to disable)</p>
                 </div>
                 <div class="setting-item">
-                    <label for="sonarr_sleep_duration"><a href="https://diybits.github.io/seekarr/apps/sonarr.html" class="info-icon" title="Learn more about sleep duration" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Sleep Duration:</label>
+                    <label for="sonarr_sleep_duration"><a href="https://diybits.github.io/seekarr/getting-started/how-it-works.html" class="info-icon" title="How long Seekarr waits between search cycles (seconds)" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Sleep Duration:</label>
                     <input type="number" id="sonarr_sleep_duration" name="sleep_duration" min="60" value="${settings.sleep_duration !== undefined ? settings.sleep_duration : 900}">
-                    <p class="setting-help">Time in seconds between processing cycles</p>
+                    <p class="setting-help">Time in seconds between processing cycles (<span id="sonarr_sleep_duration_hours">${settings.sleep_duration !== undefined ? (settings.sleep_duration < 3600 ? Math.round(settings.sleep_duration / 60) + ' min' : (settings.sleep_duration / 3600).toFixed(1) + ' hr') : '15 min'}</span>)</p>
                 </div>
                 <div class="setting-item">
                     <label for="sonarr_hourly_cap"><a href="#" class="info-icon" title="Maximum API requests per hour for this app" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;API Cap - Hourly:</label>
@@ -124,7 +124,7 @@ const SettingsForms = {
             <div class="settings-group">
                 <h3>Additional Options</h3>
                 <div class="setting-item">
-                    <label for="sonarr_monitored_only"><a href="https://diybits.github.io/seekarr/apps/sonarr.html" class="info-icon" title="Learn more about monitored only option" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Monitored Only:</label>
+                    <label for="sonarr_monitored_only"><a href="https://diybits.github.io/seekarr/apps/sonarr.html" class="info-icon" title="Only process items marked as monitored in your arr app" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Monitored Only:</label>
                     <label class="toggle-switch" style="width:40px; height:20px; display:inline-block; position:relative;">
                         <input type="checkbox" id="sonarr_monitored_only" name="monitored_only" ${settings.monitored_only !== false ? 'checked' : ''}>
                         <span class="toggle-slider" style="position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background-color:#3d4353; border-radius:20px; transition:0.4s;"></span>
@@ -230,19 +230,19 @@ const SettingsForms = {
             <div class="settings-group">
                 <h3>Search Settings</h3>
                 <div class="setting-item">
-                    <label for="radarr_hunt_missing_movies"><a href="https://diybits.github.io/seekarr/apps/radarr.html" class="info-icon" title="Learn more about missing movies search" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Missing Search:</label>
+                    <label for="radarr_hunt_missing_movies"><a href="https://diybits.github.io/seekarr/apps/radarr.html" class="info-icon" title="How many missing movies Seekarr searches each cycle (0 = disabled)" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Missing Search:</label>
                     <input type="number" id="radarr_hunt_missing_movies" name="hunt_missing_movies" min="0" value="${settings.hunt_missing_movies !== undefined ? (settings.hunt_missing_movies === 0 ? 0 : settings.hunt_missing_movies) : 1}">
                     <p class="setting-help">Number of missing movies to search per cycle (0 to disable)</p>
                 </div>
                 <div class="setting-item">
-                    <label for="radarr_hunt_upgrade_movies"><a href="https://diybits.github.io/seekarr/apps/radarr.html" class="info-icon" title="Learn more about upgrading movies" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Upgrade Search:</label>
+                    <label for="radarr_hunt_upgrade_movies"><a href="https://diybits.github.io/seekarr/apps/radarr.html" class="info-icon" title="How many movies Seekarr checks for quality upgrades each cycle (0 = disabled)" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Upgrade Search:</label>
                     <input type="number" id="radarr_hunt_upgrade_movies" name="hunt_upgrade_movies" min="0" value="${settings.hunt_upgrade_movies !== undefined ? (settings.hunt_upgrade_movies === 0 ? 0 : settings.hunt_upgrade_movies) : 0}">
                     <p class="setting-help">Number of movies to search for quality upgrades per cycle (0 to disable)</p>
                 </div>
                 <div class="setting-item">
-                    <label for="radarr_sleep_duration"><a href="https://diybits.github.io/seekarr/apps/radarr.html" class="info-icon" title="Learn more about sleep duration" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Sleep Duration:</label>
+                    <label for="radarr_sleep_duration"><a href="https://diybits.github.io/seekarr/getting-started/how-it-works.html" class="info-icon" title="How long Seekarr waits between search cycles (seconds)" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Sleep Duration:</label>
                     <input type="number" id="radarr_sleep_duration" name="sleep_duration" min="60" value="${settings.sleep_duration !== undefined ? settings.sleep_duration : 900}">
-                    <p class="setting-help">Time in seconds between processing cycles</p>
+                    <p class="setting-help">Time in seconds between processing cycles (<span id="radarr_sleep_duration_hours">${settings.sleep_duration !== undefined ? (settings.sleep_duration < 3600 ? Math.round(settings.sleep_duration / 60) + ' min' : (settings.sleep_duration / 3600).toFixed(1) + ' hr') : '15 min'}</span>)</p>
                 </div>
                 <div class="setting-item">
                     <label for="radarr_hourly_cap"><a href="#" class="info-icon" title="Maximum API requests per hour for this app" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;API Cap - Hourly:</label>
@@ -255,7 +255,7 @@ const SettingsForms = {
             <div class="settings-group">
                 <h3>Additional Options</h3>
                 <div class="setting-item">
-                    <label for="radarr_monitored_only"><a href="https://diybits.github.io/seekarr/apps/radarr.html" class="info-icon" title="Learn more about monitored only option" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Monitored Only:</label>
+                    <label for="radarr_monitored_only"><a href="https://diybits.github.io/seekarr/apps/radarr.html" class="info-icon" title="Only process items marked as monitored in your arr app" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Monitored Only:</label>
                     <label class="toggle-switch" style="width:40px; height:20px; display:inline-block; position:relative;">
                         <input type="checkbox" id="radarr_monitored_only" ${settings.monitored_only !== false ? 'checked' : ''}>
                         <span class="toggle-slider" style="position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background-color:#3d4353; border-radius:20px; transition:0.4s;"></span>
@@ -380,7 +380,7 @@ const SettingsForms = {
             <div class="settings-group">
                 <h3>Search Settings</h3>
                 <div class="setting-item">
-                    <label for="lidarr_hunt_missing_mode"><a href="https://diybits.github.io/seekarr/apps/lidarr.html" class="info-icon" title="Learn more about missing search modes" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Missing Search Mode:</label>
+                    <label for="lidarr_hunt_missing_mode"><a href="https://diybits.github.io/seekarr/apps/lidarr.html" class="info-icon" title="How Seekarr groups missing items when searching" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Missing Search Mode:</label>
                     <select id="lidarr_hunt_missing_mode" name="hunt_missing_mode">
                         <option value="artist" ${settings.hunt_missing_mode === 'artist' ? 'selected' : ''}>Artist</option>
                         <option value="album" ${settings.hunt_missing_mode === 'album' ? 'selected' : ''}>Album</option>
@@ -388,20 +388,20 @@ const SettingsForms = {
                     <p class="setting-help">Whether to search by artist (all missing albums for artist) or individual albums</p>
                 </div>
                 <div class="setting-item">
-                    <label for="lidarr_hunt_missing_items"><a href="https://diybits.github.io/seekarr/apps/lidarr.html" class="info-icon" title="Learn more about missing items search" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Missing Search:</label>
+                    <label for="lidarr_hunt_missing_items"><a href="https://diybits.github.io/seekarr/apps/lidarr.html" class="info-icon" title="How many missing items Seekarr searches each cycle (0 = disabled)" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Missing Search:</label>
                     <input type="number" id="lidarr_hunt_missing_items" name="hunt_missing_items" min="0" value="${settings.hunt_missing_items !== undefined ? settings.hunt_missing_items : 1}">
                     <p class="setting-help">Number of artists with missing albums to search per cycle (0 to disable)</p>
                 </div>
                 
                 <div class="setting-item">
-                    <label for="lidarr_hunt_upgrade_items"><a href="https://diybits.github.io/seekarr/apps/lidarr.html" class="info-icon" title="Learn more about upgrading items" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Upgrade Search:</label>
+                    <label for="lidarr_hunt_upgrade_items"><a href="https://diybits.github.io/seekarr/apps/lidarr.html" class="info-icon" title="How many items Seekarr checks for quality upgrades each cycle (0 = disabled)" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Upgrade Search:</label>
                     <input type="number" id="lidarr_hunt_upgrade_items" name="hunt_upgrade_items" min="0" value="${settings.hunt_upgrade_items !== undefined ? settings.hunt_upgrade_items : 0}">
                     <p class="setting-help">Number of albums to search for quality upgrades per cycle (0 to disable)</p>
                 </div>
                 <div class="setting-item">
-                    <label for="lidarr_sleep_duration"><a href="https://diybits.github.io/seekarr/apps/lidarr.html" class="info-icon" title="Learn more about sleep duration" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Sleep Duration:</label>
+                    <label for="lidarr_sleep_duration"><a href="https://diybits.github.io/seekarr/getting-started/how-it-works.html" class="info-icon" title="How long Seekarr waits between search cycles (seconds)" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Sleep Duration:</label>
                     <input type="number" id="lidarr_sleep_duration" name="sleep_duration" min="60" value="${settings.sleep_duration !== undefined ? settings.sleep_duration : 900}">
-                    <p class="setting-help">Time in seconds between processing cycles</p>
+                    <p class="setting-help">Time in seconds between processing cycles (<span id="lidarr_sleep_duration_hours">${settings.sleep_duration !== undefined ? (settings.sleep_duration < 3600 ? Math.round(settings.sleep_duration / 60) + ' min' : (settings.sleep_duration / 3600).toFixed(1) + ' hr') : '15 min'}</span>)</p>
                 </div>
                 <div class="setting-item">
                     <label for="lidarr_hourly_cap"><a href="#" class="info-icon" title="Maximum API requests per hour for this app" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;API Cap - Hourly:</label>
@@ -414,7 +414,7 @@ const SettingsForms = {
             <div class="settings-group">
                 <h3>Additional Options</h3>
                 <div class="setting-item">
-                    <label for="lidarr_monitored_only"><a href="https://diybits.github.io/seekarr/apps/lidarr.html" class="info-icon" title="Learn more about monitored only option" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Monitored Only:</label>
+                    <label for="lidarr_monitored_only"><a href="https://diybits.github.io/seekarr/apps/lidarr.html" class="info-icon" title="Only process items marked as monitored in your arr app" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Monitored Only:</label>
                     <label class="toggle-switch" style="width:40px; height:20px; display:inline-block; position:relative;">
                         <input type="checkbox" id="lidarr_monitored_only" ${settings.monitored_only !== false ? 'checked' : ''}>
                         <span class="toggle-slider" style="position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background-color:#3d4353; border-radius:20px; transition:0.4s;"></span>
@@ -516,19 +516,19 @@ const SettingsForms = {
             <div class="settings-group">
                 <h3>Search Settings</h3>
                 <div class="setting-item">
-                    <label for="readarr_hunt_missing_books"><a href="https://diybits.github.io/seekarr/apps/readarr.html" class="info-icon" title="Learn more about missing books search" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Missing Search:</label>
+                    <label for="readarr_hunt_missing_books"><a href="https://diybits.github.io/seekarr/apps/readarr.html" class="info-icon" title="How many missing books Seekarr searches each cycle (0 = disabled)" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Missing Search:</label>
                     <input type="number" id="readarr_hunt_missing_books" name="hunt_missing_books" min="0" value="${settings.hunt_missing_books !== undefined ? settings.hunt_missing_books : 1}">
                     <p class="setting-help">Number of missing books to search per cycle (0 to disable)</p>
                 </div>
                 <div class="setting-item">
-                    <label for="readarr_hunt_upgrade_books"><a href="https://diybits.github.io/seekarr/apps/readarr.html" class="info-icon" title="Learn more about upgrading books" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Upgrade Search:</label>
+                    <label for="readarr_hunt_upgrade_books"><a href="https://diybits.github.io/seekarr/apps/readarr.html" class="info-icon" title="How many books Seekarr checks for quality upgrades each cycle (0 = disabled)" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Upgrade Search:</label>
                     <input type="number" id="readarr_hunt_upgrade_books" name="hunt_upgrade_books" min="0" value="${settings.hunt_upgrade_books !== undefined ? settings.hunt_upgrade_books : 0}">
                     <p class="setting-help">Number of books to search for quality upgrades per cycle (0 to disable)</p>
                 </div>
                 <div class="setting-item">
-                    <label for="readarr_sleep_duration"><a href="https://diybits.github.io/seekarr/apps/readarr.html" class="info-icon" title="Learn more about sleep duration" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Sleep Duration:</label>
+                    <label for="readarr_sleep_duration"><a href="https://diybits.github.io/seekarr/getting-started/how-it-works.html" class="info-icon" title="How long Seekarr waits between search cycles (seconds)" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Sleep Duration:</label>
                     <input type="number" id="readarr_sleep_duration" name="sleep_duration" min="60" value="${settings.sleep_duration !== undefined ? settings.sleep_duration : 900}">
-                    <p class="setting-help">Time in seconds between processing cycles</p>
+                    <p class="setting-help">Time in seconds between processing cycles (<span id="readarr_sleep_duration_hours">${settings.sleep_duration !== undefined ? (settings.sleep_duration < 3600 ? Math.round(settings.sleep_duration / 60) + ' min' : (settings.sleep_duration / 3600).toFixed(1) + ' hr') : '15 min'}</span>)</p>
                 </div>
                 <div class="setting-item">
                     <label for="readarr_hourly_cap"><a href="#" class="info-icon" title="Maximum API requests per hour for this app" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;API Cap - Hourly:</label>
@@ -541,7 +541,7 @@ const SettingsForms = {
             <div class="settings-group">
                 <h3>Additional Options</h3>
                 <div class="setting-item">
-                    <label for="readarr_monitored_only"><a href="https://diybits.github.io/seekarr/apps/readarr.html" class="info-icon" title="Learn more about monitored only option" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Monitored Only:</label>
+                    <label for="readarr_monitored_only"><a href="https://diybits.github.io/seekarr/apps/readarr.html" class="info-icon" title="Only process items marked as monitored in your arr app" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Monitored Only:</label>
                     <label class="toggle-switch" style="width:40px; height:20px; display:inline-block; position:relative;">
                         <input type="checkbox" id="readarr_monitored_only" ${settings.monitored_only !== false ? 'checked' : ''}>
                         <span class="toggle-slider" style="position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background-color:#3d4353; border-radius:20px; transition:0.4s;"></span>
@@ -641,19 +641,19 @@ const SettingsForms = {
             <div class="settings-group">
                 <h3>Search Settings</h3>
                 <div class="setting-item">
-                    <label for="whisparr_hunt_missing_items"><a href="https://diybits.github.io/seekarr/apps/whisparr.html" class="info-icon" title="Learn more about missing items search" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Missing Search:</label>
+                    <label for="whisparr_hunt_missing_items"><a href="https://diybits.github.io/seekarr/apps/whisparr.html" class="info-icon" title="How many missing items Seekarr searches each cycle (0 = disabled)" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Missing Search:</label>
                     <input type="number" id="whisparr_hunt_missing_items" name="hunt_missing_items" min="0" value="${settings.hunt_missing_items !== undefined ? settings.hunt_missing_items : 1}">
                     <p class="setting-help">Number of missing items to search per cycle (0 to disable)</p>
                 </div>
                 <div class="setting-item">
-                    <label for="whisparr_hunt_upgrade_items"><a href="https://diybits.github.io/seekarr/apps/whisparr.html" class="info-icon" title="Learn more about upgrading items" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Upgrade Search:</label>
+                    <label for="whisparr_hunt_upgrade_items"><a href="https://diybits.github.io/seekarr/apps/whisparr.html" class="info-icon" title="How many items Seekarr checks for quality upgrades each cycle (0 = disabled)" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Upgrade Search:</label>
                     <input type="number" id="whisparr_hunt_upgrade_items" name="hunt_upgrade_items" min="0" value="${settings.hunt_upgrade_items !== undefined ? settings.hunt_upgrade_items : 0}">
                     <p class="setting-help">Number of items to search for quality upgrades per cycle (0 to disable)</p>
                 </div>
                 <div class="setting-item">
-                    <label for="whisparr_sleep_duration"><a href="https://diybits.github.io/seekarr/apps/whisparr.html" class="info-icon" title="Learn more about sleep duration" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Sleep Duration:</label>
+                    <label for="whisparr_sleep_duration"><a href="https://diybits.github.io/seekarr/getting-started/how-it-works.html" class="info-icon" title="How long Seekarr waits between search cycles (seconds)" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Sleep Duration:</label>
                     <input type="number" id="whisparr_sleep_duration" name="sleep_duration" min="60" value="${settings.sleep_duration !== undefined ? settings.sleep_duration : 900}">
-                    <p class="setting-help">Time in seconds between processing cycles</p>
+                    <p class="setting-help">Time in seconds between processing cycles (<span id="whisparr_sleep_duration_hours">${settings.sleep_duration !== undefined ? (settings.sleep_duration < 3600 ? Math.round(settings.sleep_duration / 60) + ' min' : (settings.sleep_duration / 3600).toFixed(1) + ' hr') : '15 min'}</span>)</p>
                 </div>
                 <div class="setting-item">
                     <label for="whisparr_hourly_cap"><a href="#" class="info-icon" title="Maximum API requests per hour for this app" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;API Cap - Hourly:</label>
@@ -666,7 +666,7 @@ const SettingsForms = {
             <div class="settings-group">
                 <h3>Additional Options</h3>
                 <div class="setting-item">
-                    <label for="whisparr_monitored_only"><a href="https://diybits.github.io/seekarr/apps/whisparr.html" class="info-icon" title="Learn more about monitored only option" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Monitored Only:</label>
+                    <label for="whisparr_monitored_only"><a href="https://diybits.github.io/seekarr/apps/whisparr.html" class="info-icon" title="Only process items marked as monitored in your arr app" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Monitored Only:</label>
                     <label class="toggle-switch" style="width:40px; height:20px; display:inline-block; position:relative;">
                         <input type="checkbox" id="whisparr_monitored_only" name="monitored_only" ${settings.monitored_only !== false ? 'checked' : ''}>
                         <span class="toggle-slider" style="position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background-color:#3d4353; border-radius:20px; transition:0.4s;"></span>
@@ -780,19 +780,19 @@ const SettingsForms = {
                     <p class="setting-help">How to search for missing and upgradable Whisparr V3 content (Movie-based or Scene-based)</p>
                 </div>
                 <div class="setting-item">
-                    <label for="eros_hunt_missing_items"><a href="https://diybits.github.io/seekarr/apps/whisparr.html" class="info-icon" title="Learn more about missing items search" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Missing Search:</label>
+                    <label for="eros_hunt_missing_items"><a href="https://diybits.github.io/seekarr/apps/whisparr.html" class="info-icon" title="How many missing items Seekarr searches each cycle (0 = disabled)" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Missing Search:</label>
                     <input type="number" id="eros_hunt_missing_items" name="hunt_missing_items" min="0" value="${settings.hunt_missing_items !== undefined ? settings.hunt_missing_items : 1}">
                     <p class="setting-help">Number of missing items to search per cycle (0 to disable)</p>
                 </div>
                 <div class="setting-item">
-                    <label for="eros_hunt_upgrade_items"><a href="https://diybits.github.io/seekarr/apps/whisparr.html" class="info-icon" title="Learn more about upgrading items" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Upgrade Search:</label>
+                    <label for="eros_hunt_upgrade_items"><a href="https://diybits.github.io/seekarr/apps/whisparr.html" class="info-icon" title="How many items Seekarr checks for quality upgrades each cycle (0 = disabled)" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Upgrade Search:</label>
                     <input type="number" id="eros_hunt_upgrade_items" name="hunt_upgrade_items" min="0" value="${settings.hunt_upgrade_items !== undefined ? settings.hunt_upgrade_items : 0}">
                     <p class="setting-help">Number of items to search for quality upgrades per cycle (0 to disable)</p>
                 </div>
                 <div class="setting-item">
-                    <label for="eros_sleep_duration"><a href="https://diybits.github.io/seekarr/apps/whisparr.html" class="info-icon" title="Learn more about sleep duration" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Sleep Duration:</label>
+                    <label for="eros_sleep_duration"><a href="https://diybits.github.io/seekarr/getting-started/how-it-works.html" class="info-icon" title="How long Seekarr waits between search cycles (seconds)" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Sleep Duration:</label>
                     <input type="number" id="eros_sleep_duration" name="sleep_duration" min="60" value="${settings.sleep_duration !== undefined ? settings.sleep_duration : 900}">
-                    <p class="setting-help">Time in seconds between processing cycles</p>
+                    <p class="setting-help">Time in seconds between processing cycles (<span id="eros_sleep_duration_hours">${settings.sleep_duration !== undefined ? (settings.sleep_duration < 3600 ? Math.round(settings.sleep_duration / 60) + ' min' : (settings.sleep_duration / 3600).toFixed(1) + ' hr') : '15 min'}</span>)</p>
                 </div>
                 <div class="setting-item">
                     <label for="eros_hourly_cap"><a href="#" class="info-icon" title="Maximum API requests per hour for this app" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;API Cap - Hourly:</label>
@@ -805,7 +805,7 @@ const SettingsForms = {
             <div class="settings-group">
                 <h3>Additional Options</h3>
                 <div class="setting-item">
-                    <label for="eros_monitored_only"><a href="https://diybits.github.io/seekarr/apps/whisparr.html" class="info-icon" title="Learn more about monitored only option" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Monitored Only:</label>
+                    <label for="eros_monitored_only"><a href="https://diybits.github.io/seekarr/apps/whisparr.html" class="info-icon" title="Only process items marked as monitored in your arr app" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Monitored Only:</label>
                     <label class="toggle-switch" style="width:40px; height:20px; display:inline-block; position:relative;">
                         <input type="checkbox" id="eros_monitored_only" name="monitored_only" ${settings.monitored_only !== false ? 'checked' : ''}>
                         <span class="toggle-slider" style="position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background-color:#3d4353; border-radius:20px; transition:0.4s;"></span>
@@ -1507,11 +1507,12 @@ const SettingsForms = {
         };
 
         // Update for each app
-        updateSleepDisplay('sleep_duration', 'sleep_duration_hours');
+        updateSleepDisplay('sonarr_sleep_duration', 'sonarr_sleep_duration_hours');
         updateSleepDisplay('radarr_sleep_duration', 'radarr_sleep_duration_hours');
         updateSleepDisplay('lidarr_sleep_duration', 'lidarr_sleep_duration_hours');
         updateSleepDisplay('readarr_sleep_duration', 'readarr_sleep_duration_hours');
-        updateSleepDisplay('whisparr_sleep_duration', 'whisparr_sleep_duration_hours'); // Added Whisparr
+        updateSleepDisplay('whisparr_sleep_duration', 'whisparr_sleep_duration_hours');
+        updateSleepDisplay('eros_sleep_duration', 'eros_sleep_duration_hours');
     },
     
     // Setup instance management - test connection buttons and add/remove instance buttons
