@@ -28,7 +28,6 @@ except ImportError:
         logger.error("Failed to import Seekarr modules, using fallback logging")
 
 # Print startup message to help with debugging
-print("Hourly API Cap Scheduler module loaded")
 logger.info("Hourly API Cap Scheduler module initialized")
 
 # Global variables
@@ -67,7 +66,6 @@ def scheduler_loop():
     """
     try:
         logger.info("Starting hourly API cap scheduler")
-        print("Hourly API cap scheduler thread starting")
         
         # Initial check on startup
         check_and_reset_caps()
@@ -95,7 +93,6 @@ def scheduler_loop():
     except Exception as e:
         logger.error(f"Fatal error in scheduler_loop: {e}")
         logger.error(traceback.format_exc())
-        print(f"FATAL ERROR in hourly cap scheduler: {e}")
 
 def start_scheduler():
     """
@@ -105,7 +102,6 @@ def start_scheduler():
     
     try:
         logger.info("Attempting to start hourly API cap scheduler")
-        print("Attempting to start hourly API cap scheduler")
         
         if scheduler_thread and scheduler_thread.is_alive():
             logger.info("Hourly API cap scheduler already running")
@@ -119,12 +115,10 @@ def start_scheduler():
         scheduler_thread.start()
         
         logger.info(f"Hourly API cap scheduler started. Thread is alive: {scheduler_thread.is_alive()}")
-        print(f"Hourly API cap scheduler started. Thread is alive: {scheduler_thread.is_alive()}")
         return True
     except Exception as e:
         logger.error(f"Failed to start hourly API cap scheduler: {e}")
         logger.error(traceback.format_exc())
-        print(f"Failed to start hourly API cap scheduler: {e}")
         return False
 
 def stop_scheduler():

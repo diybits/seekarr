@@ -1,31 +1,34 @@
 #!/usr/bin/env python3
 """
 Keys manager for Seekarr
-Handles storage and retrieval of API keys and URLs
+Thin wrapper around settings_manager that provides api_url/api_key access
+for callers that predate the settings_manager migration.
 """
 
-import os
-import json
-import pathlib
-import logging
-from typing import Dict, Any, Optional, Tuple
+from typing import Any, Dict, Tuple
 
-# Create a simple logger
-logging.basicConfig(level=logging.INFO)
-keys_logger = logging.getLogger("keys_manager")
 
-# Settings directory - Changed to match the updated settings_manager.py
-SETTINGS_DIR = pathlib.Path("/config")
-SETTINGS_DIR.mkdir(parents=True, exist_ok=True)
+def load_api_keys(app_name: str) -> Dict[str, Any]:
+    """Return the full settings dict for an app (delegates to settings_manager)."""
+    from src.primary import settings_manager
+    return settings_manager.load_settings(app_name)
 
-SETTINGS_FILE = SETTINGS_DIR / "seekarr.json"
 
-# Removed save_api_keys function
+def get_api_keys(app_name: str) -> Tuple[str, str]:
+    """Return (api_url, api_key) for an app.
 
-# Removed get_api_keys function
+    For apps using the instances model, returns the first enabled instance.
+    For apps using a flat settings model, returns top-level values.
+    Returns ('', '') if the app is not configured.
+    """
+    from src.primary import settings_manager
+    settings = settings_manager.load_settings(app_name)
 
-# Removed list_configured_apps function
+    instances = settings.get("instances", [])
+    if instances:
+        for instance in instances:
+            if instance.get("enabled", True):
+                return instance.get("api_url", ""), instance.get("api_key", "")
+        return "", ""
 
-# Keep other functions if they exist and are needed, otherwise the file might become empty.
-# If this file solely managed API keys in the old way, it might be removable entirely,
-# but let's keep it for now in case other key-related logic exists or is added later.
+    return settings.get("api_url", ""), settings.get("api_key", "")

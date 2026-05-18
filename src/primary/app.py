@@ -125,5 +125,5 @@ if __name__ == "__main__":
     migrate_settings()
     
     # Using filtered logging
-    logging.info("Web interface available at http://localhost:8080")
+    logging.info("Web interface available at http://localhost:9705")
     logging.info("Application started")
