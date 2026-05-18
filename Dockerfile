@@ -18,8 +18,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Build arg — injected by docker-release.yml; defaults to "dev" for local builds
+ARG VERSION=dev
+
 # Copy application code
 COPY . /app/
+
+# Stamp version into the image (overwrites any version.txt from the repo)
+RUN echo "$VERSION" > /app/version.txt
 
 # Create necessary directories
 RUN mkdir -p /config/settings /config/stateful /config/user /config/logs
