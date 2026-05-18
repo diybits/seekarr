@@ -14,7 +14,7 @@ on:
         default: true
 
 permissions:
-  contents: read
+  contents: write
   packages: write
 
 jobs:
@@ -56,3 +56,14 @@ jobs:
           build-args: VERSION=${{ github.event.inputs.tag }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Create GitHub Release
+        if: ${{ github.event.inputs.push == 'true' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "v${{ github.event.inputs.tag }}" \
+            --title "v${{ github.event.inputs.tag }}" \
+            --generate-notes \
+            --notes-start-tag "$(git tag --sort=-version:refname | grep '^v' | sed -n '2p')" \
+            --latest
