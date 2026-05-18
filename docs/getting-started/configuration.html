@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuration Reference - Seekarr Documentation</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <script src="../js/main.js" defer></script>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-logo">
+            <img src="../images/seekarr-logo.png" alt="Seekarr Logo">
+            <h2>Seekarr</h2>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="sidebar-section">
+                <h3 class="sidebar-section-title">Core</h3>
+                <ul>
+                    <li><a href="../index.html"><svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"></path></svg> Home</a></li>
+                    <li><a href="../apps/index.html"><svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"></path></svg> Apps</a></li>
+                    <li><a href="../settings/index.html"><svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"></path></svg> Settings</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <h3 class="sidebar-section-title">Getting Started</h3>
+                <ul>
+                    <li><a href="installation.html"><svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"></path></svg> Installation</a></li>
+                    <li><a href="quick-setup.html"><svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"></path></svg> Quick Setup</a></li>
+                    <li class="active"><a href="configuration.html"><svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path></svg> Configuration</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <h3 class="sidebar-section-title">Resources</h3>
+                <ul>
+                    <li><a href="https://github.com/diybits/seekarr" target="_blank"><svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg> GitHub</a></li>
+                    <li><a href="https://diybits.github.io/seekarr/" target="_blank"><svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c5.514 0 10 4.486 10 10s-4.486 10-10 10-10-4.486-10-10 4.486-10 10-10zm0-2c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-2.033 16.01c.564-1.789 1.632-3.932 1.821-4.474.273-.787-.211-1.136-1.74.209l-.34-.64c1.744-1.897 5.335-2.326 4.113.613-.763 1.835-1.309 3.074-1.621 4.03-.455 1.393.694.828 1.819-.211.153.25.203.331.356.619-2.498 2.378-5.271 2.588-4.408-.146zm4.742-8.169c-.532.453-1.32.443-1.761-.022-.441-.465-.367-1.208.164-1.661.532-.453 1.32-.442 1.761.022.439.466.367 1.209-.164 1.661z"></path></svg> Website</a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <div class="container">
+            <h1>Configuration Reference</h1>
+
+            <section>
+                <p>All settings are managed through the web UI at <code>http://YOUR_SERVER_IP:9705</code> and persisted as JSON files under <code>/config/</code>. No manual file editing is required for normal use.</p>
+            </section>
+
+            <section>
+                <h2>Per-App Hunt Settings</h2>
+                <p>Each connected app (Sonarr, Radarr, Lidarr, Readarr, Whisparr) has its own settings page. Go to <strong>Settings → [App Name]</strong> to configure these.</p>
+
+                <table>
+                    <tr>
+                        <th>Setting</th>
+                        <th>Default</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td>API URL</td>
+                        <td>—</td>
+                        <td>Base URL of the app, e.g. <code>http://10.0.0.5:8989</code>. No trailing slash.</td>
+                    </tr>
+                    <tr>
+                        <td>API Key</td>
+                        <td>—</td>
+                        <td>Found in the app under <strong>Settings → General → Security → API Key</strong>.</td>
+                    </tr>
+                    <tr>
+                        <td>Hunt Missing Items</td>
+                        <td><code>1</code></td>
+                        <td>Number of missing items to search for per cycle. Increase gradually once you know your indexer can handle the load.</td>
+                    </tr>
+                    <tr>
+                        <td>Hunt Upgrade Items</td>
+                        <td><code>1</code></td>
+                        <td>Number of below-cutoff items to search for quality upgrades per cycle.</td>
+                    </tr>
+                    <tr>
+                        <td>Sleep Duration</td>
+                        <td><code>900</code></td>
+                        <td>Seconds to wait between cycles. Lower values hunt more frequently but put more load on your indexers.</td>
+                    </tr>
+                    <tr>
+                        <td>Monitored Only</td>
+                        <td>Enabled</td>
+                        <td>When enabled, only items marked as monitored in the app are processed.</td>
+                    </tr>
+                    <tr>
+                        <td>Skip Future Items</td>
+                        <td>Enabled</td>
+                        <td>Skips items whose release date is in the future, avoiding unnecessary searches.</td>
+                    </tr>
+                    <tr>
+                        <td>Skip Series/Movie Refresh</td>
+                        <td>Enabled</td>
+                        <td>Skips metadata refresh before searching, reducing disk I/O and database load significantly.</td>
+                    </tr>
+                    <tr>
+                        <td>Minimum Download Queue Size</td>
+                        <td><code>0</code></td>
+                        <td>Pause hunting when the download queue reaches this size. Set to <code>0</code> to disable the check.</td>
+                    </tr>
+                    <tr>
+                        <td>Hourly API Cap</td>
+                        <td><code>0</code></td>
+                        <td>Maximum number of API search calls per hour. Set to <code>0</code> for no cap. Helps avoid indexer rate limits.</td>
+                    </tr>
+                    <tr>
+                        <td>State Reset Interval</td>
+                        <td><code>168</code></td>
+                        <td>Hours before processed item state is cleared so items can be re-hunted. Default is 7 days.</td>
+                    </tr>
+                    <tr>
+                        <td>Random Selection</td>
+                        <td>Enabled</td>
+                        <td>Process items in random order rather than sequentially. Recommended to distribute searches evenly across your library.</td>
+                    </tr>
+                    <tr>
+                        <td>Debug Mode</td>
+                        <td>Disabled</td>
+                        <td>Logs detailed API responses. Enable temporarily when troubleshooting a connection issue, then disable again.</td>
+                    </tr>
+                </table>
+            </section>
+
+            <section>
+                <h2>General Settings</h2>
+                <p>Found under <strong>Settings → General</strong>. These apply globally across all apps.</p>
+
+                <table>
+                    <tr>
+                        <th>Setting</th>
+                        <th>Default</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td>API Timeout</td>
+                        <td><code>120</code></td>
+                        <td>Seconds before an outbound API call to an Arr app times out. Increase if your apps are slow to respond.</td>
+                    </tr>
+                    <tr>
+                        <td>Command Wait Delay</td>
+                        <td><code>1</code></td>
+                        <td>Seconds between polling attempts when waiting for an Arr command to complete.</td>
+                    </tr>
+                    <tr>
+                        <td>Command Wait Attempts</td>
+                        <td><code>600</code></td>
+                        <td>Maximum number of poll attempts before declaring a command timed out (600 × 1s = 10 minutes).</td>
+                    </tr>
+                </table>
+            </section>
+
+            <section>
+                <h2>Authentication</h2>
+                <p>Seekarr supports three authentication modes, configured under <strong>Settings → Authentication</strong>.</p>
+
+                <table>
+                    <tr>
+                        <th>Mode</th>
+                        <th>Use case</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Standard Login</strong></td>
+                        <td>Username and password required for every session. Recommended default.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Local Network Bypass</strong></td>
+                        <td>Requests from private (RFC 1918) IP addresses skip authentication. Use only when Seekarr is directly reachable on a trusted LAN — not behind a reverse proxy.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>No Login</strong></td>
+                        <td>Authentication is disabled entirely. Suitable only for fully isolated private networks or when Seekarr sits behind a reverse proxy that handles auth itself.</td>
+                    </tr>
+                </table>
+
+                <h3>Two-Factor Authentication (2FA)</h3>
+                <p>TOTP-based 2FA can be enabled from your user profile after logging in. You will need an authenticator app such as Google Authenticator, Authy, or any standard TOTP client.</p>
+
+                <h3>Password Reset</h3>
+                <p>If you forget your password, delete <code>/config/user/credentials.json</code> and restart the container. You will be prompted to create a new account on next visit.</p>
+            </section>
+
+            <section>
+                <h2>Reverse Proxy</h2>
+                <p>When running Seekarr behind Nginx, Traefik, Caddy, or another reverse proxy, set the <code>TRUSTED_PROXIES</code> environment variable so that forwarded headers are trusted correctly.</p>
+
+                <table>
+                    <tr>
+                        <th>Value</th>
+                        <th>Meaning</th>
+                    </tr>
+                    <tr>
+                        <td><code>*</code></td>
+                        <td>Trust any upstream. Simplest option for single-proxy LAN setups.</td>
+                    </tr>
+                    <tr>
+                        <td><code>192.168.1.10</code></td>
+                        <td>Trust a specific proxy IP only.</td>
+                    </tr>
+                    <tr>
+                        <td><code>10.0.1.5,192.168.1.0/24</code></td>
+                        <td>Comma-separated list of IPs and/or CIDR ranges. Use for load-balanced or multi-proxy setups.</td>
+                    </tr>
+                </table>
+
+                <p>When <code>TRUSTED_PROXIES</code> is set, Seekarr will:</p>
+                <ul>
+                    <li>Trust <code>X-Forwarded-For</code>, <code>X-Forwarded-Proto</code>, <code>X-Forwarded-Host</code>, and <code>X-Forwarded-Prefix</code> headers from matching upstream IPs only.</li>
+                    <li>Strip forwarded headers arriving from untrusted connections to prevent spoofing.</li>
+                    <li>Set the <code>Secure</code> flag on the session cookie so browsers send it only over HTTPS.</li>
+                    <li>Honour <code>X-Forwarded-Prefix</code> for subpath deployments (e.g. serving Seekarr at <code>/seekarr</code>).</li>
+                </ul>
+
+                <p><strong>Do not</strong> set <code>TRUSTED_PROXIES</code> when Seekarr is directly internet-facing.</p>
+
+                <h3>Nginx example</h3>
+                <pre><code>location /seekarr/ {
+    proxy_pass         http://seekarr:9705/;
+    proxy_set_header   X-Forwarded-For    $proxy_add_x_forwarded_for;
+    proxy_set_header   X-Forwarded-Proto  $scheme;
+    proxy_set_header   X-Forwarded-Host   $host;
+    proxy_set_header   X-Forwarded-Prefix /seekarr;
+    proxy_set_header   Host               $host;
+}</code></pre>
+
+                <p>And in your <code>docker-compose.yml</code>:</p>
+                <pre><code>environment:
+  - TRUSTED_PROXIES=192.168.1.10   # your proxy's IP</code></pre>
+            </section>
+
+            <section>
+                <h2>Environment Variables</h2>
+                <p>These variables are set at container start time and cannot be changed from the web UI.</p>
+
+                <table>
+                    <tr>
+                        <th>Variable</th>
+                        <th>Default</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td><code>TZ</code></td>
+                        <td><code>UTC</code></td>
+                        <td>Timezone for log timestamps, e.g. <code>America/New_York</code>.</td>
+                    </tr>
+                    <tr>
+                        <td><code>TRUSTED_PROXIES</code></td>
+                        <td>—</td>
+                        <td>Comma-separated proxy IPs/CIDRs, or <code>*</code>. Required when running behind a reverse proxy.</td>
+                    </tr>
+                    <tr>
+                        <td><code>SECRET_KEY</code></td>
+                        <td>auto-generated</td>
+                        <td>Flask session signing key. If not set, a random key is generated and stored at <code>/config/secret_key</code> on first start. Supply a fixed value to keep sessions valid across key file deletions.</td>
+                    </tr>
+                    <tr>
+                        <td><code>DEBUG</code></td>
+                        <td>—</td>
+                        <td>Set to <code>true</code> to enable Flask debug mode and verbose logging. Not recommended in production.</td>
+                    </tr>
+                </table>
+            </section>
+
+            <section>
+                <h2>Config File Layout</h2>
+                <p>Settings are stored in the <code>/config</code> volume. You should not need to edit these files directly, but this is useful for troubleshooting.</p>
+                <pre><code>/config/
+  sonarr.json          # Sonarr connection and hunt settings
+  radarr.json          # Radarr connection and hunt settings
+  lidarr.json          # Lidarr connection and hunt settings
+  readarr.json         # Readarr connection and hunt settings
+  whisparr.json        # Whisparr connection and hunt settings
+  general.json         # Global settings (timeouts, debug mode)
+  user/
+    credentials.json   # Hashed password and 2FA secret
+  state/
+    sonarr/            # IDs of already-processed Sonarr items
+    radarr/
+    ...
+  stateful/            # Extended stateful item management
+  scheduler/
+    schedule.json      # Scheduled action definitions
+  logs/                # Application log files
+  sessions.json        # Active login sessions (persisted across restarts)
+  secret_key           # Auto-generated Flask session key</code></pre>
+            </section>
+
+            <div class="next-steps">
+                <h2>Next Steps</h2>
+                <a href="https://github.com/diybits/seekarr/wiki" target="_blank">Full Wiki on GitHub →</a>
+            </div>
+
+            <div class="section-nav">
+                <a href="quick-setup.html">← Quick Setup</a>
+                <a href="../index.html">Back to Home →</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
