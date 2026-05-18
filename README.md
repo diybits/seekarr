@@ -6,6 +6,10 @@
 
 ---
 
+> **Note:** Seekarr is a rebranded and actively maintained fork of [Huntarr](https://github.com/plexguide/Huntarr.io). It includes all original functionality plus security improvements, reverse proxy support, session persistence, and ongoing updates. If you are upgrading from Huntarr, see the [migration notes in CHANGELOG.md](CHANGELOG.md).
+
+---
+
 <h2 align="center">Want to Help? Click the Star in the Upper-Right Corner! ⭐</h2> 
 
 | Application | Status        |
