@@ -29,8 +29,11 @@ except Exception as e:
 
 # Create app directories
 APP_TYPES = ["sonarr", "radarr", "lidarr", "readarr", "whisparr", "eros"]
-for app_type in APP_TYPES:
-    (STATEFUL_DIR / app_type).mkdir(exist_ok=True)
+try:
+    for app_type in APP_TYPES:
+        (STATEFUL_DIR / app_type).mkdir(exist_ok=True)
+except Exception as e:
+    stateful_logger.error(f"Error creating app directories: {e}")
 
 # Add import for get_advanced_setting
 from src.primary.settings_manager import get_advanced_setting
