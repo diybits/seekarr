@@ -164,6 +164,22 @@ a:hover {
     text-decoration: underline;
 }
 
+/* Fork attribution notice */
+.fork-notice {
+    background-color: rgba(52, 152, 219, 0.08);
+    border: 1px solid rgba(52, 152, 219, 0.25);
+    border-radius: 8px;
+    padding: 14px 20px;
+    margin-bottom: 30px;
+    font-size: 0.9rem;
+    color: #bbb;
+    line-height: 1.6;
+}
+
+.fork-notice strong {
+    color: var(--text-color);
+}
+
 /* Hero Section */
 .hero-section {
     background-color: var(--card-bg);
