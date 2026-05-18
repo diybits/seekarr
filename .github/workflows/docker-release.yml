@@ -53,5 +53,6 @@ jobs:
           push: ${{ github.event.inputs.push == 'true' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: VERSION=${{ github.event.inputs.tag }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
