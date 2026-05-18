@@ -139,21 +139,24 @@ def get_logger(app_type: str) -> logging.Logger:
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setLevel(logging.DEBUG if debug_mode else logging.INFO)
     
-    # Create file handler for the specific app log file
+    # Create file handler for the specific app log file (skip if log dir is not writable)
     log_file = APP_LOG_FILES[app_type]
-    file_handler = logging.FileHandler(log_file)
-    file_handler.setLevel(logging.DEBUG if debug_mode else logging.INFO)
-    
+    file_handler = None
+    try:
+        file_handler = logging.FileHandler(log_file)
+        file_handler.setLevel(logging.DEBUG if debug_mode else logging.INFO)
+    except (OSError, FileNotFoundError):
+        pass
+
     # Set a distinct format for this app log
     log_format = f"%(asctime)s - seekarr.{app_type} - %(levelname)s - %(message)s"
     formatter = logging.Formatter(log_format, datefmt="%Y-%m-%d %H:%M:%S")
-    
+
     console_handler.setFormatter(formatter)
-    file_handler.setFormatter(formatter)
-    
-    # Add the handlers specific to this app logger
     app_logger.addHandler(console_handler)
-    app_logger.addHandler(file_handler)
+    if file_handler is not None:
+        file_handler.setFormatter(formatter)
+        app_logger.addHandler(file_handler)
     
     # Cache the configured logger
     app_loggers[log_name] = app_logger
