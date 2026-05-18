@@ -12,7 +12,7 @@ import logging
 from pathlib import Path
 
 # Set up logging
-logger = logging.getLogger("huntarr.instance_list_generator")
+logger = logging.getLogger("seekarr.instance_list_generator")
 
 def capitalize_first(string):
     """Capitalize the first letter of a string"""

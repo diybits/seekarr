@@ -31,7 +31,7 @@ def apply_log_filters():
     for handler in logging.root.handlers:
         handler.addFilter(web_filter)
     
-    # Apply to huntarr logger
-    huntarr_logger = logging.getLogger('huntarr')
-    for handler in huntarr_logger.handlers:
+    # Apply to seekarr logger
+    seekarr_logger = logging.getLogger('seekarr')
+    for handler in seekarr_logger.handlers:
         handler.addFilter(web_filter)

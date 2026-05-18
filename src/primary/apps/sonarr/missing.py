@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Sonarr missing episodes processing module for Huntarr
+Sonarr missing episodes processing module for Seekarr
 """
 
 import time

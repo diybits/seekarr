@@ -1,5 +1,5 @@
 """
-Swaparr app module for Huntarr
+Swaparr app module for Seekarr
 Contains functionality for handling stalled downloads in Starr apps
 """
 

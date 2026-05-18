@@ -1,5 +1,5 @@
 """
-Utility functions for Huntarr
+Utility functions for Seekarr
 """
 
 from src.primary.utils.logger import logger, debug_log

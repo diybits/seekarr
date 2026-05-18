@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Scheduler Engine for Huntarr
+Scheduler Engine for Seekarr
 Handles execution of scheduled actions from schedule.json
 """
 

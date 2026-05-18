@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Lidarr missing content processing module for Huntarr
+Lidarr missing content processing module for Seekarr
 Handles missing albums or artists based on configuration.
 """
 

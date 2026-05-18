@@ -1,3 +1,9 @@
+# Claude Code local config
+.claude/
+
+# Runtime config volume (contains live API keys and credentials)
+/config/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Hourly API Cap Scheduler for Huntarr
+"""Hourly API Cap Scheduler for Seekarr
 Handles checking time and resetting hourly API caps at the top of each hour (00 minute mark)
 """
 
@@ -25,7 +25,7 @@ except ImportError:
         # Fallback to standard logging in case neither works
         logging.basicConfig(level=logging.INFO)
         logger = logging.getLogger("hourly_caps")
-        logger.error("Failed to import Huntarr modules, using fallback logging")
+        logger.error("Failed to import Seekarr modules, using fallback logging")
 
 # Print startup message to help with debugging
 print("Hourly API Cap Scheduler module loaded")

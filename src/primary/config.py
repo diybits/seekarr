@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Configuration module for Huntarr
+Configuration module for Seekarr
 Provides utility functions to access settings via settings_manager
 and perform configuration-related tasks like logging.
 Removes the old concept of loading a single app's config into global constants.

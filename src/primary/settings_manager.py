@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Settings manager for Huntarr
+Settings manager for Seekarr
 Handles loading, saving, and providing settings from individual JSON files per app
 Supports default configurations for different Arr applications
 """
