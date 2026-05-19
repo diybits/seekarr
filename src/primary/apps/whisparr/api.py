@@ -158,7 +158,7 @@ def get_items_with_missing(api_url: str, api_key: str, api_timeout: int, monitor
         A list of item objects with missing files, or None if the request failed.
     """
     try:
-        whisparr_logger.debug(f"Retrieving missing items...")
+        whisparr_logger.debug("Retrieving missing items...")
         
         # Endpoint parameters - always use v2 format
         endpoint = "wanted/missing?pageSize=1000&sortKey=airDateUtc&sortDirection=descending"
@@ -198,7 +198,7 @@ def get_cutoff_unmet_items(api_url: str, api_key: str, api_timeout: int, monitor
         A list of item objects that need quality upgrades, or None if the request failed.
     """
     try:
-        whisparr_logger.debug(f"Retrieving cutoff unmet items...")
+        whisparr_logger.debug("Retrieving cutoff unmet items...")
         
         # Endpoint - always use v2 format
         endpoint = "wanted/cutoff?pageSize=1000&sortKey=airDateUtc&sortDirection=descending"

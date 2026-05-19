@@ -20,7 +20,6 @@ _NO_STOP = lambda: False
 
 def _patch(monkeypatch, *, eligible=None, search_id=42, is_proc=False):
     monkeypatch.setattr("src.primary.apps.eros.upgrade.get_advanced_setting", lambda k, d=None: d)
-    monkeypatch.setattr("src.primary.apps.eros.upgrade.load_settings", lambda *a: {})
     monkeypatch.setattr("src.primary.apps.eros.upgrade.check_state_reset", MagicMock())
     monkeypatch.setattr("src.primary.apps.eros.upgrade.is_processed", lambda *a: is_proc)
     monkeypatch.setattr("src.primary.apps.eros.upgrade.add_processed_id", MagicMock())

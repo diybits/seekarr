@@ -26,7 +26,6 @@ _ALBUM = {
 
 def _patch(monkeypatch, *, eligible=None, search_cmd=99, is_proc=False):
     monkeypatch.setattr("src.primary.apps.lidarr.upgrade.get_advanced_setting", lambda k, d=None: d)
-    monkeypatch.setattr("src.primary.apps.lidarr.upgrade.load_settings", lambda *a: {})
     monkeypatch.setattr("src.primary.apps.lidarr.upgrade.check_state_reset", MagicMock())
     monkeypatch.setattr("src.primary.apps.lidarr.upgrade.is_processed", lambda *a: is_proc)
     monkeypatch.setattr("src.primary.apps.lidarr.upgrade.add_processed_id", MagicMock())

@@ -4,10 +4,9 @@ Quality Upgrade Processing for Readarr
 Handles searching for books that need quality upgrades in Readarr
 """
 
-import time
 import random
 import datetime # Import the datetime module
-from typing import List, Dict, Any, Set, Callable, Union, Optional
+from typing import Dict, Any, Callable
 from src.primary.utils.logger import get_logger
 from src.primary.apps.readarr import api as readarr_api
 from src.primary.stats_manager import increment_stat
@@ -37,9 +36,7 @@ def process_cutoff_upgrades(
     
     # Reset state files if enough time has passed
     check_state_reset("readarr")
-    
-    processed_any = False
-    
+
     # Load general settings to get centralized timeout
     general_settings = load_settings('general')
     
@@ -54,12 +51,8 @@ def process_cutoff_upgrades(
     
     # Extract necessary settings
     instance_name = app_settings.get("instance_name", "Readarr Default")
-    monitored_only = app_settings.get("monitored_only", True)
-    # skip_author_refresh setting removed as it was a performance bottleneck
     hunt_upgrade_books = app_settings.get("hunt_upgrade_books", 0)
-    command_wait_delay = app_settings.get("command_wait_delay", 5)
-    command_wait_attempts = app_settings.get("command_wait_attempts", 12)
-    
+
     # Get books eligible for upgrade
     readarr_logger.info("Retrieving books eligible for quality upgrade...")
     # Pass API credentials explicitly
@@ -184,7 +177,7 @@ def process_cutoff_upgrades(
         processed_something = True
         readarr_logger.info(f"Processed {processed_count} book upgrades this cycle.")
     else:
-        readarr_logger.error(f"Failed to trigger search for book upgrades.")
+        readarr_logger.error("Failed to trigger search for book upgrades.")
 
     readarr_logger.info(f"Completed processing {processed_count} books for upgrade this cycle.")
     

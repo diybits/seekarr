@@ -3,8 +3,6 @@ Swaparr app module for Seekarr
 Contains functionality for handling stalled downloads in Starr apps
 """
 
-# Add necessary imports for get_configured_instances
-from src.primary.settings_manager import load_settings
 from src.primary.utils.logger import get_logger
 
 swaparr_logger = get_logger("swaparr")  # Get the logger instance

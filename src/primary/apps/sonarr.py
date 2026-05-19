@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 
 from flask import Blueprint, request, jsonify
-import datetime, os, requests
-from src.primary import keys_manager
+import requests
 from src.primary.state import get_state_file_path
 from src.primary.settings_manager import load_settings, get_ssl_verify_setting
-import logging
 from src.primary.utils.logger import get_logger
 
 sonarr_bp = Blueprint('sonarr', __name__)

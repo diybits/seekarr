@@ -130,7 +130,7 @@ def check_connection(api_url: str, api_key: str, api_timeout: int) -> bool:
              # Log details if the status response was unexpected
              sonarr_logger.warning(f"Connection check for {api_url} returned unexpected status: {str(status)[:200]}")
              return False
-    except Exception as e:
+    except Exception:
         # Error should have been logged by arr_request, just indicate failure
         sonarr_logger.error(f"Connection check failed for {api_url}")
         return False
@@ -605,8 +605,6 @@ def get_series_with_missing_episodes(api_url: str, api_key: str, api_timeout: in
     Returns:
         A list of series with missing episodes and counts per season
     """
-    result = []
-
     # Step 1: Get all series
     all_series = get_series(api_url, api_key, api_timeout)
     if not all_series:
@@ -623,10 +621,10 @@ def get_series_with_missing_episodes(api_url: str, api_key: str, api_timeout: in
     # Apply random selection if requested
     if random_mode:
         import random
-        sonarr_logger.info(f"Using RANDOM selection mode for missing episodes")
+        sonarr_logger.info("Using RANDOM selection mode for missing episodes")
         random.shuffle(filtered_series)
     else:
-        sonarr_logger.info(f"Using SEQUENTIAL selection mode for missing episodes")
+        sonarr_logger.info("Using SEQUENTIAL selection mode for missing episodes")
 
     # Step 3: For each series, check if it has missing episodes using episode endpoint
     # This is much more efficient than using the wanted/missing endpoint

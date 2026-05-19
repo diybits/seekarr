@@ -22,7 +22,6 @@ _ITEM = {"id": 1, "title": "Scene One", "seasonNumber": 1, "episodeNumber": 2}
 
 def _patch(monkeypatch, *, missing=None, search_id=42, is_proc=False):
     monkeypatch.setattr("src.primary.apps.whisparr.missing.get_advanced_setting", lambda k, d=None: d)
-    monkeypatch.setattr("src.primary.apps.whisparr.missing.load_settings", lambda *a: {})
     monkeypatch.setattr("src.primary.apps.whisparr.missing.check_state_reset", MagicMock())
     monkeypatch.setattr("src.primary.apps.whisparr.missing.is_processed", lambda *a: is_proc)
     monkeypatch.setattr("src.primary.apps.whisparr.missing.add_processed_id", MagicMock())

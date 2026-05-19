@@ -83,7 +83,7 @@ def get_configured_instances():
                 "api_key": api_key,
             }
             instances.append(instance_data)
-            sonarr_logger.info(f"Using legacy configuration with instance name: 'Default'")
+            sonarr_logger.info("Using legacy configuration with instance name: 'Default'")
         else:
             sonarr_logger.warning("No API URL or key found in legacy configuration")
 

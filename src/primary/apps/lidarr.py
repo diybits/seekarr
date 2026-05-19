@@ -4,7 +4,6 @@ Lidarr Blueprint for Seekarr
 Defines Flask routes for interacting with Lidarr
 """
 
-import json
 import traceback
 import requests
 from flask import Blueprint, jsonify, request

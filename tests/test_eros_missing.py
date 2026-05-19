@@ -21,7 +21,6 @@ _NO_STOP = lambda: False
 
 def _patch(monkeypatch, *, missing=None, search_id=42, is_proc=False):
     monkeypatch.setattr("src.primary.apps.eros.missing.get_advanced_setting", lambda k, d=None: d)
-    monkeypatch.setattr("src.primary.apps.eros.missing.load_settings", lambda *a: {})
     monkeypatch.setattr("src.primary.apps.eros.missing.check_state_reset", MagicMock())
     monkeypatch.setattr("src.primary.apps.eros.missing.is_processed", lambda *a: is_proc)
     monkeypatch.setattr("src.primary.apps.eros.missing.add_processed_id", MagicMock())

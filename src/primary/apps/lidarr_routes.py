@@ -1,11 +1,8 @@
 #!/usr/bin/env python3
 
-from flask import Blueprint, request, jsonify
-import datetime, os
-from src.primary import keys_manager
-from src.primary.state import get_state_file_path, reset_state_file
+from flask import Blueprint, request
+from src.primary.state import get_state_file_path
 from src.primary.utils.logger import get_logger
-import traceback
 from src.primary.utils.connection_test import test_arr_connection
 
 lidarr_bp = Blueprint('lidarr', __name__)

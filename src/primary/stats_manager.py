@@ -7,12 +7,10 @@ and monitoring hourly API usage for rate limiting
 
 import os
 import json
-import time
 import datetime
 import threading
 from typing import Dict, Any, Optional
 from src.primary.utils.logger import get_logger
-from src.primary.settings_manager import get_advanced_setting
 
 logger = get_logger("stats")
 

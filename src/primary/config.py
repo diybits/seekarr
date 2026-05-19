@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from src.primary import settings_manager
-from src.primary.utils.logger import logger, get_logger
+from src.primary.utils.logger import get_logger
 
 
 def get_debug_mode():

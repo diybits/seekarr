@@ -4,7 +4,7 @@ Stateful Management API Routes
 Handles API endpoints for stateful management
 """
 
-from flask import Blueprint, jsonify, request, Response
+from flask import Blueprint, request, Response
 import json
 from src.primary.stateful_manager import (
     get_stateful_management_info,

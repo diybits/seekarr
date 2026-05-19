@@ -10,7 +10,6 @@ import threading
 import datetime
 import time
 import traceback
-from typing import Dict, List, Any
 import collections
 
 # Import settings_manager to handle cache refreshing
@@ -62,7 +61,7 @@ def load_schedule():
                     return schedule_data
             except json.JSONDecodeError as json_err:
                 scheduler_logger.error(f"Invalid JSON in schedule file: {json_err}")
-                scheduler_logger.error(f"Attempting to repair JSON file...")
+                scheduler_logger.error("Attempting to repair JSON file...")
                 
                 # Backup the corrupted file
                 backup_file = f"{SCHEDULE_FILE}.backup.{int(time.time())}"
@@ -73,7 +72,7 @@ def load_schedule():
                 default_schedule = {"global": [], "sonarr": [], "radarr": [], "lidarr": [], "readarr": [], "whisparr": [], "eros": []}
                 with open(SCHEDULE_FILE, 'w') as f:
                     json.dump(default_schedule, f, indent=2)
-                scheduler_logger.info(f"Created new empty schedule file")
+                scheduler_logger.info("Created new empty schedule file")
                 
                 return default_schedule
         else:
@@ -81,7 +80,7 @@ def load_schedule():
             default_schedule = {"global": [], "sonarr": [], "radarr": [], "lidarr": [], "readarr": [], "whisparr": [], "eros": []}
             with open(SCHEDULE_FILE, 'w') as f:
                 json.dump(default_schedule, f, indent=2)
-            scheduler_logger.info(f"Created new schedule file with default structure")
+            scheduler_logger.info("Created new schedule file with default structure")
             return default_schedule
     except Exception as e:
         scheduler_logger.error(f"Error loading schedule: {e}")

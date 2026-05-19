@@ -4,9 +4,8 @@ Quality Upgrade Processing for Radarr
 Handles searching for movies that need quality upgrades in Radarr
 """
 
-import time
 import random
-from typing import List, Dict, Any, Set, Callable
+from typing import Dict, Any, Callable
 from src.primary.utils.logger import get_logger
 from src.primary.apps.radarr import api as radarr_api
 from src.primary.stats_manager import increment_stat
@@ -32,8 +31,7 @@ def process_cutoff_upgrades(
         True if any movies were processed for upgrades, False otherwise.
     """
     radarr_logger.info("Starting quality cutoff upgrades processing cycle for Radarr.")
-    processed_any = False
-    
+
     # Extract necessary settings
     api_url = app_settings.get("api_url", "").strip()
     api_key = app_settings.get("api_key", "").strip()
@@ -41,11 +39,7 @@ def process_cutoff_upgrades(
     monitored_only = app_settings.get("monitored_only", True)
     # skip_movie_refresh setting removed as it was a performance bottleneck
     hunt_upgrade_movies = app_settings.get("hunt_upgrade_movies", 0)
-    
-    # Use advanced settings from general.json for command operations
-    command_wait_delay = get_advanced_setting("command_wait_delay", 1)
-    command_wait_attempts = get_advanced_setting("command_wait_attempts", 600)
-    
+
     # Get instance name - check for instance_name first, fall back to legacy "name" key if needed
     instance_name = app_settings.get("instance_name", app_settings.get("name", "Radarr Default"))
     
@@ -95,11 +89,11 @@ def process_cutoff_upgrades(
         # Refresh functionality has been removed as it was identified as a performance bottleneck
         
         # Search for cutoff upgrade
-        radarr_logger.info(f"  - Searching for quality upgrade...")
+        radarr_logger.info("  - Searching for quality upgrade...")
         search_result = radarr_api.movie_search(api_url, api_key, api_timeout, [movie_id])
         
         if search_result:
-            radarr_logger.info(f"  - Successfully triggered search for quality upgrade.")
+            radarr_logger.info("  - Successfully triggered search for quality upgrade.")
             add_processed_id("radarr", instance_name, str(movie_id))
             increment_stat("radarr", "upgraded")
             
@@ -111,7 +105,7 @@ def process_cutoff_upgrades(
             processed_count += 1
             processed_something = True
         else:
-            radarr_logger.warning(f"  - Failed to trigger search for quality upgrade.")
+            radarr_logger.warning("  - Failed to trigger search for quality upgrade.")
             
     # Log final status
     radarr_logger.info(f"Completed processing {processed_count} movies for quality upgrades.")

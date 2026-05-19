@@ -5,13 +5,13 @@ Sonarr missing episodes processing module for Seekarr
 
 import time
 import random
-from typing import List, Dict, Any, Set, Callable
+from typing import List, Dict, Callable
 from src.primary.utils.logger import get_logger
 from src.primary.apps.sonarr import api as sonarr_api
 from src.primary.stats_manager import increment_stat
 from src.primary.stateful_manager import is_processed, add_processed_id
 from src.primary.utils.history_utils import log_processed_media
-from src.primary.settings_manager import load_settings, get_advanced_setting
+from src.primary.settings_manager import get_advanced_setting
 
 # Get logger for the Sonarr app
 sonarr_logger = get_logger("sonarr")
@@ -85,7 +85,7 @@ def process_missing_episodes_mode(
     processed_any = False
     
     # Always use random selection for missing episodes
-    sonarr_logger.info(f"Using random selection for missing episodes")
+    sonarr_logger.info("Using random selection for missing episodes")
     episodes_to_search = sonarr_api.get_missing_episodes_random_page(
         api_url, api_key, api_timeout, monitored_only, hunt_missing_items)
 
@@ -125,7 +125,7 @@ def process_missing_episodes_mode(
     
     # Add detailed listing of episodes being processed
     if episodes_to_search:
-        sonarr_logger.info(f"Episodes selected for processing in this cycle:")
+        sonarr_logger.info("Episodes selected for processing in this cycle:")
         for idx, episode in enumerate(episodes_to_search):
             series_title = episode.get('series', {}).get('title', 'Unknown Series')
             episode_title = episode.get('title', 'Unknown Episode')

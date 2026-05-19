@@ -6,13 +6,11 @@ Handles searching for items that need quality upgrades in Whisparr
 Supports both v2 (legacy) and v3 (Eros) API versions
 """
 
-import time
 import random
-from typing import Dict, Any, List, Callable
-from datetime import datetime, timedelta
+from typing import Dict, Any, Callable
 from src.primary.utils.logger import get_logger
 from src.primary.apps.whisparr import api as whisparr_api
-from src.primary.settings_manager import load_settings, get_advanced_setting
+from src.primary.settings_manager import get_advanced_setting
 from src.primary.stateful_manager import is_processed, add_processed_id
 from src.primary.stats_manager import increment_stat
 from src.primary.utils.history_utils import log_processed_media
@@ -36,8 +34,7 @@ def process_cutoff_upgrades(
         True if any items were processed for upgrades, False otherwise.
     """
     whisparr_logger.info("Starting quality cutoff upgrades processing cycle for Whisparr.")
-    processed_any = False
-    
+
     # Reset state files if enough time has passed
     check_state_reset("whisparr")
     
@@ -47,17 +44,11 @@ def process_cutoff_upgrades(
     api_timeout = get_advanced_setting("api_timeout", 120)  # Use general.json value
     instance_name = app_settings.get("instance_name", "Whisparr Default")
     
-    # Use advanced settings from general.json for command operations
-    command_wait_delay = get_advanced_setting("command_wait_delay", 1)
-    command_wait_attempts = get_advanced_setting("command_wait_attempts", 600)
-    
     monitored_only = app_settings.get("monitored_only", True)
     # skip_item_refresh setting removed as it was a performance bottleneck
     
     # Use the new hunt_upgrade_items parameter name, falling back to hunt_upgrade_scenes for backwards compatibility
     hunt_upgrade_items = app_settings.get("hunt_upgrade_items", app_settings.get("hunt_upgrade_scenes", 0))
-    
-    state_reset_interval_hours = get_advanced_setting("stateful_management_hours", 168)  
     
     # Log that we're using Whisparr V2 API
     whisparr_logger.debug(f"Using Whisparr V2 API for instance: {instance_name}")
@@ -73,7 +64,7 @@ def process_cutoff_upgrades(
         return False
 
     # Get items eligible for upgrade
-    whisparr_logger.info(f"Retrieving items eligible for cutoff upgrade...")
+    whisparr_logger.info("Retrieving items eligible for cutoff upgrade...")
     upgrade_eligible_data = whisparr_api.get_cutoff_unmet_items(api_url, api_key, api_timeout, monitored_only)
     
     if not upgrade_eligible_data:
@@ -161,7 +152,7 @@ def process_cutoff_upgrades(
             
             # Increment the upgraded statistics for Whisparr
             increment_stat("whisparr", "upgraded", 1)
-            whisparr_logger.debug(f"Incremented whisparr upgraded statistics by 1")
+            whisparr_logger.debug("Incremented whisparr upgraded statistics by 1")
             
             # Log progress
             current_limit = app_settings.get("hunt_upgrade_items", app_settings.get("hunt_upgrade_scenes", 1))

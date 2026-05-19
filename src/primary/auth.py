@@ -16,10 +16,9 @@ import base64
 import io
 import qrcode
 import pyotp # Ensure pyotp is imported
-import re # Import the re module for regex
 import bcrypt
 from typing import Dict, Any, Optional, Tuple
-from flask import request, redirect, url_for, session
+from flask import request, redirect, session
 from .utils.logger import logger # Ensure logger is imported
 
 # User directory setup
@@ -338,7 +337,6 @@ def authenticate_request():
     try:
         # Force reload settings from disk to ensure we have the latest
         from src.primary.settings_manager import load_settings
-        from src.primary import settings_manager
         
         settings = load_settings("general")  # Specify 'general' as the app_type
         general_settings = settings

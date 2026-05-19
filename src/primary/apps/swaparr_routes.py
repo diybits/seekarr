@@ -7,7 +7,6 @@ import os
 import json
 from src.primary.utils.logger import get_logger
 from src.primary.settings_manager import load_settings, save_settings
-from src.primary.apps.swaparr.handler import process_stalled_downloads
 
 # Create the blueprint directly in this file
 swaparr_bp = Blueprint('swaparr', __name__)

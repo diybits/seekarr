@@ -1,7 +1,7 @@
-from flask import Blueprint, request, jsonify, current_app
+from flask import Blueprint, request, jsonify
 import logging
 
-from src.primary.history_manager import get_history, clear_history, add_history_entry
+from src.primary.history_manager import get_history, clear_history
 
 logger = logging.getLogger("seekarr")
 history_blueprint = Blueprint('history', __name__)

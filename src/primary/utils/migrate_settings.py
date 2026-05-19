@@ -4,7 +4,6 @@ Settings migration utility for Seekarr
 Migrates settings from nested structure to flat structure
 """
 
-import os
 import json
 import pathlib
 import logging

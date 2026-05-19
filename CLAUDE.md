@@ -33,8 +33,8 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 
 **Lint (must use a venv — system Python is externally managed):**
 ```bash
-python3 -m venv .venv && .venv/bin/pip install flake8
-.venv/bin/flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+python3 -m venv .venv && .venv/bin/pip install ruff
+.venv/bin/ruff check src/
 ```
 
 **Docker:**
@@ -49,7 +49,7 @@ python3 -c "import datetime; t=datetime.date.today(); print(f'{t.year}.{t.timetu
 ```
 Full build example:
 ```bash
-docker build -t seekarr:2026.100.0 .
+docker build --build-arg VERSION=2026.100.0 -t seekarr:2026.100.0 .
 ```
 
 **Docker release** (manual only — no auto-push on CI):

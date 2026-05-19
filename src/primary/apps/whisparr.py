@@ -1,9 +1,9 @@
 from flask import Blueprint, request, jsonify
-import datetime, os, requests
+import requests
 from primary import keys_manager
 from src.primary.utils.logger import get_logger
 from src.primary.state import get_state_file_path
-from src.primary.settings_manager import load_settings, get_ssl_verify_setting
+from src.primary.settings_manager import get_ssl_verify_setting
 
 whisparr_bp = Blueprint('whisparr', __name__)
 whisparr_logger = get_logger("whisparr")

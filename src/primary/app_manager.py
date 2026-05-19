@@ -1,6 +1,5 @@
 # If this file doesn't exist, we'll create it
 
-import os
 from src.primary.utils.logger import get_logger
 from src.primary.settings_manager import load_settings
 
@@ -22,9 +21,6 @@ def initialize_app(app_type):
     if app_type not in SUPPORTED_APP_TYPES:
         logger.warning(f"Attempted to initialize unsupported app type: {app_type}")
         return False
-    
-    # Load settings for this app
-    settings = load_settings(app_type)
     
     # Additional initialization as needed
     # ...

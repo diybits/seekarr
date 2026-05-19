@@ -5,14 +5,12 @@ Based on the functionality provided by https://github.com/ThijmenGThN/swaparr
 
 import os
 import json
-import time
 import hashlib
 from datetime import datetime, timedelta
 import requests
 
 from src.primary.utils.logger import get_logger
 from src.primary.settings_manager import load_settings, get_ssl_verify_setting
-from src.primary.state import get_state_file_path
 
 # Create logger
 swaparr_logger = get_logger("swaparr")
