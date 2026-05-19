@@ -1,0 +1,33 @@
+# Version control
+.git
+.gitignore
+.gitattributes
+
+# GitHub / CI
+.github
+.claude
+
+# Development tooling
+.venv
+.venv*/
+*.pyc
+__pycache__
+.pytest_cache
+.ruff_cache
+.coverage
+coverage.json
+htmlcov
+
+# Docs and tests (not needed at runtime)
+docs
+tests
+
+# Project meta files
+CHANGELOG.md
+CLAUDE.md
+SECURITY.md
+README.md
+ruff.toml
+
+# Runtime data (mounted as volume in production)
+data

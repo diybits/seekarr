@@ -94,6 +94,26 @@ app.register_blueprint(scheduler_api)
 # Register the authentication check to run before requests
 app.before_request(authenticate_request)
 
+_behind_proxy = bool(os.environ.get('TRUSTED_PROXIES', '').strip())
+
+@app.after_request
+def set_security_headers(response):
+    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+    response.headers['Content-Security-Policy'] = (
+        "default-src 'self'; "
+        "script-src 'self' 'unsafe-inline'; "
+        "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; "
+        "font-src 'self' https://cdnjs.cloudflare.com; "
+        "img-src 'self' data: https:; "
+        "connect-src 'self' https://api.github.com; "
+        "frame-ancestors 'none'"
+    )
+    if _behind_proxy:
+        response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+    return response
+
 # Removed MAIN_PID and signal-related code
 
 # Lock for accessing the log files
