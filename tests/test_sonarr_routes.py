@@ -69,9 +69,9 @@ def test_url_without_scheme_returns_400(client):
 
 
 def test_url_with_http_scheme_passes_validation(client):
-    with patch("src.primary.apps.sonarr_routes.socket.socket") as mock_sock_cls, \
-         patch("src.primary.apps.sonarr_routes.requests.get") as mock_get, \
-         patch("src.primary.apps.sonarr_routes.get_ssl_verify_setting", return_value=True):
+    with patch("src.primary.utils.connection_test.socket.socket") as mock_sock_cls, \
+         patch("src.primary.utils.connection_test.requests.get") as mock_get, \
+         patch("src.primary.utils.connection_test.get_ssl_verify_setting", return_value=True):
         mock_sock_cls.return_value.__enter__ = lambda s: _mock_socket(0)
         mock_sock_cls.return_value = _mock_socket(0)
         mock_get.return_value = _mock_response(200)
@@ -80,9 +80,9 @@ def test_url_with_http_scheme_passes_validation(client):
 
 
 def test_url_with_https_scheme_passes_validation(client):
-    with patch("src.primary.apps.sonarr_routes.socket.socket") as mock_sock_cls, \
-         patch("src.primary.apps.sonarr_routes.requests.get") as mock_get, \
-         patch("src.primary.apps.sonarr_routes.get_ssl_verify_setting", return_value=True):
+    with patch("src.primary.utils.connection_test.socket.socket") as mock_sock_cls, \
+         patch("src.primary.utils.connection_test.requests.get") as mock_get, \
+         patch("src.primary.utils.connection_test.get_ssl_verify_setting", return_value=True):
         mock_sock_cls.return_value = _mock_socket(0)
         mock_get.return_value = _mock_response(200)
         resp = client.post("/api/sonarr/test-connection",
@@ -93,14 +93,14 @@ def test_url_with_https_scheme_passes_validation(client):
 # ── Socket connectivity check ─────────────────────────────────────────────────
 
 def test_socket_connection_refused_returns_404(client):
-    with patch("src.primary.apps.sonarr_routes.socket.socket") as mock_sock_cls:
+    with patch("src.primary.utils.connection_test.socket.socket") as mock_sock_cls:
         mock_sock_cls.return_value = _mock_socket(connect_result=111)
         resp = client.post("/api/sonarr/test-connection", json=VALID_PAYLOAD)
     assert resp.status_code == 404
 
 
 def test_socket_dns_failure_returns_404(client):
-    with patch("src.primary.apps.sonarr_routes.socket.socket") as mock_sock_cls:
+    with patch("src.primary.utils.connection_test.socket.socket") as mock_sock_cls:
         instance = _mock_socket()
         instance.connect_ex.side_effect = socket.gaierror("name not known")
         mock_sock_cls.return_value = instance
@@ -109,7 +109,7 @@ def test_socket_dns_failure_returns_404(client):
 
 
 def test_socket_error_message_mentions_host(client):
-    with patch("src.primary.apps.sonarr_routes.socket.socket") as mock_sock_cls:
+    with patch("src.primary.utils.connection_test.socket.socket") as mock_sock_cls:
         instance = _mock_socket()
         instance.connect_ex.side_effect = socket.gaierror("name not known")
         mock_sock_cls.return_value = instance
@@ -120,9 +120,9 @@ def test_socket_error_message_mentions_host(client):
 # ── HTTP response mapping ─────────────────────────────────────────────────────
 
 def _post_with_mock_http(client, status_code, json_data=None):
-    with patch("src.primary.apps.sonarr_routes.socket.socket") as mock_sock_cls, \
-         patch("src.primary.apps.sonarr_routes.requests.get") as mock_get, \
-         patch("src.primary.apps.sonarr_routes.get_ssl_verify_setting", return_value=True):
+    with patch("src.primary.utils.connection_test.socket.socket") as mock_sock_cls, \
+         patch("src.primary.utils.connection_test.requests.get") as mock_get, \
+         patch("src.primary.utils.connection_test.get_ssl_verify_setting", return_value=True):
         mock_sock_cls.return_value = _mock_socket(0)
         mock_get.return_value = _mock_response(status_code, json_data)
         return client.post("/api/sonarr/test-connection", json=VALID_PAYLOAD)
@@ -159,9 +159,9 @@ def test_http_200_includes_version(client):
 
 def test_timeout_returns_504(client):
     import requests as _requests
-    with patch("src.primary.apps.sonarr_routes.socket.socket") as mock_sock_cls, \
-         patch("src.primary.apps.sonarr_routes.requests.get") as mock_get, \
-         patch("src.primary.apps.sonarr_routes.get_ssl_verify_setting", return_value=True):
+    with patch("src.primary.utils.connection_test.socket.socket") as mock_sock_cls, \
+         patch("src.primary.utils.connection_test.requests.get") as mock_get, \
+         patch("src.primary.utils.connection_test.get_ssl_verify_setting", return_value=True):
         mock_sock_cls.return_value = _mock_socket(0)
         mock_get.side_effect = _requests.exceptions.Timeout()
         resp = client.post("/api/sonarr/test-connection", json=VALID_PAYLOAD)
@@ -170,9 +170,9 @@ def test_timeout_returns_504(client):
 
 def test_connection_error_returns_404(client):
     import requests as _requests
-    with patch("src.primary.apps.sonarr_routes.socket.socket") as mock_sock_cls, \
-         patch("src.primary.apps.sonarr_routes.requests.get") as mock_get, \
-         patch("src.primary.apps.sonarr_routes.get_ssl_verify_setting", return_value=True):
+    with patch("src.primary.utils.connection_test.socket.socket") as mock_sock_cls, \
+         patch("src.primary.utils.connection_test.requests.get") as mock_get, \
+         patch("src.primary.utils.connection_test.get_ssl_verify_setting", return_value=True):
         mock_sock_cls.return_value = _mock_socket(0)
         mock_get.side_effect = _requests.exceptions.ConnectionError("Connection refused")
         resp = client.post("/api/sonarr/test-connection", json=VALID_PAYLOAD)
@@ -181,9 +181,9 @@ def test_connection_error_returns_404(client):
 
 def test_request_exception_returns_500(client):
     import requests as _requests
-    with patch("src.primary.apps.sonarr_routes.socket.socket") as mock_sock_cls, \
-         patch("src.primary.apps.sonarr_routes.requests.get") as mock_get, \
-         patch("src.primary.apps.sonarr_routes.get_ssl_verify_setting", return_value=True):
+    with patch("src.primary.utils.connection_test.socket.socket") as mock_sock_cls, \
+         patch("src.primary.utils.connection_test.requests.get") as mock_get, \
+         patch("src.primary.utils.connection_test.get_ssl_verify_setting", return_value=True):
         mock_sock_cls.return_value = _mock_socket(0)
         mock_get.side_effect = _requests.exceptions.RequestException("unexpected")
         resp = client.post("/api/sonarr/test-connection", json=VALID_PAYLOAD)
