@@ -6,13 +6,12 @@ Handles searching for missing items in Eros
 Exclusively supports the v3 API.
 """
 
-import time
 import random
 import datetime
-from typing import List, Dict, Any, Set, Callable
+from typing import Dict, Any, Callable
 from src.primary.utils.logger import get_logger
 from src.primary.apps.eros import api as eros_api
-from src.primary.settings_manager import load_settings, get_advanced_setting
+from src.primary.settings_manager import get_advanced_setting
 from src.primary.stateful_manager import is_processed, add_processed_id
 from src.primary.stats_manager import increment_stat
 from src.primary.utils.history_utils import log_processed_media
@@ -36,8 +35,7 @@ def process_missing_items(
         True if any items were processed, False otherwise.
     """
     eros_logger.info("Starting missing items processing cycle for Eros.")
-    processed_any = False
-    
+
     # Reset state files if enough time has passed
     check_state_reset("eros")
     
@@ -46,10 +44,7 @@ def process_missing_items(
     api_key = app_settings.get("api_key", "").strip()
     api_timeout = get_advanced_setting("api_timeout", 120)  # Use general.json value
     instance_name = app_settings.get("instance_name", "Eros Default")
-    
-    # Load general settings to get centralized timeout
-    general_settings = load_settings('general')
-    
+
     monitored_only = app_settings.get("monitored_only", True)
     skip_future_releases = app_settings.get("skip_future_releases", True)
     # skip_item_refresh setting removed as it was a performance bottleneck
@@ -59,13 +54,6 @@ def process_missing_items(
     
     # Use the new hunt_missing_items parameter name, falling back to hunt_missing_scenes for backwards compatibility
     hunt_missing_items = app_settings.get("hunt_missing_items", app_settings.get("hunt_missing_scenes", 0))
-    
-    # Use advanced settings from general.json for command operations
-    command_wait_delay = get_advanced_setting("command_wait_delay", 1)
-    command_wait_attempts = get_advanced_setting("command_wait_attempts", 600)
-    
-    # Use the centralized advanced setting for stateful management hours
-    stateful_management_hours = get_advanced_setting("stateful_management_hours", 168)
     
     # Log that we're using Eros v3 API
     eros_logger.debug(f"Using Eros API v3 for instance: {instance_name}")
@@ -81,7 +69,7 @@ def process_missing_items(
         return False
     
     # Get missing items
-    eros_logger.info(f"Retrieving items with missing files...")
+    eros_logger.info("Retrieving items with missing files...")
     missing_items = eros_api.get_items_with_missing(api_url, api_key, api_timeout, monitored_only, search_mode) 
     
     if missing_items is None: # API call failed
@@ -200,7 +188,7 @@ def process_missing_items(
             
             # Increment the hunted statistics for Eros
             increment_stat("eros", "hunted", 1)
-            eros_logger.debug(f"Incremented eros hunted statistics by 1")
+            eros_logger.debug("Incremented eros hunted statistics by 1")
 
             # Log progress
             current_limit = app_settings.get("hunt_missing_items", app_settings.get("hunt_missing_scenes", 1))

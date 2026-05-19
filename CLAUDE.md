@@ -33,8 +33,8 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 
 **Lint (must use a venv — system Python is externally managed):**
 ```bash
-python3 -m venv .venv && .venv/bin/pip install flake8
-.venv/bin/flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+python3 -m venv .venv && .venv/bin/pip install ruff
+.venv/bin/ruff check src/
 ```
 
 **Docker:**

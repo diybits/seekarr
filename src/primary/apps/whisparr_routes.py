@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 
 from flask import Blueprint, request, jsonify
-import datetime, os, requests
+import os, requests
 from src.primary import keys_manager
 from src.primary.state import get_state_file_path, reset_state_file
 from src.primary.utils.logger import get_logger, APP_LOG_FILES
 from src.primary.settings_manager import get_ssl_verify_setting
 import traceback
-import socket
-from urllib.parse import urlparse
 from src.primary.apps.whisparr import api as whisparr_api
 from src.primary.utils.connection_test import test_arr_connection
 

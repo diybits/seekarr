@@ -6,9 +6,8 @@ Handles all persistence of program state
 
 import os
 import datetime
-import time
 import json
-from typing import List, Dict, Any, Optional
+from typing import List
 from src.primary import settings_manager
 
 # Define the config directory - typically /config in Docker environment
@@ -122,7 +121,7 @@ def check_state_reset(app_type: str = None) -> bool:
     
     if hours_passed >= reset_interval:
         logger.warning(f"State files for {current_app_type} will be reset after {hours_passed:.1f} hours (interval: {reset_interval}h)")
-        logger.warning(f"This will cause all previously processed media to be eligible for processing again")
+        logger.warning("This will cause all previously processed media to be eligible for processing again")
         
         # Add additional safeguard - only reset if more than double the interval has passed
         # This helps prevent accidental resets due to clock issues or other anomalies

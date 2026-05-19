@@ -5,7 +5,6 @@ Provides a web interface to view logs in real-time, manage settings, and include
 """
 
 import os
-import datetime
 import time
 from threading import Lock
 from primary.utils.logger import LOG_DIR, APP_LOG_FILES, MAIN_LOG_FILE # Import log constants
@@ -13,26 +12,18 @@ from primary import settings_manager # Import settings_manager
 from src.primary.stateful_manager import update_lock_expiration # Import stateful update function
 
 # import socket # No longer used
-import json
 # import signal # No longer used for reload
 import sys
-import qrcode
-import pyotp
-import base64
-import io
 # import requests # No longer used
 import logging
-import threading
 import importlib # Added import
-from flask import Flask, render_template, request, jsonify, Response, send_from_directory, redirect, url_for, session, stream_with_context # Added stream_with_context
+from flask import Flask, render_template, request, jsonify, Response, stream_with_context # Added stream_with_context
 # from src.primary.config import API_URL # No longer needed directly
 # Use only settings_manager
 from src.primary import settings_manager
-from src.primary.utils.logger import setup_main_logger, get_logger, LOG_DIR, update_logging_levels # Import get_logger, LOG_DIR, and update_logging_levels
+from src.primary.utils.logger import get_logger, LOG_DIR, update_logging_levels # Import get_logger, LOG_DIR, and update_logging_levels
 from src.primary.auth import (
-    authenticate_request, user_exists, create_user, verify_user, create_session,
-    logout, SESSION_COOKIE_NAME, is_2fa_enabled, generate_2fa_secret,
-    verify_2fa_code, disable_2fa, change_username, change_password
+    authenticate_request
 )
 # Import blueprint for common routes
 from src.primary.routes.common import common_bp
@@ -50,7 +41,6 @@ from src.primary.routes.history_routes import history_blueprint
 from src.primary.routes.scheduler_routes import scheduler_api
 
 # Import background module to trigger manual cycle resets
-from src.primary import background
 
 # Disable Flask default logging
 log = logging.getLogger('werkzeug')
@@ -210,7 +200,7 @@ def logs_stream():
             if app_type == 'all':
                 # Follow all log files for 'all' type
                 log_files_to_follow = list(KNOWN_LOG_FILES.items())
-                web_logger.debug(f"Following all log files for 'all' type")
+                web_logger.debug("Following all log files for 'all' type")
             elif app_type == 'system':
                 # For system, only follow main log
                 system_log = KNOWN_LOG_FILES.get('system')
@@ -343,7 +333,7 @@ def logs_stream():
                     
                     except Exception as e:
                         web_logger.error(f"Error processing {name}: {e}")
-                        yield f"data: ERROR: Unexpected issue with log.\n\n"
+                        yield "data: ERROR: Unexpected issue with log.\n\n"
 
                 # Keep-alive or sleep
                 if not had_content:

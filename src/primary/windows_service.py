@@ -5,7 +5,6 @@ Allows Seekarr to run as a Windows service.
 
 import os
 import sys
-import time
 import logging
 import servicemanager
 import socket
@@ -70,7 +69,7 @@ class SeekarrService(win32serviceutil.ServiceFramework):
 
             # Import here to avoid import errors when installing the service
             import threading
-            from primary.background import start_seekarr, stop_event, shutdown_threads
+            from primary.background import start_seekarr, stop_event
             from primary.web_server import app
             from waitress import serve
 

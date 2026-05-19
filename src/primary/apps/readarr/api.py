@@ -5,7 +5,6 @@ Handles all communication with the Readarr API
 """
 
 import requests
-import time
 from typing import List, Dict, Any, Optional
 from src.primary.utils.logger import get_logger
 from src.primary.settings_manager import load_settings, get_ssl_verify_setting

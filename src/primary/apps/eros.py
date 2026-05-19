@@ -1,9 +1,8 @@
 from flask import Blueprint, request, jsonify
-import datetime, os, requests
-from primary import keys_manager
+import requests
 from src.primary.utils.logger import get_logger
 from src.primary.state import get_state_file_path
-from src.primary.settings_manager import load_settings, settings_manager, get_ssl_verify_setting
+from src.primary.settings_manager import load_settings, get_ssl_verify_setting
 
 eros_bp = Blueprint('eros', __name__)
 eros_logger = get_logger("eros")

@@ -5,7 +5,7 @@ Sonarr cutoff upgrade processing module for Seekarr
 
 import time
 import random
-from typing import List, Dict, Any, Set, Callable, Union
+from typing import List, Dict, Callable, Union
 from src.primary.utils.logger import get_logger
 from src.primary.apps.sonarr import api as sonarr_api
 from src.primary.stats_manager import increment_stat
@@ -72,7 +72,7 @@ def process_upgrade_episodes_mode(
     skip_episode_history = False
     
     # Always use the efficient random page selection method
-    sonarr_logger.debug(f"Using random selection for cutoff unmet episodes")
+    sonarr_logger.debug("Using random selection for cutoff unmet episodes")
     episodes_to_search = sonarr_api.get_cutoff_unmet_episodes_random_page(
         api_url, api_key, api_timeout, monitored_only, hunt_upgrade_items)
         
@@ -116,7 +116,7 @@ def process_upgrade_episodes_mode(
     
     # Add detailed listing of episodes being upgraded
     if episodes_to_search:
-        sonarr_logger.info(f"Episodes selected for quality upgrades in this cycle:")
+        sonarr_logger.info("Episodes selected for quality upgrades in this cycle:")
         for idx, episode in enumerate(episodes_to_search):
             series_title = episode.get('series', {}).get('title', 'Unknown Series')
             episode_title = episode.get('title', 'Unknown Episode')
@@ -263,7 +263,7 @@ def process_upgrade_seasons_mode(
     skip_episode_history = True
     
     # Use the efficient random page selection method to get a sample of cutoff unmet episodes
-    sonarr_logger.debug(f"Using random page selection for cutoff unmet episodes")
+    sonarr_logger.debug("Using random page selection for cutoff unmet episodes")
     # Request slightly more episodes than needed to ensure we have enough for a few seasons
     sample_size = hunt_upgrade_items * 10
     cutoff_unmet_episodes = sonarr_api.get_cutoff_unmet_episodes_random_page(
@@ -423,7 +423,7 @@ def process_upgrade_shows_mode(
     skip_episode_history = False
     
     # Use the efficient random page selection method to get a sample of cutoff unmet episodes
-    sonarr_logger.debug(f"Using random page selection for cutoff unmet episodes in shows mode")
+    sonarr_logger.debug("Using random page selection for cutoff unmet episodes in shows mode")
     # Request slightly more episodes than needed to ensure we have enough for a few shows
     sample_size = hunt_upgrade_items * 20  # Use a larger multiplier for shows mode
     cutoff_unmet_sample = sonarr_api.get_cutoff_unmet_episodes_random_page(

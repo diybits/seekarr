@@ -24,7 +24,6 @@ _ALBUM = {"id": 10, "title": "Album One", "artistId": 1, "artist": {"artistName"
 def _patch(monkeypatch, *, missing=None, search_cmd=99, artist_cmd=None, is_proc=False,
            artist_data=None, albums_data=None):
     monkeypatch.setattr("src.primary.apps.lidarr.missing.get_advanced_setting", lambda k, d=None: d)
-    monkeypatch.setattr("src.primary.apps.lidarr.missing.load_settings", lambda *a: {})
     monkeypatch.setattr("src.primary.apps.lidarr.missing.check_state_reset", MagicMock())
     monkeypatch.setattr("src.primary.apps.lidarr.missing.is_processed", lambda *a: is_proc)
     monkeypatch.setattr("src.primary.apps.lidarr.missing.add_processed_id", MagicMock(return_value=True))

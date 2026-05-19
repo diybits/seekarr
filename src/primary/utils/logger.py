@@ -6,7 +6,6 @@ Supports separate log files for each application type
 
 import logging
 import sys
-import os
 import pathlib
 from typing import Dict, Optional
 
@@ -228,7 +227,7 @@ def debug_log(message: str, data: object = None, app_type: Optional[str] = None)
                 if len(as_json) > 500:
                     as_json = as_json[:500] + "..."
                 current_logger.debug(as_json)
-            except:
+            except Exception:
                 data_str = str(data)
                 if len(data_str) > 500:
                     data_str = data_str[:500] + "..."

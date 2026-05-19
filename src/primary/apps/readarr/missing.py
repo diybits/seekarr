@@ -4,15 +4,14 @@ Missing Books Processing for Readarr
 Handles searching for missing books in Readarr
 """
 
-import time
 import random
-from typing import List, Dict, Any, Set, Callable
+from typing import Dict, Any, Callable
 from src.primary.utils.logger import get_logger
 from src.primary.apps.readarr import api as readarr_api
 from src.primary.stats_manager import increment_stat
 from src.primary.stateful_manager import is_processed, add_processed_id
 from src.primary.utils.history_utils import log_processed_media
-from src.primary.settings_manager import load_settings, get_advanced_setting
+from src.primary.settings_manager import get_advanced_setting
 from src.primary.state import check_state_reset
 
 # Get logger for the app
@@ -33,14 +32,10 @@ def process_missing_books(
         True if any books were processed, False otherwise.
     """
     readarr_logger.info("Starting missing books processing cycle for Readarr.")
-    processed_any = False
-    
+
     # Reset state files if enough time has passed
     check_state_reset("readarr")
-    
-    # Get the settings for the instance
-    general_settings = readarr_api.load_settings('general')
-    
+
     # Extract necessary settings
     api_url = app_settings.get("api_url", "").strip()
     api_key = app_settings.get("api_key", "").strip()
@@ -50,23 +45,16 @@ def process_missing_books(
     readarr_logger.info(f"Using API timeout of {api_timeout} seconds for Readarr")
     
     monitored_only = app_settings.get("monitored_only", True)
-    skip_future_releases = app_settings.get("skip_future_releases", True)
-    # skip_author_refresh setting removed as it was a performance bottleneck
     hunt_missing_books = app_settings.get("hunt_missing_books", 0)
-    
-    # Use advanced settings from general.json for command operations
-    command_wait_delay = get_advanced_setting("command_wait_delay", 1)
-    command_wait_attempts = get_advanced_setting("command_wait_attempts", 600)
 
     # Get missing books
-    readarr_logger.info("Retrieving wanted/missing books...")
     readarr_logger.info("Retrieving wanted/missing books...")
 
     # Call the correct function to get missing books
     missing_books_data = readarr_api.get_wanted_missing_books(api_url, api_key, api_timeout, monitored_only)
 
     if missing_books_data is None: # Check if None was returned due to an API error
-        readarr_logger.error(f"Failed to retrieve missing books data. Skipping processing.")
+        readarr_logger.error("Failed to retrieve missing books data. Skipping processing.")
         return False
         
     readarr_logger.info(f"Found {len(missing_books_data)} missing books.")
@@ -118,7 +106,7 @@ def process_missing_books(
         # Refresh functionality has been removed as it was identified as a performance bottleneck
 
         # Search for missing books associated with the author
-        readarr_logger.info(f"  - Searching for missing books...")
+        readarr_logger.info("  - Searching for missing books...")
         book_ids_for_author = [book['id'] for book in books_by_author[author_id]] # 'id' is bookId
         
         # Create detailed log with book titles

@@ -4,14 +4,8 @@ Common routes blueprint for Seekarr web interface
 """
 
 import os
-import json
-import base64
-import io
-import qrcode
-import pyotp
-import logging
 # Add render_template, send_from_directory, session
-from flask import Blueprint, request, jsonify, make_response, redirect, url_for, current_app, render_template, send_from_directory, session
+from flask import Blueprint, request, jsonify, redirect, url_for, render_template, send_from_directory, session
 from ..auth import (
     verify_user, create_session, get_username_from_session, SESSION_COOKIE_NAME,
     change_username as auth_change_username, change_password as auth_change_password,
@@ -70,7 +64,7 @@ def login_route():
                 # Authentication failed *because* 2FA was required (or code was invalid)
                 # The specific reason (missing vs invalid code) is logged in verify_user
                 logger.warning(f"Login failed for '{username}': 2FA required or invalid.")
-                logger.debug(f"Returning 2FA required response: {{\"success\": False, \"requires_2fa\": True, \"requiresTwoFactor\": True, \"error\": \"Invalid or missing 2FA code\"}}")
+                logger.debug("Returning 2FA required response: {\"success\": False, \"requires_2fa\": True, \"requiresTwoFactor\": True, \"error\": \"Invalid or missing 2FA code\"}")
                 
                 # Use all common variations of the 2FA flag to ensure compatibility
                 return jsonify({

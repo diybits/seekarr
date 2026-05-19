@@ -1,0 +1,8 @@
+[lint]
+select = [
+    "E722",   # bare-except
+    "F401",   # unused-import
+    "F541",   # f-string-without-placeholders
+    "F841",   # unused-variable
+    "W292",   # missing-newline-at-end-of-file
+]

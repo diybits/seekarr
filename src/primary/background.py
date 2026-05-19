@@ -5,14 +5,12 @@ Supports multiple Arr applications running concurrently
 """
 
 import time
-import sys
 import os
 # import socket # No longer used directly
-import signal
 import importlib
 import logging
 import threading
-from typing import Dict, List, Optional, Callable, Union, Tuple
+from typing import Dict
 import datetime
 import traceback
 
@@ -374,7 +372,7 @@ def app_specific_loop(app_type: str) -> None:
                         # Import directly from handler module to avoid circular imports
                         from src.primary.apps.swaparr.handler import process_stalled_downloads
                         swaparr_logger = get_logger("swaparr")
-                        swaparr_logger.debug(f"Successfully imported Swaparr module")
+                        swaparr_logger.debug("Successfully imported Swaparr module")
                     except (ImportError, AttributeError) as e:
                         app_logger.debug(f"Swaparr module not available or missing functions: {e}")
                         process_stalled_downloads = None
@@ -435,7 +433,7 @@ def app_specific_loop(app_type: str) -> None:
                     # Try to remove the file even if reading failed
                     try:
                         os.remove(reset_file_path)
-                    except:
+                    except Exception:
                         pass
                     break
                         
