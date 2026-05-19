@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Troubleshooting - Seekarr Documentation</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <script src="../js/main.js" defer></script>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-logo">
+            <img src="../images/seekarr-logo.png" alt="Seekarr Logo">
+            <h2>Seekarr</h2>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="sidebar-section">
+                <h3 class="sidebar-section-title">Core</h3>
+                <ul>
+                    <li><a href="../index.html"><svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"></path></svg> Home</a></li>
+                    <li><a href="../apps/index.html"><svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"></path></svg> Apps</a></li>
+                    <li><a href="../settings/index.html"><svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"></path></svg> Settings</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <h3 class="sidebar-section-title">Getting Started</h3>
+                <ul>
+                    <li><a href="installation.html"><svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"></path></svg> Installation</a></li>
+                    <li><a href="quick-setup.html"><svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"></path></svg> Quick Setup</a></li>
+                    <li><a href="configuration.html"><svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path></svg> Configuration</a></li>
+                    <li><a href="how-it-works.html"><svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"></path></svg> How It Works</a></li>
+                    <li class="active"><a href="troubleshooting.html"><svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"></path></svg> Troubleshooting</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <h3 class="sidebar-section-title">Resources</h3>
+                <ul>
+                    <li><a href="https://github.com/diybits/seekarr" target="_blank"><svg class="svg-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg> GitHub</a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <div class="container">
+            <h1>Troubleshooting</h1>
+
+            <section>
+                <p>This page covers the most common problems and how to resolve them. If your issue isn't listed here, check the <a href="#logs">logs</a> first — they almost always point to the cause.</p>
+            </section>
+
+            <section>
+                <h2 id="logs">Finding the Logs</h2>
+                <p>Seekarr writes logs to <code>/config/logs/</code> inside the container, which maps to your host volume path. You can also view live logs directly from the Seekarr UI under the <strong>Logs</strong> tab, or from the terminal:</p>
+                <pre><code>docker logs seekarr
+docker logs seekarr --tail 100 -f   # follow live output</code></pre>
+
+                <h3>Enabling DEBUG mode</h3>
+                <p>The default log level is INFO. DEBUG mode adds verbose output including per-item decisions, API request details, and state checks — useful when you can't tell why Seekarr is or isn't doing something.</p>
+                <p><strong>Option 1 — UI:</strong> Settings → General → enable <strong>Debug Mode</strong>. Takes effect immediately without a restart.</p>
+                <p><strong>Option 2 — environment variable:</strong> set <code>DEBUG=true</code> in your <code>docker-compose.yml</code> and restart the container. This also enables Flask's development server.</p>
+                <pre><code>environment:
+  - DEBUG=true</code></pre>
+                <p>Turn DEBUG off again once you're done — it produces a large volume of output during normal operation.</p>
+            </section>
+
+            <section>
+                <h2 id="connection-test">Connection Test Failures</h2>
+                <p>The connection test button in each app's settings sends a request directly from the Seekarr container to the <em>*Arr</em> host and port you entered. A failure means Seekarr cannot reach the app — it does not indicate a problem with Seekarr itself.</p>
+
+                <h3>Checklist</h3>
+                <ol>
+                    <li><strong>URL and port</strong> — confirm the URL is reachable from inside the container. If Seekarr and your <em>*Arr</em> app are on the same Docker network, use the service name (<code>http://sonarr:8989</code>), not <code>localhost</code>. <code>localhost</code> inside the Seekarr container refers to the Seekarr container itself.</li>
+                    <li><strong>API key</strong> — copy it directly from the <em>*Arr</em> app (Settings → General → Security) and paste it fresh. A single extra space will cause a 401 Unauthorized error.</li>
+                    <li><strong>Network reachability</strong> — run a quick connectivity check from inside the container:
+                        <pre><code>docker exec seekarr python3 -c "import urllib.request; print(urllib.request.urlopen('http://sonarr:8989/ping').read())"</code></pre>
+                    </li>
+                    <li><strong>SSL errors</strong> — if the URL is HTTPS with a self-signed certificate, see the <a href="#ssl">SSL Errors</a> section below.</li>
+                    <li><strong>Firewall / network policy</strong> — confirm no firewall or VLAN policy is blocking the connection between containers.</li>
+                </ol>
+
+                <h3>Error: "Connection refused"</h3>
+                <p>The <em>*Arr</em> app is not listening on that port, or the port is wrong. Check that the app is running and confirm the port in its settings.</p>
+
+                <h3>Error: "Name or service not known"</h3>
+                <p>The hostname cannot be resolved. If using Docker service names, make sure both containers are on the same Docker network.</p>
+
+                <h3>Error: 401 Unauthorized</h3>
+                <p>The API key is wrong. Re-copy it from the <em>*Arr</em> app's settings page.</p>
+            </section>
+
+            <section>
+                <h2 id="ssl">SSL Errors</h2>
+                <p>If your <em>*Arr</em> app uses a self-signed certificate you will see an error like:</p>
+                <pre><code>SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self-signed certificate</code></pre>
+                <p>You have three options — see the <a href="configuration.html#self-signed-certificates">Self-Signed Certificates</a> section of the Configuration guide for full details on each:</p>
+                <ul>
+                    <li><strong>Custom CA bundle</strong> (recommended) — Settings → General → Custom CA Bundle Path. Point it at your CA cert inside <code>/config</code>.</li>
+                    <li><strong>Disable SSL verify</strong> — Settings → General → turn off Enable SSL Verify. Simple, but skips all certificate validation.</li>
+                    <li><strong>Mount cert into container trust store</strong> — bind-mount your CA cert into <code>/usr/local/share/ca-certificates/</code> and run <code>update-ca-certificates</code> at container start.</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2 id="no-items-found">No Items Found / Nothing Being Searched</h2>
+                <p>Seekarr reports finding zero items to search. The most common causes:</p>
+
+                <h3>Monitored Only is enabled</h3>
+                <p>When <strong>Monitored Only</strong> is on (the default), Seekarr skips anything not marked as monitored in your <em>*Arr</em> app. If your library items are all unmonitored, Seekarr has nothing to process. Check the monitored status in Sonarr/Radarr and re-monitor the items you want searched.</p>
+
+                <h3>State tracking — all items already processed</h3>
+                <p>Seekarr records which items it has already processed and skips them on subsequent cycles. If every eligible item has been processed at least once, Seekarr will idle until the state reset interval expires (default 7 days). You can reset state manually from <strong>Settings → Stateful Management → Reset State</strong>, or wait for the automatic reset.</p>
+
+                <h3>Hunt limits set to zero</h3>
+                <p>The <strong>Missing Search</strong> and <strong>Upgrade Search</strong> values in each app's settings control how many items are processed per cycle. If either is set to <code>0</code>, that type of search is disabled.</p>
+
+                <h3>App not enabled or not configured</h3>
+                <p>An app must have a valid URL, API key, and at least one instance saved before Seekarr will start its background loop. Check that the connection test passes and that the app is enabled.</p>
+            </section>
+
+            <section>
+                <h2 id="whisparr">Whisparr v2 vs Eros (Whisparr v3)</h2>
+                <p>Seekarr supports two generations of Whisparr, which use different API versions:</p>
+                <table>
+                    <tr>
+                        <th>App in Seekarr</th>
+                        <th>Whisparr version</th>
+                        <th>API base path</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Whisparr</strong></td>
+                        <td>v2</td>
+                        <td><code>/api/</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Eros</strong></td>
+                        <td>v3 (also marketed as "Eros")</td>
+                        <td><code>/api/v3/</code></td>
+                    </tr>
+                </table>
+                <p>If connection tests or searches fail for Whisparr, confirm which version you're running. Check the Whisparr web UI — v3 shows "Eros" in the title or version string. Use the <strong>Eros</strong> app in Seekarr for v3, and the <strong>Whisparr</strong> app for v2.</p>
+                <p>Connecting v3 to the Whisparr app (or vice versa) will result in API errors or empty results.</p>
+            </section>
+
+            <section>
+                <h2 id="lockout">Locked Out After Failed Login Attempts</h2>
+                <p>Seekarr locks an IP address out of the login page for 15 minutes after 10 consecutive failed attempts. If you're locked out:</p>
+                <ul>
+                    <li><strong>Wait 15 minutes</strong> — the lockout expires automatically.</li>
+                    <li><strong>Restart the container</strong> — lockout state is in-memory and clears on restart:
+                        <pre><code>docker restart seekarr</code></pre>
+                    </li>
+                </ul>
+                <p>If you've forgotten your password, the only recovery path is to delete <code>/config/user/credentials.json</code> and restart the container. Seekarr will redirect to the setup page to create a new account.</p>
+                <pre><code>docker exec seekarr rm /config/user/credentials.json
+docker restart seekarr</code></pre>
+            </section>
+
+            <section>
+                <h2 id="still-stuck">Still Stuck?</h2>
+                <p>If none of the above resolves your issue:</p>
+                <ol>
+                    <li>Enable <a href="#logs">DEBUG mode</a> and reproduce the problem — the debug output usually identifies the exact cause.</li>
+                    <li>Search the <a href="https://github.com/diybits/seekarr/issues" target="_blank">GitHub issues</a> to see if it's a known problem.</li>
+                    <li>Open a new issue with your Seekarr version, the relevant log lines, and a description of what you expected vs. what happened.</li>
+                </ol>
+            </section>
+
+            <div class="section-nav">
+                <a href="how-it-works.html">← How It Works</a>
+                <a href="../apps/index.html">App Integrations →</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
