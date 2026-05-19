@@ -4,6 +4,59 @@ All notable changes to Seekarr are documented here.
 
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [7.3.0] — 2026-05-19
+
+### Security
+
+- **HTTP security headers** — `after_request` hook added to `web_server.py` emitting
+  `X-Frame-Options: SAMEORIGIN`, `X-Content-Type-Options: nosniff`,
+  `Referrer-Policy: strict-origin-when-cross-origin`, `Content-Security-Policy`
+  (self + cdnjs.cloudflare.com for Font Awesome, api.github.com for version checks),
+  and `Strict-Transport-Security` (only when `TRUSTED_PROXIES` is set). (`src/primary/web_server.py`)
+- **Partial API key removed from browser console** — Two `console.log` calls in
+  `settings_forms.js` logged the first 5 characters of each *Arr API key on every
+  connection test. Removed entirely — no key material appears even in debug mode.
+  (`frontend/static/js/settings_forms.js`)
+
+### Fixed
+
+- **Stale CSS references** — `head.html` referenced `variables.css` and `styles.css`,
+  neither of which existed. The server returned 404 HTML responses; `X-Content-Type-Options:
+  nosniff` surfaced the silent failure. Dead references removed; `base.html` (unused stub)
+  also removed. (`frontend/templates/components/head.html`, `frontend/templates/base.html`)
+- **Sidebar spacing** — Logo and "Core" nav group had no breathing room after the sponsor
+  section was removed. Negative margin remnants cleared; 5 px bottom padding added to
+  logo container. (`frontend/templates/components/sidebar.html`)
+- **urllib3 InsecureRequestWarning spam** — When `ssl_verify=False`, urllib3 logged a
+  warning on every outbound API call. Now suppressed once on first use via a module-level
+  flag; a single INFO line is emitted instead. (`src/primary/settings_manager.py`)
+
+### Added
+
+- **Dockerfile HEALTHCHECK** — Polls `/ping` every 30 s using stdlib `urllib.request`
+  (no curl dependency). `docker ps` now shows `(healthy)` / `(unhealthy)`; orchestrators
+  can restart on failure. Same check added to `docker-compose.yml`. (`Dockerfile`,
+  `docker-compose.yml`)
+- **`.dockerignore`** — First `.dockerignore` for the project. Excludes `.git`, `.venv`,
+  `tests/`, `docs/`, `.github/`, `.claude/`, cache dirs, and project meta files, keeping
+  the build context to runtime files only.
+- **Client-side debug logger** — `seekarrLog` utility added to `utils.js`. Silent by
+  default; enabled via `localStorage.setItem('seekarr_debug', 'true')` + reload. All 196
+  `console.log/warn/info/debug` calls across 18 JS files replaced; `console.error` (91
+  calls) untouched. (`frontend/static/js/utils.js`, all app JS files)
+
+### Changed
+
+- **Log noise reduced** — Several high-frequency INFO lines demoted to DEBUG:
+  - Per-request Local Bypass Mode status (`src/primary/auth.py`)
+  - `stateful_manager` `is_processed` check — fired once per item per cycle (100s–1000s
+    of lines per app per cycle) (`src/primary/stateful_manager.py`)
+  - Stats write confirmation and increment verification (`src/primary/stats_manager.py`)
+  - Per-episode duplicate STATS INCREMENT lines in sonarr missing/upgrade
+    (`src/primary/apps/sonarr/missing.py`, `upgrade.py`)
+  - `Configured apps` on every UI request (`src/primary/settings_manager.py`)
+  - `No schedule file found` on every UI poll (`src/primary/routes/scheduler_routes.py`)
+
 ---
 
 ## [7.2.0] — 2026-05-19
