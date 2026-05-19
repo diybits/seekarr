@@ -604,16 +604,20 @@ def change_username(current_username: str, new_username: str, password: str) -> 
 def change_password(current_password: str, new_password: str) -> bool:
     """Change the password for the current user"""
     user_data = get_user_data()
-    
+
     # Verify current password
     if not verify_password(user_data.get("password", ""), current_password):
         logger.warning("Password change failed: Invalid current password provided.")
         return False
-    
+
     # Update password
     user_data["password"] = hash_password(new_password)
     if save_user_data(user_data):
-        logger.info("Password changed successfully.")
+        # Invalidate all existing sessions so stolen tokens can't outlive a password change
+        with _session_lock:
+            active_sessions.clear()
+            _save_sessions()
+        logger.info("Password changed successfully — all existing sessions invalidated.")
         return True
     else:
         logger.error("Failed to save user data after changing password.")
