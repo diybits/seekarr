@@ -377,12 +377,12 @@ def authenticate_request():
             is_local = False
 
         if is_local:
-            logger.info(f"Local network access from {remote_addr} - authentication bypassed (Local Bypass Mode)")
+            logger.debug(f"Local Bypass Mode: request from {remote_addr} bypassed authentication")
             return None
         else:
-            logger.warning(f"Access from {remote_addr} is not a local network address - authentication required")
+            logger.debug(f"Local Bypass Mode: {remote_addr} is not a local address, falling through to session check")
     else:
-        logger.info("Local Bypass Mode is DISABLED - Authentication required")
+        logger.debug("Local Bypass Mode is disabled, falling through to session check")
     
     # Check for valid session
     session_id = session.get(SESSION_COOKIE_NAME)
