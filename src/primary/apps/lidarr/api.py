@@ -7,7 +7,6 @@ Handles all communication with the Lidarr API (v1)
 import requests
 import json
 import sys
-import time
 import traceback
 import logging
 from typing import List, Dict, Any, Optional, Union
@@ -176,12 +175,12 @@ def get_albums(api_url: str, api_key: str, api_timeout: int, album_id: Optional[
     return arr_request(api_url, api_key, api_timeout, endpoint, params=params if params else None)
 
 def get_tracks(api_url: str, api_key: str, api_timeout: int, album_id: Optional[int] = None) -> Union[List, None]:
-     """Get track information for a specific album."""
-     if not album_id:
-         lidarr_logger.warning("get_tracks requires an album_id.")
-         return None
-     params = {'albumId': album_id}
-     return arr_request(api_url, api_key, api_timeout, "track", params=params)
+    """Get track information for a specific album."""
+    if not album_id:
+        lidarr_logger.warning("get_tracks requires an album_id.")
+        return None
+    params = {'albumId': album_id}
+    return arr_request(api_url, api_key, api_timeout, "track", params=params)
 
 def get_queue(api_url: str, api_key: str, api_timeout: int) -> List:
     """Get the current queue from Lidarr (handles pagination)."""
