@@ -39,6 +39,47 @@ _SESSIONS_FILE = pathlib.Path("/config/sessions.json")
 
 active_sessions: Dict[str, Dict] = {}
 
+# Brute-force protection — per-IP in-memory counters
+_BRUTE_MAX_ATTEMPTS = 10
+_BRUTE_LOCKOUT_SECONDS = 15 * 60  # 15 minutes
+
+_rate_limit_lock = threading.Lock()
+# {ip: {"count": int, "locked_until": float}}
+_failed_attempts: Dict[str, Dict] = {}
+
+
+def is_locked_out(ip: str) -> Tuple[bool, int]:
+    """Return (locked, seconds_remaining). Clears expired lockouts lazily."""
+    with _rate_limit_lock:
+        entry = _failed_attempts.get(ip)
+        if not entry:
+            return False, 0
+        locked_until = entry.get("locked_until", 0)
+        if locked_until and time.time() < locked_until:
+            return True, int(locked_until - time.time())
+        if locked_until and time.time() >= locked_until:
+            del _failed_attempts[ip]
+        return False, 0
+
+
+def record_failed_attempt(ip: str) -> None:
+    """Increment the failure counter for an IP; lock it out after the threshold."""
+    with _rate_limit_lock:
+        entry = _failed_attempts.setdefault(ip, {"count": 0, "locked_until": 0})
+        entry["count"] += 1
+        if entry["count"] >= _BRUTE_MAX_ATTEMPTS:
+            entry["locked_until"] = time.time() + _BRUTE_LOCKOUT_SECONDS
+            logger.warning(
+                f"Brute-force lockout triggered for {ip} after {entry['count']} failed attempts "
+                f"— locked for {_BRUTE_LOCKOUT_SECONDS // 60} minutes."
+            )
+
+
+def clear_failed_attempts(ip: str) -> None:
+    """Reset the failure counter for an IP after a successful login."""
+    with _rate_limit_lock:
+        _failed_attempts.pop(ip, None)
+
 
 def _load_sessions() -> None:
     """Load persisted sessions into active_sessions, dropping any that have expired."""
