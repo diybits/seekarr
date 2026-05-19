@@ -58,14 +58,6 @@ jobs:
         if: always()
         run: |
           if [ -f coverage.json ]; then
-            python3 -c "
-import json, sys
-data = json.load(open('coverage.json'))
-total = data['totals']['percent_covered']
-covered = data['totals']['covered_lines']
-missing = data['totals']['missing_lines']
-print(f'Coverage: {total:.1f}%  ({covered} covered, {missing} missing)')
-sys.exit(0 if total >= 50 else 1)
-"
+            python3 -c "import json,sys; d=json.load(open('coverage.json'))['totals']; t=d['percent_covered']; c=d['covered_lines']; m=d['missing_lines']; print('Coverage: %.1f%%  (%d covered, %d missing)' % (t,c,m)); sys.exit(0 if t>=50 else 1)"
           fi
 
