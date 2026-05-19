@@ -38,5 +38,8 @@ ENV PYTHONPATH=/app
 # Expose port
 EXPOSE 9705
 
+HEALTHCHECK --interval=30s --timeout=10s --start-period=20s --retries=3 \
+    CMD python3 -c "import urllib.request; urllib.request.urlopen('http://localhost:9705/ping')" || exit 1
+
 # Run the main application using the new entry point
 CMD ["python3", "main.py"]

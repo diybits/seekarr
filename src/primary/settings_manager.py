@@ -313,14 +313,23 @@ def get_advanced_setting(setting_name, default_value=None):
     general_settings = load_settings('general', use_cache=True)
     return general_settings.get(setting_name, default_value)
 
+_ssl_warning_suppressed = False
+
 def get_ssl_verify_setting():
     """
     Get the SSL verification setting.
-    
+
     Returns:
         bool: True if SSL verification should be enabled (default), False otherwise
     """
-    return get_advanced_setting("ssl_verify", True)
+    global _ssl_warning_suppressed
+    result = get_advanced_setting("ssl_verify", True)
+    if not result and not _ssl_warning_suppressed:
+        import urllib3
+        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+        _ssl_warning_suppressed = True
+        settings_logger.info("SSL verification disabled — urllib3 InsecureRequestWarning suppressed")
+    return result
 
 # Example usage (for testing purposes, remove later)
 if __name__ == "__main__":
