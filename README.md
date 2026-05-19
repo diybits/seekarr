@@ -23,7 +23,7 @@
 | Bazarr      | **❌ Not Ready** |
 
 
-Keep in mind this is very early in program development. If you have a very special hand picked collection (because some users are extra special), test before you deploy.
+> **Note for curated collections:** Seekarr only processes items that are marked as *monitored* in your \*Arr application. If you have hand-selected media you don't want auto-searched or upgraded, unmonitor those items in Sonarr/Radarr/etc. before enabling Seekarr — this is the standard way to exclude specific content from any automated activity.
 
 ## Table of Contents
 - [Overview](#overview)
@@ -171,9 +171,7 @@ docker-compose up -d seekarr
 
 ### Unraid Users
 
-You can install Seekarr using the Unraid App Store.
-
-If not, you can run this from Command Line in Unraid:
+Run from the Unraid terminal:
 
 ```bash
 docker run -d --name seekarr \
