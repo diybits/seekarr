@@ -6,6 +6,34 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [7.1.0] — 2026-05-19
+
+### Fixed
+
+- **SSL verification bypass (all apps)** — Direct `requests.get/post()` calls in sonarr, radarr, lidarr, readarr, whisparr, eros, and swaparr bypassed `arr_request()`, meaning `get_ssl_verify_setting()` was never consulted. Users with SSL verification disabled still received certificate errors on the majority of API calls. All HTTP calls now route through `arr_request()`. (`src/primary/apps/*/api.py`, `src/primary/apps/swaparr/handler.py`)
+- **Whisparr v2 wrong base URL** — `arr_request()` in `whisparr/api.py` was using `/api/v3/` as its primary URL path instead of `/api/`. This caused all Whisparr v2 API calls to fail before falling back. (`src/primary/apps/whisparr/api.py`)
+- **Swaparr query string construction** — Queue and delete requests had query parameters embedded directly in the URL string instead of passed via `params` dict, which could produce malformed URLs. (`src/primary/apps/swaparr/handler.py`)
+
+### Added
+
+- **Test suite — 491 tests** covering the full codebase: scheduler engine, history manager, stateful manager, hourly cap scheduler, web server routes, sonarr/radarr/lidarr/readarr/whisparr/eros API layers, swaparr routes, auth (including 2FA and credential changes), proxy middleware, config, keys manager, migrate_settings, history utils, stateful routes, and scheduler routes.
+- **CI: auto-create GitHub Release on Docker push** — `docker-release.yml` now runs `gh release create` with `--generate-notes` when the push toggle is enabled, eliminating the manual release-notes step. (`/.github/workflows/docker-release.yml`)
+- **CI: CodeQL SARIF upload fixed for private repos** — `upload-sarif` upgraded to v4 (v3 deprecated December 2026); `continue-on-error: true` added so the step silently skips while the repo is private and activates automatically on publication. (`/.github/workflows/security.yml`)
+
+### Changed
+
+- `arr_request()` in `radarr/api.py` gained a `params` kwarg for query string parameters — consistent with the other app modules.
+- Sonarr's three paginated fetch functions extracted into a shared `_fetch_paginated()` helper, eliminating duplicated retry logic.
+- Test-connection handlers across all apps consolidated into a shared utility, removing per-app duplication.
+- Dead code removed: unused stub functions (`refresh_author`, `book_search`, `refresh_item`), orphaned files, and unused imports across readarr, eros, sonarr, and whisparr.
+
+### Maintenance
+
+- `pytest` bumped `8.4.2 → 9.0.3`.
+- `data/` added to `.gitignore` (runtime tally fallback written by `stats_manager.py`).
+
+---
+
 ## [7.0.0] — 2026-05-17
 
 ### ⚠️ Breaking Changes
