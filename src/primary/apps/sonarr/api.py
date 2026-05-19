@@ -58,9 +58,6 @@ def arr_request(api_url: str, api_key: str, api_timeout: int, endpoint: str, met
             "User-Agent": "Seekarr/7.0.0 (https://github.com/diybits/seekarr)"
         }
 
-        # Log the User-Agent for debugging
-        sonarr_logger.debug(f"Using User-Agent: {headers['User-Agent']}")
-
         # Get SSL verification setting
         verify_ssl = get_ssl_verify_setting()
 
@@ -229,19 +226,13 @@ def get_calendar(api_url: str, api_key: str, api_timeout: int, start_date: Optio
     Returns:
         Calendar information or empty list if request failed
     """
-    params = []
-
+    params = {}
     if start_date:
-        params.append(f"start={start_date}")
-
+        params["start"] = start_date
     if end_date:
-        params.append(f"end={end_date}")
+        params["end"] = end_date
 
-    endpoint = "calendar"
-    if params:
-        endpoint = f"{endpoint}?{'&'.join(params)}"
-
-    response = arr_request(api_url, api_key, api_timeout, endpoint)
+    response = arr_request(api_url, api_key, api_timeout, "calendar", params=params or None)
     if response:
         return response
     return []
