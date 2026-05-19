@@ -43,6 +43,15 @@ docker build -t seekarr .
 docker run -p 9705:9705 -v /your-path/seekarr:/config seekarr
 ```
 
+**Local Docker builds** — tag with `yyyy.dayofyear.buildofday` so local images are identifiable and sortable. The build-of-day counter starts at 0 and increments if you build more than once in a day. Examples: `2026.100.0`, `2026.100.1`. Generate the date portion with:
+```bash
+python3 -c "import datetime; t=datetime.date.today(); print(f'{t.year}.{t.timetuple().tm_yday}')"
+```
+Full build example:
+```bash
+docker build -t seekarr:2026.100.0 .
+```
+
 **Docker release** (manual only — no auto-push on CI):
 Trigger `docker-release.yml` via GitHub Actions → Run workflow, providing a tag (e.g. `7.0.0`).
 
