@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Development Workflow
 
-All changes must be made on a feature branch and submitted as a pull request. PRs require manual review and approval before merging — do not merge PRs programmatically. After a PR is merged, pull main and delete the local branch before starting the next item.
+All changes must be made on a feature branch and submitted as a pull request. PRs require manual review and approval before merging — do not merge PRs programmatically. Use **squash and merge** when merging via GitHub (keeps `main` history one-commit-per-feature). After a PR is merged, pull main and delete the local branch before starting the next item.
 
 ## What This Is
 
@@ -135,6 +135,8 @@ Single-user login backed by `/config/user/credentials.json`. Passwords hashed wi
 ## CI
 
 - `ci.yml` — lint then test, runs on push/PR to `main`. No Docker push.
-- `docker-release.yml` — manual `workflow_dispatch` only; prompts for tag and push toggle.
-- `security.yml` — dependency/SAST scanning.
+  - **Lint**: `ruff check src/` using `ruff.toml` (rules: E722, F401, F541, F841, W292).
+  - **Test**: `pytest tests/` with `pytest-cov`; enforces ≥50% coverage gate.
+- `docker-release.yml` — manual `workflow_dispatch` only; prompts for tag and push toggle. Auto-creates a GitHub Release with generated notes on push.
+- `security.yml` — dependency/SAST scanning (Trivy + CodeQL).
 - `seekarr-docs.yml` — deploys `docs/` to GitHub Pages.
