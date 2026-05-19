@@ -6,6 +6,36 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [Unreleased]
+
+### Fixed
+
+- **2FA timing edge case** — `pyotp.TOTP.verify()` defaulted to `valid_window=0`, rejecting codes generated at a 30-second window boundary if `verify()` ran milliseconds later. All three `totp.verify()` calls in `auth.py` now use `valid_window=1` (the adjacent-window tolerance recommended by RFC 6238), eliminating intermittent 2FA failures for users with slight clock skew. (`src/primary/auth.py`)
+
+### Removed
+
+- **Windows service module** — `src/primary/windows_service.py` and the corresponding argv-handling block in `main.py` removed. The project is Docker-first (`linux/amd64` + `linux/arm64`); the module imported win32 packages at the top level (unimportable on Linux), was untestable in CI, and had no documented installation path. (`src/primary/windows_service.py`, `main.py`)
+
+### Added
+
+- **Test suite expanded to 697 tests** — new coverage for eros API layer (38 tests, PR #55), all six apps' `missing.py` and `upgrade.py` modules (148 tests, PR #56), and `background.py` orchestration loop (18 tests, PR #57).
+- **pytest-cov coverage reporting in CI** — `ci.yml` now runs with `--cov=src/primary` and enforces a ≥50% coverage gate; coverage summary printed on every run. (`requirements.txt`, `.github/workflows/ci.yml`)
+- **GitHub issue templates** — structured YAML forms for bug reports and feature requests; blank free-form issues disabled; docs link added to chooser. (`.github/ISSUE_TEMPLATE/`)
+- **Multi-arch Docker image documented** — README now notes the image supports `linux/amd64` and `linux/arm64`. (`README.md`)
+
+### Changed
+
+- **Replaced flake8 with ruff** — CI lint stage now runs `ruff check src/` via `ruff.toml`. Enforces E722, F401, F541, F841, and W292. Auto-fixed 235 violations across 14 source files; manually fixed 2 bare excepts, dead variable assignments, and a duplicate log line. (`ruff.toml`, `.github/workflows/ci.yml`)
+
+### Maintenance
+
+- Dead code removed: orphaned stub files (PR #49), `FUNDING.yml` (PR #50), unused routes and config cleanup (PR #53).
+- Trivy SARIF upload `continue-on-error` removed from `security.yml` (PR #52).
+- `SECURITY.md` added; branch/PR workflow and squash-merge strategy documented in `CLAUDE.md` (PR #51).
+- Local Docker build convention documented: tag as `yyyy.dayofyear.buildofday` and pass `--build-arg VERSION=<tag>` so the UI displays the local version instead of `dev`. (`CLAUDE.md`)
+
+---
+
 ## [7.1.0] — 2026-05-19
 
 ### Fixed
