@@ -288,7 +288,8 @@ ADVANCED_SETTINGS = [
     "debug_mode",
     "stateful_management_hours",
     "hourly_cap",
-    "ssl_verify"  # Add SSL verification setting
+    "ssl_verify",
+    "ssl_ca_bundle",
 ]
 
 def get_advanced_setting(setting_name, default_value=None):
@@ -317,12 +318,17 @@ _ssl_warning_suppressed = False
 
 def get_ssl_verify_setting():
     """
-    Get the SSL verification setting.
+    Return the value to pass as ``verify=`` to requests.
 
-    Returns:
-        bool: True if SSL verification should be enabled (default), False otherwise
+    Priority:
+      1. ssl_ca_bundle path (non-empty) — custom CA, verify against it
+      2. ssl_verify False              — skip all verification
+      3. default                       — True (system CAs)
     """
     global _ssl_warning_suppressed
+    ca_bundle = get_advanced_setting("ssl_ca_bundle", "")
+    if ca_bundle and isinstance(ca_bundle, str) and ca_bundle.strip():
+        return ca_bundle.strip()
     result = get_advanced_setting("ssl_verify", True)
     if not result and not _ssl_warning_suppressed:
         import urllib3
