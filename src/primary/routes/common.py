@@ -10,7 +10,8 @@ from ..auth import (
     verify_user, create_session, get_username_from_session, SESSION_COOKIE_NAME,
     change_username as auth_change_username, change_password as auth_change_password,
     validate_password_strength, logout, verify_session, disable_2fa_with_password_and_otp,
-    user_exists, create_user, generate_2fa_secret, verify_2fa_code, is_2fa_enabled # Add missing auth imports
+    user_exists, create_user, generate_2fa_secret, verify_2fa_code, is_2fa_enabled,
+    is_locked_out, record_failed_attempt, clear_failed_attempts,
 )
 from ..utils.logger import logger # Ensure logger is imported
 from .. import settings_manager # Import settings_manager
@@ -38,6 +39,16 @@ def logo_files(filename):
 def login_route():
     if request.method == 'POST':
         try: # Wrap the POST logic in a try block for better error handling
+            client_ip = request.remote_addr
+
+            locked, retry_after = is_locked_out(client_ip)
+            if locked:
+                logger.warning(f"Login attempt from locked-out IP {client_ip} — {retry_after}s remaining.")
+                return jsonify({
+                    "success": False,
+                    "error": f"Too many failed attempts. Try again in {retry_after // 60 + 1} minutes."
+                }), 429
+
             data = request.json
             username = data.get('username')
             password = data.get('password')
@@ -49,11 +60,12 @@ def login_route():
 
             # Call verify_user which now returns (auth_success, needs_2fa)
             auth_success, needs_2fa = verify_user(username, password, twoFactorCode)
-            
+
             logger.debug(f"Auth result for '{username}': success={auth_success}, needs_2fa={needs_2fa}")
 
             if auth_success:
                 # User is authenticated (password correct, and 2FA if needed was correct)
+                clear_failed_attempts(client_ip)
                 session_token = create_session(username)
                 session[SESSION_COOKIE_NAME] = session_token # Store token in Flask session immediately
                 response = jsonify({"success": True, "redirect": "/"}) # Add redirect URL
@@ -61,15 +73,18 @@ def login_route():
                 logger.info(f"User '{username}' logged in successfully.")
                 return response
             elif needs_2fa:
-                # Authentication failed *because* 2FA was required (or code was invalid)
+                # 2FA required or wrong code — count against the IP only for invalid codes,
+                # not for the intermediate "code required" prompt
+                if twoFactorCode:
+                    record_failed_attempt(client_ip)
                 # The specific reason (missing vs invalid code) is logged in verify_user
                 logger.warning(f"Login failed for '{username}': 2FA required or invalid.")
                 logger.debug("Returning 2FA required response: {\"success\": False, \"requires_2fa\": True, \"requiresTwoFactor\": True, \"error\": \"Invalid or missing 2FA code\"}")
-                
+
                 # Use all common variations of the 2FA flag to ensure compatibility
                 return jsonify({
-                    "success": False, 
-                    "requires_2fa": True, 
+                    "success": False,
+                    "requires_2fa": True,
                     "requiresTwoFactor": True,
                     "requires2fa": True,
                     "requireTwoFactor": True,
@@ -77,6 +92,7 @@ def login_route():
                 }), 401
             else:
                 # Authentication failed for other reasons (e.g., wrong password, user not found)
+                record_failed_attempt(client_ip)
                 # Specific reason logged in verify_user
                 logger.warning(f"Login failed for '{username}': Invalid credentials or other error.")
                 return jsonify({"success": False, "error": "Invalid username or password"}), 401 # Use 401
