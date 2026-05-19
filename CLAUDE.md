@@ -53,6 +53,8 @@ Each supported app has two files:
 - `src/primary/apps/{app}.py` — processing logic (process_missing, process_upgrades, check_connection)
 - `src/primary/apps/{app}_routes.py` — Flask blueprint for the app's settings/test-connection endpoints
 
+**API layer contract**: All HTTP calls to external apps must go through each module's `arr_request()` function. It is the single place that applies SSL verification (`get_ssl_verify_setting()`), session reuse, User-Agent, and consistent error handling. Do not call `requests.get/post()` or `session.get/post()` directly — route everything through `arr_request()`. The function signature includes a `params` kwarg for query string parameters.
+
 ### Settings (`src/primary/settings_manager.py`)
 All settings live at `/config/{app}.json`. `load_settings(app_name)` and `get_setting(app_name, key, default)` are the primary access patterns. A 5-second TTL cache sits in front of disk reads. Default templates are in `src/primary/default_configs/`.
 

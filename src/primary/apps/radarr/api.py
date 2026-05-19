@@ -20,7 +20,7 @@ radarr_logger = get_logger("radarr")
 # Use a session for better performance
 session = requests.Session()
 
-def arr_request(api_url: str, api_key: str, api_timeout: int, endpoint: str, method: str = "GET", data: Dict = None) -> Any:
+def arr_request(api_url: str, api_key: str, api_timeout: int, endpoint: str, method: str = "GET", data: Dict = None, params: Dict = None) -> Any:
     """
     Make a request to the Radarr API.
     
@@ -60,7 +60,7 @@ def arr_request(api_url: str, api_key: str, api_timeout: int, endpoint: str, met
         
         # Make the request based on the method
         if method.upper() == "GET":
-            response = session.get(full_url, headers=headers, timeout=api_timeout, verify=verify_ssl)
+            response = session.get(full_url, headers=headers, params=params, timeout=api_timeout, verify=verify_ssl)
         elif method.upper() == "POST":
             response = session.post(full_url, headers=headers, json=data, timeout=api_timeout, verify=verify_ssl)
         elif method.upper() == "PUT":
@@ -98,22 +98,13 @@ def get_download_queue_size(api_url: str, api_key: str, api_timeout: int) -> int
     if not api_url or not api_key:
         radarr_logger.error("Radarr API URL or API Key not provided for queue size check.")
         return -1
-    try:
-        # Radarr uses /api/v3/queue
-        endpoint = f"{api_url.rstrip('/')}/api/v3/queue?page=1&pageSize=1000" # Fetch a large page size
-        headers = {"X-Api-Key": api_key}
-        response = session.get(endpoint, headers=headers, timeout=api_timeout)
-        response.raise_for_status()
-        queue_data = response.json()
-        queue_size = queue_data.get('totalRecords', 0)
-        radarr_logger.debug(f"Radarr download queue size: {queue_size}")
-        return queue_size
-    except requests.exceptions.RequestException as e:
-        radarr_logger.error(f"Error getting Radarr download queue size: {e}")
-        return -1 # Return -1 to indicate an error
-    except Exception as e:
-        radarr_logger.error(f"An unexpected error occurred while getting Radarr queue size: {e}")
+    response = arr_request(api_url, api_key, api_timeout, "queue", params={"page": 1, "pageSize": 1000})
+    if response is None:
+        radarr_logger.error("Error getting Radarr download queue size.")
         return -1
+    queue_size = response.get('totalRecords', 0)
+    radarr_logger.debug(f"Radarr download queue size: {queue_size}")
+    return queue_size
 
 def get_movies_with_missing(api_url: str, api_key: str, api_timeout: int, monitored_only: bool) -> Optional[List[Dict]]:
     """
@@ -263,31 +254,18 @@ def movie_search(api_url: str, api_key: str, api_timeout: int, movie_ids: List[i
 
 def check_connection(api_url: str, api_key: str, api_timeout: int) -> bool:
     """Check the connection to Radarr API."""
-    try:
-        # Ensure api_url is properly formatted
-        if not api_url:
-            radarr_logger.error("API URL is empty or not set")
-            return False
-            
-        # Make sure api_url has a scheme
-        if not (api_url.startswith('http://') or api_url.startswith('https://')):
-            radarr_logger.error(f"Invalid URL format: {api_url} - URL must start with http:// or https://")
-            return False
-            
-        # Ensure URL doesn't end with a slash before adding the endpoint
-        base_url = api_url.rstrip('/')
-        full_url = f"{base_url}/api/v3/system/status"
-        
-        response = requests.get(full_url, headers={"X-Api-Key": api_key}, timeout=api_timeout)
-        response.raise_for_status() # Raise HTTPError for bad responses (4xx or 5xx)
-        radarr_logger.debug("Successfully connected to Radarr.")
+    if not api_url:
+        radarr_logger.error("API URL is empty or not set")
+        return False
+    if not (api_url.startswith('http://') or api_url.startswith('https://')):
+        radarr_logger.error(f"Invalid URL format: {api_url} - URL must start with http:// or https://")
+        return False
+    status = arr_request(api_url, api_key, api_timeout, "system/status")
+    if status and isinstance(status, dict) and 'version' in status:
+        radarr_logger.debug(f"Successfully connected to Radarr. Version: {status.get('version')}")
         return True
-    except requests.exceptions.RequestException as e:
-        radarr_logger.error(f"Error connecting to Radarr: {e}")
-        return False
-    except Exception as e:
-        radarr_logger.error(f"An unexpected error occurred during Radarr connection check: {e}")
-        return False
+    radarr_logger.warning(f"Connection check for {api_url} returned unexpected status: {str(status)[:200]}")
+    return False
 
 def wait_for_command(api_url: str, api_key: str, api_timeout: int, command_id: int, 
                     delay_seconds: int = 1, max_attempts: int = 600) -> bool:
