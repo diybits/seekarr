@@ -18,8 +18,8 @@
 | Radarr      | **✅ Ready**  |
 | Lidarr      | **✅ Ready**  |
 | Readarr     | **✅ Ready**  |
-| Whisparr    | **✅ Ready**  |
-| Eros        | **✅ Ready**  |
+| Whisparr v2 | **✅ Ready**  |
+| Whisparr v3 (Eros) | **✅ Ready**  |
 | Bazarr      | **❌ Not Ready** |
 
 
@@ -52,7 +52,7 @@ For detailed documentation, please visit the [Seekarr Docs](https://diybits.gith
 ### 🔄 Continuous Automation Cycle
 
 #### 1️⃣ Connect & Analyze
-🔌 Seekarr connects to your Sonarr/Radarr/Lidarr/Readarr/Whisparr/Eros instances and analyzes your media libraries to identify both missing content and potential quality upgrades.
+🔌 Seekarr connects to your Sonarr/Radarr/Lidarr/Readarr/Whisparr v2/Whisparr v3 instances and analyzes your media libraries to identify both missing content and potential quality upgrades.
 
 #### 2️⃣ Hunt Missing Content
 - 🔍 **Efficient Refreshing:** Skip metadata refresh to reduce disk I/O and database load

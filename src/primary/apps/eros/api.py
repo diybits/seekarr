@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Eros-specific API functions
-Handles all communication with the Eros API
+Whisparr v3 (Eros) API functions
+Handles all communication with the Whisparr v3 / Eros API
 
-Exclusively uses the Eros API v3
+Uses the /api/v3/ endpoint path. Internal config key is 'eros'.
 """
 
 import requests

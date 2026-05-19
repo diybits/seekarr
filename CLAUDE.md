@@ -58,7 +58,7 @@ Flask app that registers all blueprints and owns authentication middleware. Blue
 `start_seekarr()` launches one thread per enabled app (`app_specific_loop`). Each thread calls `process_missing` and `process_upgrades` from the corresponding `src/primary/apps/{app}.py`, then sleeps for `sleep_duration` seconds.
 
 ### Per-app modules
-Each supported app (sonarr, radarr, lidarr, readarr, whisparr, eros) has this layout:
+Each supported app has this layout. The six apps are: sonarr, radarr, lidarr, readarr, whisparr (Whisparr v2), and eros (Whisparr v3 — also marketed as "Eros"). The internal key `eros` is used in config files, state directories, and settings to avoid breaking existing deployments.
 
 ```
 src/primary/apps/{app}.py          # Flask blueprint: /test-connection route + is_configured()
