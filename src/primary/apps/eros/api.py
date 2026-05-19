@@ -300,50 +300,15 @@ def item_search(api_url: str, api_key: str, api_timeout: int, item_ids: List[int
 
         eros_logger.debug(f"Searching for items with IDs: {item_ids}")
 
-        possible_commands = [
-            {
-                "name": "MoviesSearch",
-                "movieIds": item_ids,
-                "updateScheduledTask": False,
-                "runRefreshAfterSearch": False,
-                "sendUpdatesToClient": False
-            },
-            {
-                "name": "MovieSearch",
-                "movieIds": item_ids,
-                "updateScheduledTask": False,
-                "runRefreshAfterSearch": False,
-                "sendUpdatesToClient": False
-            },
-            {
-                "name": "MoviesSearch",
-                "movieIds": [str(id) for id in item_ids],
-                "updateScheduledTask": False,
-                "runRefreshAfterSearch": False,
-                "sendUpdatesToClient": False
-            },
-            {
-                "name": "MovieSearch",
-                "movieIds": [str(id) for id in item_ids],
-                "updateScheduledTask": False,
-                "runRefreshAfterSearch": False,
-                "sendUpdatesToClient": False
-            },
-            {"name": "MoviesSearch", "movieIds": item_ids},
-            {"name": "MovieSearch", "movieIds": item_ids},
-            {"name": "MoviesSearch", "movieIds": [str(id) for id in item_ids]},
-            {"name": "MovieSearch", "movieIds": [str(id) for id in item_ids]}
-        ]
+        payload = {"name": "MoviesSearch", "movieIds": item_ids}
+        eros_logger.debug(f"Triggering search command: {payload}")
+        response = arr_request(api_url, api_key, api_timeout, "command", "POST", payload)
+        if response and "id" in response:
+            command_id = response["id"]
+            eros_logger.debug(f"Search command succeeded with ID {command_id}")
+            return command_id
 
-        for i, payload in enumerate(possible_commands):
-            eros_logger.debug(f"Trying search command format {i+1}: {payload}")
-            response = arr_request(api_url, api_key, api_timeout, "command", "POST", payload)
-            if response and "id" in response:
-                command_id = response["id"]
-                eros_logger.debug(f"Search command format {i+1} succeeded with ID {command_id}")
-                return command_id
-
-        eros_logger.error("All search command formats failed - no command ID returned")
+        eros_logger.error(f"Search command failed — no command ID returned. Response: {response}")
         return None
 
     except Exception as e:

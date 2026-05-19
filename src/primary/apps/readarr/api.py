@@ -9,7 +9,6 @@ import time
 from typing import List, Dict, Any, Optional
 from src.primary.utils.logger import get_logger
 from src.primary.settings_manager import load_settings, get_ssl_verify_setting
-import importlib
 
 # Get app-specific logger
 logger = get_logger("readarr")
@@ -45,17 +44,6 @@ def arr_request(endpoint: str, method: str = "GET", data: Dict = None, app_type:
     """
     logger = get_logger(app_type)
 
-    if not instance_data and not (api_url and api_key):
-        try:
-            module_name = f'src.primary.apps.{app_type}'
-            module = importlib.import_module(module_name)
-            if hasattr(module, 'get_configured_instances'):
-                instances = module.get_configured_instances()
-                if instances:
-                    instance_data = instances[0]
-        except (ImportError, AttributeError) as e:
-            logger.error(f"Error importing module for {app_type}: {e}")
-
     if instance_data:
         url = instance_data.get('api_url', '')
         key = instance_data.get('api_key', '')
@@ -66,7 +54,6 @@ def arr_request(endpoint: str, method: str = "GET", data: Dict = None, app_type:
         timeout = api_timeout or 60
     else:
         try:
-            from src.primary.settings_manager import load_settings
             settings = load_settings(app_type)
             url = settings.get('api_url', '')
             key = settings.get('api_key', '')
@@ -136,48 +123,16 @@ def check_connection(api_url: str, api_key: str, api_timeout: int) -> bool:
     return False
 
 
-def get_download_queue_size(api_url: str = None, api_key: str = None, timeout: int = 30) -> int:
-    """
-    Get the current size of the download queue.
-
-    Args:
-        api_url: Optional API URL (if not provided, will be fetched from settings)
-        api_key: Optional API key (if not provided, will be fetched from settings)
-        timeout: Timeout in seconds for the request
-
-    Returns:
-        The number of items in the download queue, or 0 if the request failed
-    """
+def get_download_queue_size(api_url: str, api_key: str, api_timeout: int) -> int:
+    """Get the current size of the download queue."""
     try:
-        if api_url and api_key:
-            response = arr_request("queue", api_url=api_url, api_key=api_key, api_timeout=timeout)
-        else:
-            response = arr_request("queue")
+        response = arr_request("queue", api_url=api_url, api_key=api_key, api_timeout=api_timeout)
         if response and "totalRecords" in response:
             return response["totalRecords"]
         return 0
     except Exception as e:
         logger.error(f"Error getting download queue size: {e}")
         return 0
-
-
-def get_books_with_missing_files() -> List[Dict]:
-    """
-    Get a list of books with missing files (not downloaded/available).
-
-    Returns:
-        A list of book objects with missing files
-    """
-    books = arr_request("book")
-    if not books:
-        return []
-
-    missing_books = []
-    for book in books:
-        if book.get("monitored", False) and not book.get("bookFile", None):
-            missing_books.append(book)
-
-    return missing_books
 
 
 def get_cutoff_unmet_books(api_url: Optional[str] = None, api_key: Optional[str] = None, api_timeout: Optional[int] = None) -> List[Dict]:
