@@ -46,8 +46,18 @@ jobs:
       - name: Run tests
         run: |
           if [ -d "tests" ]; then
-            python -m pytest tests/ -v --tb=short
+            python -m pytest tests/ -v --tb=short \
+              --cov=src/primary \
+              --cov-report=term-missing \
+              --cov-report=json:coverage.json
           else
             echo "No tests/ directory found — skipping (add tests to enable this gate)"
+          fi
+
+      - name: Coverage summary
+        if: always()
+        run: |
+          if [ -f coverage.json ]; then
+            python3 -c "import json,sys; d=json.load(open('coverage.json'))['totals']; t=d['percent_covered']; c=d['covered_lines']; m=d['missing_lines']; print('Coverage: %.1f%%  (%d covered, %d missing)' % (t,c,m)); sys.exit(0 if t>=50 else 1)"
           fi
 
