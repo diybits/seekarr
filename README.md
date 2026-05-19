@@ -129,6 +129,8 @@ To ensure data persistence, make sure you map the `/config` directory to a persi
 
 The simplest way to run Seekarr is via Docker (all configuration is done via the web UI):
 
+> **Platforms:** The image is published as a multi-arch manifest supporting `linux/amd64` and `linux/arm64` (Raspberry Pi 4/5, Apple Silicon via Docker Desktop, etc.). Docker pulls the correct variant automatically.
+
 ```bash
 docker run -d --name seekarr \
   --restart always \
