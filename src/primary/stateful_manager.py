@@ -300,7 +300,7 @@ def is_processed(app_type: str, instance_name: str, media_id: str) -> bool:
     media_id_str = str(media_id)
     is_in_set = media_id_str in processed_ids
     
-    stateful_logger.info(f"is_processed check: {app_type}/{instance_name}, ID:{media_id_str}, Found:{is_in_set}, File:{file_path}, Total IDs:{len(processed_ids)}")
+    stateful_logger.debug(f"is_processed check: {app_type}/{instance_name}, ID:{media_id_str}, Found:{is_in_set}, File:{file_path}, Total IDs:{len(processed_ids)}")
     
     return is_in_set
 

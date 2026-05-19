@@ -368,7 +368,7 @@ def save_stats(stats: Dict[str, Dict[str, int]]) -> bool:
         # Move the temp file to the actual file
         os.replace(temp_file, STATS_FILE)
         
-        logger.info(f"===> Successfully wrote stats to file: {STATS_FILE}")
+        logger.debug(f"===> Successfully wrote stats to file: {STATS_FILE}")
         logger.debug(f"Stats saved successfully: {stats}")
         return True
     except Exception as e:
@@ -417,7 +417,7 @@ def increment_stat(app_type: str, stat_type: str, count: int = 1) -> bool:
             logger.error(f"Stats verification failed! Expected {new_value} but got {verification_stats[app_type][stat_type]} for {app_type} {stat_type}")
             return False
             
-        logger.info(f"Successfully incremented and verified {app_type} {stat_type}")
+        logger.debug(f"Successfully incremented and verified {app_type} {stat_type}")
         return True
 
 def get_stats() -> Dict[str, Dict[str, int]]:
