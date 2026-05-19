@@ -49,7 +49,7 @@ python3 -c "import datetime; t=datetime.date.today(); print(f'{t.year}.{t.timetu
 ```
 Full build example:
 ```bash
-docker build -t seekarr:2026.100.0 .
+docker build --build-arg VERSION=2026.100.0 -t seekarr:2026.100.0 .
 ```
 
 **Docker release** (manual only — no auto-push on CI):
