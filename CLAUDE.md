@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Development Workflow
+
+All changes must be made on a feature branch and submitted as a pull request. PRs require manual review and approval before merging — do not merge PRs programmatically. After a PR is merged, pull main and delete the local branch before starting the next item.
+
 ## What This Is
 
 Seekarr is a Python/Flask service that continuously searches *Arr applications (Sonarr, Radarr, Lidarr, Readarr, Whisparr, Eros) for missing media and quality upgrades. It exposes a web UI on port 9705. Intended to run via Docker with `/config` as a persistent volume.
