@@ -242,7 +242,7 @@ def verify_user(username: str, password: str, otp_code: str = None) -> Tuple[boo
                     # If 2FA code was provided, verify it
                     if otp_code:
                         totp = pyotp.TOTP(user_data.get("2fa_secret"))
-                        valid_code = totp.verify(otp_code)
+                        valid_code = totp.verify(otp_code, valid_window=1)
                         logger.debug(f"OTP code validation result: {valid_code}")
                         if valid_code:
                             logger.info(f"User '{username}' authenticated successfully with 2FA.")
@@ -472,7 +472,7 @@ def verify_2fa_code(username: str, code: str, enable_on_verify: bool = False) ->
         return False
     
     totp = pyotp.TOTP(temp_secret)
-    if totp.verify(code):
+    if totp.verify(code, valid_window=1):
         logger.info(f"2FA code verified successfully for user '{username}'.")
         if enable_on_verify:
             user_data["2fa_enabled"] = True
@@ -523,7 +523,7 @@ def disable_2fa_with_password_and_otp(username: str, password: str, otp_code: st
         return False 
         
     totp = pyotp.TOTP(perm_secret)
-    if not totp.verify(otp_code):
+    if not totp.verify(otp_code, valid_window=1):
         logger.warning(f"Failed to disable 2FA for '{username}': Invalid OTP code provided.")
         return False
         
