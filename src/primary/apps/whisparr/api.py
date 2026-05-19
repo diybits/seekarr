@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """
-Whisparr-specific API functions
-Handles all communication with the Whisparr API
+Whisparr v2 API functions
+Handles all communication with the Whisparr v2 API
 
-Exclusively uses the Whisparr V2 API
+Uses the /api/v3/ endpoint path. Connection check verifies application
+version starts with '2' to confirm this is a v2 instance.
 """
 
 import requests

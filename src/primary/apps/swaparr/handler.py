@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 import requests
 
 from src.primary.utils.logger import get_logger
-from src.primary.settings_manager import load_settings
+from src.primary.settings_manager import load_settings, get_ssl_verify_setting
 from src.primary.state import get_state_file_path
 
 # Create logger
@@ -164,7 +164,7 @@ def get_queue_items(app_name, api_url, api_key, api_timeout=120):
         headers = {'X-Api-Key': api_key}
         
         try:
-            response = requests.get(queue_url, headers=headers, timeout=api_timeout)
+            response = requests.get(queue_url, headers=headers, timeout=api_timeout, verify=get_ssl_verify_setting())
             response.raise_for_status()
             queue_data = response.json()
             
@@ -267,7 +267,7 @@ def delete_download(app_name, api_url, api_key, download_id, remove_from_client=
     headers = {'X-Api-Key': api_key}
     
     try:
-        response = requests.delete(delete_url, headers=headers, timeout=api_timeout)
+        response = requests.delete(delete_url, headers=headers, timeout=api_timeout, verify=get_ssl_verify_setting())
         response.raise_for_status()
         swaparr_logger.info(f"Successfully removed download {download_id} from {app_name}")
         return True

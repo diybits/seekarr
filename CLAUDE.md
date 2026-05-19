@@ -18,6 +18,15 @@ DEBUG=true python3 main.py
 TRUST_PROXY=1 python3 main.py
 ```
 
+**Tests:**
+```bash
+# Create venv once, then run tests
+python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
+.venv/bin/pytest tests/
+# Run a single test file:
+.venv/bin/pytest tests/test_sonarr_api.py -v
+```
+
 **Lint (must use a venv — system Python is externally managed):**
 ```bash
 python3 -m venv .venv && .venv/bin/pip install flake8
@@ -49,11 +58,21 @@ Flask app that registers all blueprints and owns authentication middleware. Blue
 `start_seekarr()` launches one thread per enabled app (`app_specific_loop`). Each thread calls `process_missing` and `process_upgrades` from the corresponding `src/primary/apps/{app}.py`, then sleeps for `sleep_duration` seconds.
 
 ### Per-app modules
-Each supported app has two files:
-- `src/primary/apps/{app}.py` — processing logic (process_missing, process_upgrades, check_connection)
-- `src/primary/apps/{app}_routes.py` — Flask blueprint for the app's settings/test-connection endpoints
+Each supported app has this layout. The six apps are: sonarr, radarr, lidarr, readarr, whisparr (Whisparr v2), and eros (Whisparr v3 — also marketed as "Eros"). The internal key `eros` is used in config files, state directories, and settings to avoid breaking existing deployments.
 
-**API layer contract**: All HTTP calls to external apps must go through each module's `arr_request()` function. It is the single place that applies SSL verification (`get_ssl_verify_setting()`), session reuse, User-Agent, and consistent error handling. Do not call `requests.get/post()` or `session.get/post()` directly — route everything through `arr_request()`. The function signature includes a `params` kwarg for query string parameters.
+```
+src/primary/apps/{app}.py          # Flask blueprint: /test-connection route + is_configured()
+src/primary/apps/{app}_routes.py   # Flask blueprint: settings CRUD, history endpoints (registered via blueprints.py)
+src/primary/apps/{app}/api.py      # HTTP API layer: arr_request() + all external HTTP functions
+src/primary/apps/{app}/missing.py  # Background logic for missing-item hunts (calls api.py)
+src/primary/apps/{app}/upgrade.py  # Background logic for quality-upgrade hunts (calls api.py)
+```
+
+`swaparr` is a special cross-app module (`apps/swaparr/handler.py`) that polls queues and removes stalled downloads directly via `requests.get/delete` — it applies `get_ssl_verify_setting()` but does not use the per-app `arr_request()` pattern.
+
+**API layer contract**: All HTTP calls to external *Arr APIs must go through each module's `arr_request()` function in `{app}/api.py`. It is the single place that applies SSL verification (`get_ssl_verify_setting()`), session reuse, User-Agent header, and consistent error handling. Do not call `requests.get/post()` or `session.get/post()` directly — route everything through `arr_request()`. The function signature includes a `params` kwarg for query string parameters.
+
+*Exception*: The three paginated functions in `sonarr/api.py` (`get_missing_episodes`, `get_cutoff_unmet_episodes`, `get_cutoff_unmet_episodes_for_series`) call `session.get()` directly for retry logic, but they correctly apply `verify=get_ssl_verify_setting()` inline. The `/test-connection` handlers in `{app}.py` and `{app}_routes.py` also call `requests.get()` directly with proper SSL — they are route handlers, not background API callers.
 
 ### Settings (`src/primary/settings_manager.py`)
 All settings live at `/config/{app}.json`. `load_settings(app_name)` and `get_setting(app_name, key, default)` are the primary access patterns. A 5-second TTL cache sits in front of disk reads. Default templates are in `src/primary/default_configs/`.
@@ -89,11 +108,14 @@ Single-user login backed by `/config/user/credentials.json`. Passwords hashed wi
 
 ## Adding a new app
 
-1. `src/primary/apps/{app}.py` — implement `process_missing`, `process_upgrades`, `check_connection`, `get_queue_size`
-2. `src/primary/apps/{app}_routes.py` — Flask blueprint with `/test-connection` and settings endpoints
-3. Register the blueprint in `src/primary/apps/blueprints.py` and `web_server.py`
-4. Add a default config JSON to `src/primary/default_configs/{app}.json`
-5. Add the app name to `KNOWN_APP_TYPES` in `settings_manager.py` and `state.py`
+1. `src/primary/apps/{app}/api.py` — implement `arr_request()`, `check_connection()`, and all API functions; use `session.get/post()` with `verify=get_ssl_verify_setting()` routed through `arr_request()`
+2. `src/primary/apps/{app}/missing.py` — implement `process_missing_*` functions that call api.py
+3. `src/primary/apps/{app}/upgrade.py` — implement `process_cutoff_upgrades` and related functions that call api.py
+4. `src/primary/apps/{app}.py` — Flask blueprint with `/test-connection` route and `is_configured()` helper
+5. `src/primary/apps/{app}_routes.py` — Flask blueprint for settings CRUD and history endpoints
+6. Register the `{app}_routes.py` blueprint in `src/primary/apps/blueprints.py` and `web_server.py`
+7. Add a default config JSON to `src/primary/default_configs/{app}.json`
+8. Add the app name to `KNOWN_APP_TYPES` in `settings_manager.py` and `state.py`
 
 ## CI
 
