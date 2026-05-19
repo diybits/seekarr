@@ -8,11 +8,7 @@ Exclusively uses the Whisparr V2 API
 
 import requests
 import json
-import time
-import datetime
-import traceback
-import sys
-from typing import List, Dict, Any, Optional, Union, Callable
+from typing import List, Dict, Any, Optional
 from src.primary.utils.logger import get_logger
 from src.primary.settings_manager import get_ssl_verify_setting
 
@@ -85,13 +81,13 @@ def arr_request(api_url: str, api_key: str, api_timeout: int, endpoint: str, met
                 whisparr_logger.debug(f"Standard path returned 404, trying with V3 path: {v3_url}")
                 
                 if method == "GET":
-                    response = session.get(v3_url, headers=headers, timeout=api_timeout)
+                    response = session.get(v3_url, headers=headers, timeout=api_timeout, verify=verify_ssl)
                 elif method == "POST":
-                    response = session.post(v3_url, headers=headers, json=data, timeout=api_timeout)
+                    response = session.post(v3_url, headers=headers, json=data, timeout=api_timeout, verify=verify_ssl)
                 elif method == "PUT":
-                    response = session.put(v3_url, headers=headers, json=data, timeout=api_timeout)
+                    response = session.put(v3_url, headers=headers, json=data, timeout=api_timeout, verify=verify_ssl)
                 elif method == "DELETE":
-                    response = session.delete(v3_url, headers=headers, timeout=api_timeout)
+                    response = session.delete(v3_url, headers=headers, timeout=api_timeout, verify=verify_ssl)
                 
                 whisparr_logger.debug(f"V3 path request returned status code: {response.status_code}")
             
@@ -230,24 +226,6 @@ def get_cutoff_unmet_items(api_url: str, api_key: str, api_timeout: int, monitor
         whisparr_logger.error(f"Error retrieving cutoff unmet items: {str(e)}")
         return None
 
-def refresh_item(api_url: str, api_key: str, api_timeout: int, item_id: int) -> int:
-    """
-    Refresh functionality has been removed as it was a performance bottleneck.
-    This function now returns a placeholder command ID without making any API calls.
-    
-    Args:
-        api_url: The base URL of the Whisparr API
-        api_key: The API key for authentication
-        api_timeout: Timeout for the API request
-        item_id: The ID of the item to refresh
-        
-    Returns:
-        A placeholder command ID (123) to simulate success
-    """
-    whisparr_logger.debug(f"Refresh functionality disabled for item ID: {item_id}")
-    # Return a placeholder command ID to simulate success without actually refreshing
-    return 123
-
 def item_search(api_url: str, api_key: str, api_timeout: int, item_ids: List[int]) -> int:
     """
     Trigger a search for one or more items.
@@ -275,19 +253,21 @@ def item_search(api_url: str, api_key: str, api_timeout: int, item_ids: List[int
         url = f"{api_url.rstrip('/')}/api/{command_endpoint}"
         backup_url = f"{api_url.rstrip('/')}/api/v3/{command_endpoint}"
         
+        verify_ssl = get_ssl_verify_setting()
         headers = {
             "X-Api-Key": api_key,
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "User-Agent": "Seekarr/7.0.0 (https://github.com/diybits/seekarr)"
         }
-        
+
         # Try standard API path first
         whisparr_logger.debug(f"Attempting command with standard API path: {url}")
         try:
-            response = session.post(url, headers=headers, json=payload, timeout=api_timeout)
+            response = session.post(url, headers=headers, json=payload, timeout=api_timeout, verify=verify_ssl)
             # If we get a 404 or 405, try the v3 path
             if response.status_code in [404, 405]:
                 whisparr_logger.debug(f"Standard path returned {response.status_code}, trying with V3 path: {backup_url}")
-                response = session.post(backup_url, headers=headers, json=payload, timeout=api_timeout)
+                response = session.post(backup_url, headers=headers, json=payload, timeout=api_timeout, verify=verify_ssl)
                 
             response.raise_for_status()
             result = response.json()
@@ -340,13 +320,14 @@ def get_command_status(api_url: str, api_key: str, api_timeout: int, command_id:
         }
         
         # Try standard API path first
+        verify_ssl = get_ssl_verify_setting()
         whisparr_logger.debug(f"Checking command status with standard API path: {url}")
         try:
-            response = session.get(url, headers=headers, timeout=api_timeout)
+            response = session.get(url, headers=headers, timeout=api_timeout, verify=verify_ssl)
             # If we get a 404, try the v3 path
             if response.status_code == 404:
                 whisparr_logger.debug(f"Standard path returned 404, trying with V3 path: {backup_url}")
-                response = session.get(backup_url, headers=headers, timeout=api_timeout)
+                response = session.get(backup_url, headers=headers, timeout=api_timeout, verify=verify_ssl)
                 
             response.raise_for_status()
             result = response.json()
@@ -393,7 +374,7 @@ def check_connection(api_url: str, api_key: str, api_timeout: int) -> bool:
             headers = {'X-Api-Key': api_key}
             
             try:
-                resp = session.get(url, headers=headers, timeout=api_timeout)
+                resp = session.get(url, headers=headers, timeout=api_timeout, verify=get_ssl_verify_setting())
                 resp.raise_for_status()
                 response = resp.json()
             except Exception as e:
