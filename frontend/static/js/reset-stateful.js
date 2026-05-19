@@ -4,19 +4,19 @@
 (function() {
     // Function to create and insert our custom reset button
     function createDirectResetButton() {
-        console.log('Creating direct reset button');
+        seekarrLog.log('Creating direct reset button');
         
         // Check if we're on the settings page and can find the stateful header
         const statefulHeader = document.querySelector('.stateful-header-row');
         if (!statefulHeader) {
-            console.log('Stateful header not found yet, waiting...');
+            seekarrLog.log('Stateful header not found yet, waiting...');
             setTimeout(createDirectResetButton, 500);
             return;
         }
         
         // Check if we already added our button
         if (document.getElementById('direct_reset_btn')) {
-            console.log('Direct reset button already exists');
+            seekarrLog.log('Direct reset button already exists');
             return;
         }
         
@@ -37,14 +37,14 @@
         resetBtn.onclick = function(e) {
             e.preventDefault();
             e.stopPropagation();
-            console.log('Direct reset button clicked!');
+            seekarrLog.log('Direct reset button clicked!');
             
             // Ask for confirmation
             if (!confirm('Are you sure you want to reset stateful management? This will clear all processed media IDs.')) {
                 return false;
             }
             
-            console.log('Reset confirmed, making API call');
+            seekarrLog.log('Reset confirmed, making API call');
             
             // Show loading state
             this.disabled = true;
@@ -58,14 +58,14 @@
                 }
             })
             .then(function(response) {
-                console.log('Got response:', response.status);
+                seekarrLog.log('Got response:', response.status);
                 if (!response.ok) {
                     throw new Error('Server returned ' + response.status);
                 }
                 return response.json();
             })
             .then(function(data) {
-                console.log('Reset successful!', data);
+                seekarrLog.log('Reset successful!', data);
                 alert('Stateful management has been reset successfully!');
                 window.location.reload();
             })
@@ -81,7 +81,7 @@
         
         // Add the button to the page
         statefulHeader.appendChild(resetBtn);
-        console.log('Direct reset button added to page!');
+        seekarrLog.log('Direct reset button added to page!');
     }
     
     // Try to create the button immediately

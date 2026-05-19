@@ -76,3 +76,16 @@ const SeekarrUtils = {
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = SeekarrUtils;
 }
+
+// Debug logger — silent in production; enable via browser console:
+//   localStorage.setItem('seekarr_debug', 'true')  then reload
+const seekarrLog = {
+    _on: () => {
+        try { return localStorage.getItem('seekarr_debug') === 'true'; }
+        catch { return false; }
+    },
+    log:   function(...a) { if (this._on()) console.log(...a); },
+    warn:  function(...a) { if (this._on()) console.warn(...a); },
+    info:  function(...a) { if (this._on()) console.info(...a); },
+    debug: function(...a) { if (this._on()) console.debug(...a); },
+};

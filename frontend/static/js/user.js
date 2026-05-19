@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // This file serves as a placeholder for any additional user management 
     // functionality that might be needed in the future
     
-    console.log('User settings page loaded');
+    seekarrLog.log('User settings page loaded');
     
     // Most of the user functionality is implemented inline in the HTML page
     // The following functions could be moved here in the future:

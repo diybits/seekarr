@@ -47,7 +47,7 @@ window.seekarrSchedules = window.seekarrSchedules || {
  * Initialize the scheduler functionality
  */
 function initScheduler() {
-    console.debug('Initializing scheduler'); // DEBUG level per user preference
+    seekarrLog.debug('Initializing scheduler'); // DEBUG level per user preference
     
     // Load and render the schedules
     loadSchedules();
@@ -77,14 +77,14 @@ function initScheduler() {
         const tableContainer = document.getElementById('schedule-table-container');
         if (tableContainer) {
             tableContainer.style.display = 'block';
-            console.debug('Schedule table container visibility ensured');
+            seekarrLog.debug('Schedule table container visibility ensured');
         }
         
         // Ensure current schedules panel is visible
         const schedulePanel = document.querySelector('.scheduler-panel:nth-child(2)');
         if (schedulePanel) {
             schedulePanel.style.display = 'block';
-            console.debug('Current schedules panel visibility ensured');
+            seekarrLog.debug('Current schedules panel visibility ensured');
         }
     }, 200);
     
@@ -135,7 +135,7 @@ function setupEventListeners() {
         
         // Flag to prevent duplicate initialization
         window.seekarrSchedulerInitialized = true;
-        console.debug('Scheduler event handlers initialized once');
+        seekarrLog.debug('Scheduler event handlers initialized once');
     }
 }
 
@@ -144,7 +144,7 @@ function setupEventListeners() {
  * @returns {Promise<Object>} - Object containing app instances
  */
 async function fetchAppInstances() {
-    console.debug('Fetching app instances from list.json for scheduler dropdown'); // DEBUG level per user preference
+    seekarrLog.debug('Fetching app instances from list.json for scheduler dropdown'); // DEBUG level per user preference
     
     // Define the app types we support (for fallback)
     const appTypes = ['sonarr', 'radarr', 'lidarr', 'readarr', 'whisparr', 'eros', 'bazarr'];
@@ -160,38 +160,38 @@ async function fetchAppInstances() {
         const cacheBuster = new Date().getTime();
         const listUrl = `/config/scheduling/list.json?nocache=${cacheBuster}`;
         
-        console.debug(`Loading app instances from ${listUrl}`);
+        seekarrLog.debug(`Loading app instances from ${listUrl}`);
         const response = await fetch(listUrl);
         
         if (response.ok) {
             const data = await response.json();
-            console.debug('Successfully loaded app instances from list.json');
+            seekarrLog.debug('Successfully loaded app instances from list.json');
             
             // Process each app type from the list.json file
             for (const appType of appTypes) {
                 if (data[appType] && Array.isArray(data[appType]) && data[appType].length > 0) {
                     instances[appType] = data[appType];
-                    console.debug(`Added ${instances[appType].length} ${appType} instances from list.json`);
+                    seekarrLog.debug(`Added ${instances[appType].length} ${appType} instances from list.json`);
                 } else {
                     // Add a fallback default instance if none found
-                    console.debug(`No ${appType} instances found in list.json, adding default fallback`);
+                    seekarrLog.debug(`No ${appType} instances found in list.json, adding default fallback`);
                     instances[appType] = [
                         { id: '0', name: `${capitalizeFirst(appType)} Default` }
                     ];
                 }
             }
         } else {
-            console.warn(`Error fetching list.json: ${response.status} ${response.statusText}`);
+            seekarrLog.warn(`Error fetching list.json: ${response.status} ${response.statusText}`);
             // Add fallback defaults for all app types
             useDefaultInstances(instances, appTypes);
         }
     } catch (error) {
-        console.warn('Error fetching app instances from list.json:', error);
+        seekarrLog.warn('Error fetching app instances from list.json:', error);
         // Add fallback defaults for all app types
         useDefaultInstances(instances, appTypes);
     }
     
-    console.debug('Final instances object:', instances);
+    seekarrLog.debug('Final instances object:', instances);
     return instances;
 }
 
@@ -201,7 +201,7 @@ async function fetchAppInstances() {
  * @param {Array} appTypes - Array of app types to create defaults for
  */
 function useDefaultInstances(instances, appTypes) {
-    console.debug('Using default instances for all app types');
+    seekarrLog.debug('Using default instances for all app types');
     appTypes.forEach(appType => {
         instances[appType] = [
             { id: '0', name: `${capitalizeFirst(appType)} Default` }
@@ -213,7 +213,7 @@ function useDefaultInstances(instances, appTypes) {
  * Load standard apps for the scheduler
  */
 function loadAppInstances() {
-    console.debug('Loading standard apps for scheduler dropdown'); // DEBUG level per user preference
+    seekarrLog.debug('Loading standard apps for scheduler dropdown'); // DEBUG level per user preference
     
     const scheduleApp = document.getElementById('scheduleApp');
     if (!scheduleApp) {
@@ -243,7 +243,7 @@ function loadAppInstances() {
         scheduleApp.appendChild(option);
     });
     
-    console.debug('Standard apps loaded for scheduler');
+    seekarrLog.debug('Standard apps loaded for scheduler');
 }
 
 /**
@@ -317,7 +317,7 @@ function formatAppInstances(data) {
  * Load schedules from server JSON files via API
  */
 function loadSchedules() {
-    console.debug('Loading schedules from server'); // DEBUG level per user preference
+    seekarrLog.debug('Loading schedules from server'); // DEBUG level per user preference
     
     // Make API call to get schedules
     fetch('/api/scheduler/load')
@@ -328,7 +328,7 @@ function loadSchedules() {
             return response.json();
         })
         .then(data => {
-            console.debug('Loaded schedules from server:', data);
+            seekarrLog.debug('Loaded schedules from server:', data);
             
             // Process the data to ensure it's in the correct format
             Object.keys(schedules).forEach(key => {
@@ -360,7 +360,7 @@ function loadSchedules() {
                 }
             });
             
-            console.debug('Processed schedules for rendering:', schedules);
+            seekarrLog.debug('Processed schedules for rendering:', schedules);
             renderSchedules();
         })
         .catch(error => {
@@ -414,7 +414,7 @@ function parseDays(daysData) {
  * Save schedules to server via API
  */
 function saveSchedules() {
-    console.debug('Saving schedules to server');
+    seekarrLog.debug('Saving schedules to server');
     
     try {
         // Before saving, ensure that schedules include appType information
@@ -460,7 +460,7 @@ function saveSchedules() {
             }
         });
         
-        console.debug('Saving processed schedules:', schedulesCopy);
+        seekarrLog.debug('Saving processed schedules:', schedulesCopy);
         
         // Make API call to save schedules
         fetch('/api/scheduler/save', {
@@ -478,7 +478,7 @@ function saveSchedules() {
             })
             .then(data => {
                 if (data.success) {
-                    console.debug('Schedules saved successfully');
+                    seekarrLog.debug('Schedules saved successfully');
                     // Show success toast notification
                     if (window.seekarrUI && typeof window.seekarrUI.showNotification === 'function') {
                         seekarrUI.showNotification('Schedules saved successfully!', 'success');
@@ -548,7 +548,7 @@ function getFormattedSchedules() {
         }
     });
     
-    console.debug('Formatted schedules for display:', formattedSchedules);
+    seekarrLog.debug('Formatted schedules for display:', formattedSchedules);
     return formattedSchedules;
 }
 
@@ -575,7 +575,7 @@ function renderSchedules() {
                 return;
             }
         }
-        console.warn('Schedule container elements not found, cannot render schedules');
+        seekarrLog.warn('Schedule container elements not found, cannot render schedules');
         return;
     }
     
@@ -792,7 +792,7 @@ function addSchedule() {
     saveSchedules();
     
     // Log at DEBUG level
-    console.debug(`Added new schedule to ${appType}:`, newSchedule);
+    seekarrLog.debug(`Added new schedule to ${appType}:`, newSchedule);
     
     // Update UI
     renderSchedules();
@@ -829,7 +829,7 @@ function formatDaysForAPI(days) {
  * Delete a schedule (no confirmations to prevent multiple dialog issues)
  */
 function deleteSchedule(scheduleId, appType = 'global') {
-    console.debug(`Deleting schedule ID: ${scheduleId} from ${appType}`); // DEBUG level per user preference
+    seekarrLog.debug(`Deleting schedule ID: ${scheduleId} from ${appType}`); // DEBUG level per user preference
     
     // Ensure the app type array exists
     if (!schedules[appType]) {
@@ -850,7 +850,7 @@ function deleteSchedule(scheduleId, appType = 'global') {
     // Update UI
     renderSchedules();
     
-    console.debug(`Successfully deleted schedule ID: ${scheduleId} from ${appType}`); // DEBUG level per user preference
+    seekarrLog.debug(`Successfully deleted schedule ID: ${scheduleId} from ${appType}`); // DEBUG level per user preference
 }
 
 /**
@@ -859,7 +859,7 @@ function deleteSchedule(scheduleId, appType = 'global') {
  */
 function toggleScheduleEnabled(scheduleId, appType = 'global', enabled) {
     // Function kept as a stub but functionality removed
-    console.debug('Toggle schedule enabled called, but functionality removed');
+    seekarrLog.debug('Toggle schedule enabled called, but functionality removed');
 }
 
 /**

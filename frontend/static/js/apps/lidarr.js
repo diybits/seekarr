@@ -30,7 +30,7 @@
         },
 
         init: function() {
-            console.log('[Lidarr Module] Initializing...');
+            seekarrLog.log('[Lidarr Module] Initializing...');
             // Cache elements specific to the Lidarr settings form
             this.elements = {
                 apiUrlInput: document.getElementById('lidarr_api_url'),
@@ -82,7 +82,7 @@
                 if (app && typeof app.updateDurationDisplay === 'function') {
                      app.updateDurationDisplay(seconds, this.elements.sleepDurationHoursSpan);
                 } else {
-                    console.warn("app.updateDurationDisplay not found, sleep duration text might not update.");
+                    seekarrLog.warn("app.updateDurationDisplay not found, sleep duration text might not update.");
                 }
             }
         }

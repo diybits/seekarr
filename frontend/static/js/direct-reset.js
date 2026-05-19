@@ -14,7 +14,7 @@ window.lastStatefulHoursValue = null;
         
         if (!headerRow) {
             // If we can't find it, try again soon
-            console.log('Stateful header not found, will try again in 1 second');
+            seekarrLog.log('Stateful header not found, will try again in 1 second');
             setTimeout(insertDirectResetButton, 1000);
             return;
         }
@@ -24,7 +24,7 @@ window.lastStatefulHoursValue = null;
             return;
         }
         
-        console.log('Found stateful header, adding emergency reset button');
+        seekarrLog.log('Found stateful header, adding emergency reset button');
         
         // Create the new button
         const resetButton = document.createElement('button');
@@ -91,7 +91,7 @@ window.lastStatefulHoursValue = null;
         
         // Add the button to the page
         headerRow.appendChild(resetButton);
-        console.log('Emergency reset button added successfully');
+        seekarrLog.log('Emergency reset button added successfully');
         
         // Track the initial value of the stateful hours input
         const hoursInput = document.getElementById('stateful_management_hours');
@@ -118,7 +118,7 @@ window.lastStatefulHoursValue = null;
     setInterval(function() {
         const headerRow = document.querySelector('.stateful-header-row');
         if (headerRow && !document.getElementById('emergency_reset_btn')) {
-            console.log('Emergency reset button missing, re-adding it');
+            seekarrLog.log('Emergency reset button missing, re-adding it');
             insertDirectResetButton();
         }
     }, 1000); // Check every second
@@ -133,7 +133,7 @@ window.lastStatefulHoursValue = null;
             setTimeout(function() {
                 const headerRow = document.querySelector('.stateful-header-row');
                 if (headerRow && !document.getElementById('emergency_reset_btn')) {
-                    console.log('Emergency reset button missing after save, re-adding it');
+                    seekarrLog.log('Emergency reset button missing after save, re-adding it');
                     insertDirectResetButton();
                 }
             }, 500); // Check half a second after save
@@ -146,7 +146,7 @@ window.lastStatefulHoursValue = null;
         window.seekarrUI.showNotification = function(message, type) {
             // If we just completed a reset and this is an expiration update notification, don't show it
             if (window.justCompletedStatefulReset && message.includes('Updated expiration to')) {
-                console.log('Suppressing expiration update notification after reset');
+                seekarrLog.log('Suppressing expiration update notification after reset');
                 window.justCompletedStatefulReset = false; // Reset the flag
                 return;
             }
@@ -158,7 +158,7 @@ window.lastStatefulHoursValue = null;
                     const currentValue = parseInt(hoursInput.value);
                     // Only show notification if the value actually changed
                     if (window.lastStatefulHoursValue === currentValue) {
-                        console.log('Suppressing expiration notification because hours value did not change');
+                        seekarrLog.log('Suppressing expiration notification because hours value did not change');
                         return;
                     }
                     // Update our tracked value
@@ -169,13 +169,13 @@ window.lastStatefulHoursValue = null;
             // Saving settings already shows a "Settings saved successfully" notification,
             // so we don't need the expiration one too - suppress it if we just saved settings
             if (message.includes('Updated expiration to') && document.getElementById('saveSettingsButton')?.disabled) {
-                console.log('Suppressing expiration notification after saving general settings');
+                seekarrLog.log('Suppressing expiration notification after saving general settings');
                 return;
             }
             
             // Otherwise, proceed with the original notification
             return originalShowNotification.call(this, message, type);
         };
-        console.log('Notification system intercepted to handle notifications properly');
+        seekarrLog.log('Notification system intercepted to handle notifications properly');
     }
 })();

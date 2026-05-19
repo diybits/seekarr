@@ -55,7 +55,7 @@
                 };
                 img.onerror = function() {
                     // Fallback if local path fails
-                    console.warn('Logo failed to load, trying alternate source');
+                    console.error('Logo failed to load, trying alternate source');
                     if (this.src !== '/logo/256.png') {
                         this.src = '/logo/256.png';
                     }

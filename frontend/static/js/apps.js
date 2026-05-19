@@ -110,13 +110,13 @@ const appsModule = {
     hasUnsavedChanges: function() {
         // If test connection suppression is active, return false to prevent dialog
         if (window._suppressUnsavedChangesDialog === true) {
-            console.log('Unsaved changes check suppressed due to test connection');
+            seekarrLog.log('Unsaved changes check suppressed due to test connection');
             return false;
         }
         
         // If the app is currently saving, don't consider it as having unsaved changes
         if (window._appsCurrentlySaving) {
-            console.log('Skipping unsaved changes check because app is currently saving');
+            seekarrLog.log('Skipping unsaved changes check because app is currently saving');
             return false;
         }
         
@@ -210,7 +210,7 @@ const appsModule = {
     
     // Load app settings
     loadAppSettings: function(app) {
-        console.log(`[Apps] Loading settings for ${app}`);
+        seekarrLog.log(`[Apps] Loading settings for ${app}`);
         
         // Get the container to put the settings in
         const appPanel = document.getElementById(app + 'Apps');
@@ -231,7 +231,7 @@ const appsModule = {
                 return response.json();
             })
             .then(appSettings => {
-                console.log(`[Apps] Received settings for ${app}:`, appSettings);
+                seekarrLog.log(`[Apps] Received settings for ${app}:`, appSettings);
                 
                 // Clear loading message
                 appPanel.innerHTML = '';
@@ -260,7 +260,7 @@ const appsModule = {
                         // Add change listener to detect modifications
                         this.addFormChangeListeners(formElement);
                     } else {
-                        console.warn(`Form generation function not found for ${app}`);
+                        seekarrLog.warn(`Form generation function not found for ${app}`);
                         appPanel.innerHTML = `<div class="settings-message">Settings for ${app.charAt(0).toUpperCase() + app.slice(1)} are not available.</div>`;
                     }
                 } else {
@@ -278,15 +278,15 @@ const appsModule = {
     addFormChangeListeners: function(form) {
         if (!form) return;
         
-        console.log(`Adding form change listeners to form with app type: ${form.getAttribute('data-app-type')}`);
+        seekarrLog.log(`Adding form change listeners to form with app type: ${form.getAttribute('data-app-type')}`);
         
         // Function to handle form element changes
         const handleChange = () => {
             if (this.hasFormChanges(form)) {
-                console.log('Form changed, enabling save button');
+                seekarrLog.log('Form changed, enabling save button');
                 this.markAppsAsChanged();
             } else {
-                console.log('No actual changes, save button remains disabled');
+                seekarrLog.log('No actual changes, save button remains disabled');
             }
         };
         
@@ -308,7 +308,7 @@ const appsModule = {
                 element.addEventListener('input', handleChange);
             }
             
-            console.log(`Added change listener to ${element.tagName} with id: ${element.id || 'no-id'}`);
+            seekarrLog.log(`Added change listener to ${element.tagName} with id: ${element.id || 'no-id'}`);
         });
         
         // Also add a MutationObserver to detect when instances are added or removed
@@ -332,12 +332,12 @@ const appsModule = {
                 });
                 
                 if (shouldUpdate) {
-                    console.log('Instances container changed - checking for form changes');
+                    seekarrLog.log('Instances container changed - checking for form changes');
                     if (this.hasFormChanges(form)) {
-                        console.log('Form changed, enabling save button');
+                        seekarrLog.log('Form changed, enabling save button');
                         this.markAppsAsChanged();
                     } else {
-                        console.log('No actual changes, save button remains disabled');
+                        seekarrLog.log('No actual changes, save button remains disabled');
                     }
                 }
             });
@@ -346,7 +346,7 @@ const appsModule = {
             const instancesContainers = form.querySelectorAll('.instances-container');
             instancesContainers.forEach(container => {
                 this.observer.observe(container, { childList: true, subtree: true });
-                console.log(`Added MutationObserver to container: ${container.className}`);
+                seekarrLog.log(`Added MutationObserver to container: ${container.className}`);
             });
         } catch (error) {
             console.error('Error setting up MutationObserver:', error);
@@ -370,7 +370,7 @@ const appsModule = {
                 // Add this app to the list of apps with changes if not already there
                 if (!this.appsWithChanges.includes(appType)) {
                     this.appsWithChanges.push(appType);
-                    console.log(`Added ${appType} to appsWithChanges:`, this.appsWithChanges);
+                    seekarrLog.log(`Added ${appType} to appsWithChanges:`, this.appsWithChanges);
                 }
                 
                 // Set the global tracking flag for this specific app
@@ -389,7 +389,7 @@ const appsModule = {
         
         if (this.elements.saveAppsButton) {
             this.elements.saveAppsButton.disabled = false;
-            console.log('Save button enabled');
+            seekarrLog.log('Save button enabled');
         } else {
             console.error('Save button element not found');
         }
@@ -411,7 +411,7 @@ const appsModule = {
             
             // Compare with original value
             if (originalValue !== undefined && String(originalValue) !== String(currentValue)) {
-                console.log(`Element changed: ${element.id}, Original: ${originalValue}, Current: ${currentValue}`);
+                seekarrLog.log(`Element changed: ${element.id}, Original: ${originalValue}, Current: ${currentValue}`);
                 hasChanges = true;
             }
         });
@@ -421,7 +421,7 @@ const appsModule = {
     
     // Show specific app panel and hide others
     showAppPanel: function(app) {
-        console.log(`Showing app panel for ${app}`);
+        seekarrLog.log(`Showing app panel for ${app}`);
         // Hide all app panels
         this.elements.appAppsPanels.forEach(panel => {
             panel.style.display = 'none';
@@ -437,7 +437,7 @@ const appsModule = {
             // Ensure the panel has the correct data-app-type attribute
             appPanel.setAttribute('data-app-type', app);
             
-            console.log(`App panel for ${app} is now active`);
+            seekarrLog.log(`App panel for ${app} is now active`);
         } else {
             console.error(`App panel for ${app} not found`);
         }
@@ -498,7 +498,7 @@ const appsModule = {
     saveApps: function(event) {
         if (event) event.preventDefault();
         
-        console.log('[Apps] Save button clicked');
+        seekarrLog.log('[Apps] Save button clicked');
         
         // Set a flag that we're in the middle of saving
         window._appsCurrentlySaving = true;
@@ -513,7 +513,7 @@ const appsModule = {
             if (visiblePanel && visiblePanel.id) {
                 // Extract app type from panel ID (e.g., "sonarrApps" -> "sonarr")
                 const extractedType = visiblePanel.id.replace('Apps', '');
-                console.log(`Fallback: Found visible panel with ID ${visiblePanel.id}, extracted app type: ${extractedType}`);
+                seekarrLog.log(`Fallback: Found visible panel with ID ${visiblePanel.id}, extracted app type: ${extractedType}`);
                 
                 if (extractedType) {
                     // Continue with the extracted app type
@@ -547,15 +547,15 @@ const appsModule = {
     
     // Helper function to save settings for a specific app
     saveAppSettings: function(appType, appPanel) {
-        console.log(`Saving settings for ${appType}`);
+        seekarrLog.log(`Saving settings for ${appType}`);
         
         // For Whisparr, ensure we indicate we're working with V2
         let apiVersion = "";
         if (appType === "whisparr") {
-            console.log("Saving Whisparr V2 settings");
+            seekarrLog.log("Saving Whisparr V2 settings");
             apiVersion = "V2";
         } else if (appType === "eros") {
-            console.log("Saving Eros (Whisparr V3) settings");
+            seekarrLog.log("Saving Eros (Whisparr V3) settings");
         }
         
         let settings;
@@ -565,7 +565,7 @@ const appsModule = {
             
             // Get settings from the form
             settings = SettingsForms.getFormSettings(appPanel, appType);
-            console.log(`Collected settings for ${appType}:`, settings);
+            seekarrLog.log(`Collected settings for ${appType}:`, settings);
         } catch (error) {
             console.error(`Error collecting settings for ${appType}:`, error);
             if (typeof seekarrUI !== 'undefined' && typeof seekarrUI.showNotification === 'function') {
@@ -578,7 +578,7 @@ const appsModule = {
         
         // Add specific logging for settings critical to stateful management
         if (appType === 'general') {
-            console.log('Stateful management settings being saved:', {
+            seekarrLog.log('Stateful management settings being saved:', {
                 statefulExpirationHours: settings.statefulExpirationHours,
                 api_timeout: settings.api_timeout,
                 command_wait_delay: settings.command_wait_delay,
@@ -587,7 +587,7 @@ const appsModule = {
         }
         
         // Send settings to the server
-        console.log(`Sending ${appType} settings to server...`);
+        seekarrLog.log(`Sending ${appType} settings to server...`);
         fetch(`/api/settings/${appType}`, {
             method: 'POST',
             headers: {
@@ -602,7 +602,7 @@ const appsModule = {
             return response.json();
         })
         .then(data => {
-            console.log(`${appType} settings saved successfully:`, data);
+            seekarrLog.log(`${appType} settings saved successfully:`, data);
             
             // Temporarily suppress change detection
             window._appsSuppressChangeDetection = true;
@@ -658,7 +658,7 @@ const appsModule = {
         });
         
         this.originalSettings = originalValues;
-        console.log('Original form values stored:', this.originalSettings);
+        seekarrLog.log('Original form values stored:', this.originalSettings);
     },
     
     // Mark form as unchanged
@@ -674,7 +674,7 @@ const appsModule = {
         
         // Get the app type to properly handle app-specific flags
         const appType = appPanel.getAttribute('data-app-type') || '';
-        console.log(`Marking form as unchanged for app type: ${appType}`);
+        seekarrLog.log(`Marking form as unchanged for app type: ${appType}`);
         
         // Clear app-specific change flags
         if (window._hasAppChanges && typeof window._hasAppChanges === 'object') {
@@ -696,7 +696,7 @@ const appsModule = {
             // Reset the internal change tracking for this specific app
             if (appType && this.appsWithChanges && this.appsWithChanges.includes(appType)) {
                 this.appsWithChanges = this.appsWithChanges.filter(app => app !== appType);
-                console.log(`Removed ${appType} from appsWithChanges:`, this.appsWithChanges);
+                seekarrLog.log(`Removed ${appType} from appsWithChanges:`, this.appsWithChanges);
             }
             
             // Force update overall app state
@@ -704,7 +704,7 @@ const appsModule = {
             
             // Explicitly handle Readarr, Lidarr, and Whisparr which seem to have issues
             if (appType === 'readarr' || appType === 'lidarr' || appType === 'whisparr' || appType === 'whisparrv2') {
-                console.log(`Special handling for ${appType} to ensure changes are cleared`);
+                seekarrLog.log(`Special handling for ${appType} to ensure changes are cleared`);
                 // Force additional global state updates
                 if (window.seekarrUI && window.seekarrUI.formChanged) {
                     window.seekarrUI.formChanged[appType] = false;
@@ -732,7 +732,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const saveButton = document.getElementById('saveAppsButton');
     if (saveButton) {
         saveButton.addEventListener('click', function(event) {
-            console.log('Save button clicked directly');
+            seekarrLog.log('Save button clicked directly');
             appsModule.saveApps(event);
         });
     }

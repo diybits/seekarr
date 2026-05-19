@@ -706,7 +706,7 @@ let seekarrUI = {
             // Disconnect logs if switching away from logs
             this.disconnectAllEventSources();
             
-            console.debug('Scheduling section activated');
+            seekarrLog.debug('Scheduling section activated');
         } else {
             // Default to home if section is unknown or element missing
             if (this.elements.homeSection) {
@@ -725,7 +725,7 @@ let seekarrUI = {
         if (pageTitleElement) {
             pageTitleElement.textContent = newTitle;
         } else {
-            console.warn("[seekarrUI] currentPageTitle element not found during section switch.");
+            seekarrLog.warn("[seekarrUI] currentPageTitle element not found during section switch.");
         }
     },
     
@@ -838,7 +838,7 @@ let seekarrUI = {
         }
         
         this.currentSettingsTab = app;
-        console.log(`[seekarrUI] Switched settings tab to: ${this.currentSettingsTab}`); // Added logging
+        seekarrLog.log(`[seekarrUI] Switched settings tab to: ${this.currentSettingsTab}`); // Added logging
     },
     
     // Logs handling
@@ -981,18 +981,18 @@ let seekarrUI = {
                 // Close the potentially broken connection
                 if (this.eventSources.logs) {
                     this.eventSources.logs.close();
-                    console.log(`[seekarrUI] Closed potentially broken log EventSource for ${this.currentLogApp}.`);
+                    seekarrLog.log(`[seekarrUI] Closed potentially broken log EventSource for ${this.currentLogApp}.`);
                 }
                 // Attempt to reconnect after a delay, but only if still on the logs page
                 if (this.currentSection === 'logs') {
-                    console.log(`[seekarrUI] Attempting to reconnect log stream for ${this.currentLogApp} in 5 seconds...`);
+                    seekarrLog.log(`[seekarrUI] Attempting to reconnect log stream for ${this.currentLogApp} in 5 seconds...`);
                     setTimeout(() => {
                         // Double-check if still on logs page before reconnecting
                         if (this.currentSection === 'logs') {
-                             console.log(`[seekarrUI] Reconnecting log stream for ${this.currentLogApp}.`);
+                             seekarrLog.log(`[seekarrUI] Reconnecting log stream for ${this.currentLogApp}.`);
                              this.connectToLogs(); // Re-initiate connection
                         } else {
-                             console.log(`[seekarrUI] Log reconnect cancelled; user navigated away from logs section.`);
+                             seekarrLog.log(`[seekarrUI] Log reconnect cancelled; user navigated away from logs section.`);
                         }
                     }, 5000); // 5-second delay
                 }
@@ -1015,9 +1015,9 @@ let seekarrUI = {
                  try {
                      if (source.readyState !== EventSource.CLOSED) {
                          source.close();
-                         console.log(`[seekarrUI] Closed event source for ${key}.`);
+                         seekarrLog.log(`[seekarrUI] Closed event source for ${key}.`);
                      } else {
-                         console.log(`[seekarrUI] Event source for ${key} was already closed.`);
+                         seekarrLog.log(`[seekarrUI] Event source for ${key} was already closed.`);
                      }
                  } catch (e) {
                      console.error(`[seekarrUI] Error closing event source for ${key}:`, e);
@@ -1182,7 +1182,7 @@ let seekarrUI = {
         SeekarrUtils.fetchWithTimeout('/api/settings')
             .then(response => response.json())
             .then(data => {
-                console.log('Loaded settings:', data);
+                seekarrLog.log('Loaded settings:', data);
                 
                 // Store original settings for comparison
                 this.originalSettings = data;
@@ -1243,7 +1243,7 @@ let seekarrUI = {
     // Called when any setting input changes in the active tab
     markSettingsAsChanged() {
         if (!this.settingsChanged) {
-            console.log("[seekarrUI] Settings marked as changed.");
+            seekarrLog.log("[seekarrUI] Settings marked as changed.");
             this.settingsChanged = true;
             this.updateSaveResetButtonState(true); // Enable buttons
         }
@@ -1251,7 +1251,7 @@ let seekarrUI = {
 
     saveSettings: function() {
         const app = this.currentSettingsTab;
-        console.log(`[seekarrUI] saveSettings called for app: ${app}`);
+        seekarrLog.log(`[seekarrUI] saveSettings called for app: ${app}`);
         
         // Clear the unsaved changes flag BEFORE sending the request
         // This prevents the "unsaved changes" dialog from appearing
@@ -1267,7 +1267,7 @@ let seekarrUI = {
             return;
         }
 
-        console.log(`[seekarrUI] Collected settings for ${app}:`, settings);
+        seekarrLog.log(`[seekarrUI] Collected settings for ${app}:`, settings);
         
         // Check if this is general settings and if auth bypass settings are changed
         const isLocalAccessBypassChanged = app === 'general' && 
@@ -1281,10 +1281,10 @@ let seekarrUI = {
             this.originalSettings.general.proxy_auth_bypass !== settings.proxy_auth_bypass;
             
         // Log changes to authentication settings
-        console.log(`[seekarrUI] Local access bypass changed: ${isLocalAccessBypassChanged}`);
-        console.log(`[seekarrUI] Proxy auth bypass changed: ${isProxyAuthBypassChanged}`);
+        seekarrLog.log(`[seekarrUI] Local access bypass changed: ${isLocalAccessBypassChanged}`);
+        seekarrLog.log(`[seekarrUI] Proxy auth bypass changed: ${isProxyAuthBypassChanged}`);
 
-        console.log(`[seekarrUI] Sending settings payload for ${app}:`, settings);
+        seekarrLog.log(`[seekarrUI] Sending settings payload for ${app}:`, settings);
 
         // Use the correct endpoint based on app type
         const endpoint = app === 'general' ? '/api/settings/general' : `/api/settings/${app}`;
@@ -1309,7 +1309,7 @@ let seekarrUI = {
             return response.json();
         })
         .then(savedConfig => {
-            console.log('[seekarrUI] Settings saved successfully. Full config received:', savedConfig);
+            seekarrLog.log('[seekarrUI] Settings saved successfully. Full config received:', savedConfig);
             
             // If any authentication bypass setting was changed, reload the page
             if (isLocalAccessBypassChanged || isProxyAuthBypassChanged) {
@@ -1448,7 +1448,7 @@ let seekarrUI = {
                 }
             });
             
-            console.log(`[seekarrUI] Collected Swaparr settings:`, settings);
+            seekarrLog.log(`[seekarrUI] Collected Swaparr settings:`, settings);
             return settings;
         }
 
@@ -1459,7 +1459,7 @@ let seekarrUI = {
         
         // Check if multi-instance UI elements exist (like Sonarr)
         if (instanceItems.length > 0) {
-            console.log(`[seekarrUI] Found ${instanceItems.length} instance items for ${app}. Processing multi-instance mode.`);
+            seekarrLog.log(`[seekarrUI] Found ${instanceItems.length} instance items for ${app}. Processing multi-instance mode.`);
             // Multi-instance logic (current Sonarr logic)
             instanceItems.forEach((item, index) => {
                 const instanceId = item.dataset.instanceId; // Assumes Sonarr uses data-instance-id
@@ -1479,7 +1479,7 @@ let seekarrUI = {
                 }
             });
         } else {
-            console.log(`[seekarrUI] No instance items found for ${app}. Processing single-instance mode.`);
+            seekarrLog.log(`[seekarrUI] No instance items found for ${app}. Processing single-instance mode.`);
             // Single-instance logic (for Radarr, Lidarr, etc.)
             // Look for the standard IDs used in their forms
             const nameInput = form.querySelector(`#${app}_instance_name`); // Check for a specific name field
@@ -1500,7 +1500,7 @@ let seekarrUI = {
             }
         }
 
-        console.log(`[seekarrUI] Processed instances for ${app}:`, settings.instances);
+        seekarrLog.log(`[seekarrUI] Processed instances for ${app}:`, settings.instances);
 
         // Now collect any OTHER settings NOT part of the instance structure
         const allInputs = form.querySelectorAll('input, select');
@@ -1562,19 +1562,19 @@ let seekarrUI = {
             }
         });
 
-        console.log(`[seekarrUI] Final collected settings for ${app}:`, settings);
+        seekarrLog.log(`[seekarrUI] Final collected settings for ${app}:`, settings);
         return settings;
     },
 
     // Handle instance management events
     setupInstanceEventHandlers: function() {
-        console.log("DEBUG: setupInstanceEventHandlers called"); // Added logging
+        seekarrLog.log("DEBUG: setupInstanceEventHandlers called"); // Added logging
         const settingsPanels = document.querySelectorAll('.app-settings-panel');
         
         settingsPanels.forEach(panel => {
-            console.log(`DEBUG: Adding listeners to panel '${panel.id}'`); // Added logging
+            seekarrLog.log(`DEBUG: Adding listeners to panel '${panel.id}'`); // Added logging
             panel.addEventListener('addInstance', (e) => {
-                console.log(`DEBUG: addInstance event listener fired for panel '${panel.id}'. Event detail:`, e.detail);
+                seekarrLog.log(`DEBUG: addInstance event listener fired for panel '${panel.id}'. Event detail:`, e.detail);
                 this.addAppInstance(e.detail.appName);
             });
             
@@ -1590,7 +1590,7 @@ let seekarrUI = {
     
     // Add a new instance to the app
     addAppInstance: function(appName) {
-        console.log(`DEBUG: addAppInstance called for app '${appName}'`);
+        seekarrLog.log(`DEBUG: addAppInstance called for app '${appName}'`);
         const container = document.getElementById(`${appName}Settings`);
         if (!container) return;
         
@@ -1654,7 +1654,7 @@ let seekarrUI = {
     
     // Test connection for a specific instance
     testInstanceConnection: function(appName, instanceId, url, apiKey) {
-        console.log(`Testing connection for ${appName} instance ${instanceId} with URL: ${url}`);
+        seekarrLog.log(`Testing connection for ${appName} instance ${instanceId} with URL: ${url}`);
         
         // Make sure instanceId is treated as a number
         instanceId = parseInt(instanceId, 10);
@@ -1710,7 +1710,7 @@ let seekarrUI = {
             return response.json();
         })
         .then(data => {
-            console.log(`Connection test response data for ${appName} instance ${instanceId}:`, data);
+            seekarrLog.log(`Connection test response data for ${appName} instance ${instanceId}:`, data);
             if (data.success) {
                 statusSpan.textContent = data.message || 'Connected';
                 statusSpan.className = 'connection-status success';
@@ -1807,7 +1807,7 @@ let seekarrUI = {
         const appBox = statusElement.closest('.app-stats-card'); // CORRECTED SELECTOR
         if (!appBox) {
             // If the card structure changes, this might fail. Log a warning.
-            console.warn(`[seekarrUI] Could not find parent '.app-stats-card' element for ${app}`);
+            seekarrLog.warn(`[seekarrUI] Could not find parent '.app-stats-card' element for ${app}`);
         }
 
         let isConfigured = false;
@@ -1917,7 +1917,7 @@ let seekarrUI = {
     
     // Check if local access bypass is enabled and update UI accordingly
     checkLocalAccessBypassStatus: function() {
-        console.log("Checking local access bypass status...");
+        seekarrLog.log("Checking local access bypass status...");
         SeekarrUtils.fetchWithTimeout('/api/get_local_access_bypass_status') // Corrected URL
             .then(response => {
                 if (!response.ok) {
@@ -1932,7 +1932,7 @@ let seekarrUI = {
             })
             .then(data => {
                 if (data && typeof data.isEnabled === 'boolean') {
-                    console.log("Local access bypass status received:", data.isEnabled);
+                    seekarrLog.log("Local access bypass status received:", data.isEnabled);
                     this.updateUIForLocalAccessBypass(data.isEnabled);
                 } else {
                     // Handle cases where response is JSON but not the expected format
@@ -1950,7 +1950,7 @@ let seekarrUI = {
     
     // Update UI elements visibility based on local access bypass status
     updateUIForLocalAccessBypass: function(isEnabled) {
-        console.log("Updating UI for local access bypass:", isEnabled);
+        seekarrLog.log("Updating UI for local access bypass:", isEnabled);
         
         // Get the user info container in topbar (username and logout button)
         const userInfoContainer = document.getElementById('userInfoContainer');
@@ -1960,14 +1960,14 @@ let seekarrUI = {
         
         // Set display style explicitly based on local access bypass setting
         if (isEnabled === true) {
-            console.log("Local access bypass is ENABLED - hiding user elements");
+            seekarrLog.log("Local access bypass is ENABLED - hiding user elements");
             
             // Hide user info in topbar
             if (userInfoContainer) {
                 userInfoContainer.style.display = 'none';
-                console.log("  • Hidden userInfoContainer");
+                seekarrLog.log("  • Hidden userInfoContainer");
             } else {
-                console.warn("  ⚠ userInfoContainer not found");
+                seekarrLog.warn("  ⚠ userInfoContainer not found");
             }
             
             // Hide user nav in sidebar
@@ -1975,34 +1975,34 @@ let seekarrUI = {
                 userNav.style.display = 'none';
                 // Add !important inline style to ensure mobile view respects this
                 userNav.style.setProperty('display', 'none', 'important');
-                console.log("  • Hidden userNav");
+                seekarrLog.log("  • Hidden userNav");
             } else {
-                console.warn("  ⚠ userNav not found");
+                seekarrLog.warn("  ⚠ userNav not found");
             }
         } else {
-            console.log("Local access bypass is DISABLED - showing user elements");
+            seekarrLog.log("Local access bypass is DISABLED - showing user elements");
             
             // Show user info in topbar
             if (userInfoContainer) {
                 userInfoContainer.style.display = '';
-                console.log("  • Showing userInfoContainer");
+                seekarrLog.log("  • Showing userInfoContainer");
             } else {
-                console.warn("  ⚠ userInfoContainer not found");
+                seekarrLog.warn("  ⚠ userInfoContainer not found");
             }
             
             // Show user nav in sidebar
             if (userNav) {
                 userNav.style.display = '';
-                console.log("  • Showing userNav");
+                seekarrLog.log("  • Showing userNav");
             } else {
-                console.warn("  ⚠ userNav not found");
+                seekarrLog.warn("  ⚠ userNav not found");
             }
         }
     },
     
     logout: function(e) { // Added logout function
         e.preventDefault(); // Prevent default link behavior
-        console.log('[seekarrUI] Logging out...');
+        seekarrLog.log('[seekarrUI] Logging out...');
         SeekarrUtils.fetchWithTimeout('/logout', { // Use the correct endpoint defined in Flask
             method: 'POST',
             headers: {
@@ -2012,7 +2012,7 @@ let seekarrUI = {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                console.log('[seekarrUI] Logout successful, redirecting to login.');
+                seekarrLog.log('[seekarrUI] Logout successful, redirecting to login.');
                 window.location.href = SeekarrUtils.basePath + '/login'; // Redirect to login page
             } else {
                 console.error('[seekarrUI] Logout failed:', data.message);
@@ -2128,18 +2128,18 @@ let seekarrUI = {
             .then(response => {
                 // Just log the response, don't rely on it for UI feedback
                 if (!response.ok) {
-                    console.warn('Server responded with non-OK status for stats reset');
+                    seekarrLog.warn('Server responded with non-OK status for stats reset');
                 }
                 return response.json().catch(() => ({}));
             })
             .then(data => {
-                console.log('Stats reset response:', data);
+                seekarrLog.log('Stats reset response:', data);
             })
             .catch(error => {
-                console.warn('Error communicating with server for stats reset:', error);
+                seekarrLog.warn('Error communicating with server for stats reset:', error);
             });
         } catch (error) {
-            console.warn('Error in stats reset:', error);
+            seekarrLog.warn('Error in stats reset:', error);
         }
     },
     
@@ -2211,7 +2211,7 @@ let seekarrUI = {
                 if (!response.ok) {
                     // Handle rate limiting or other errors
                     if (response.status === 403) {
-                        console.warn('GitHub API rate limit likely exceeded.');
+                        seekarrLog.warn('GitHub API rate limit likely exceeded.');
                         throw new Error('Rate limited');
                     }
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -2243,7 +2243,7 @@ let seekarrUI = {
                 if (!response.ok) {
                     // Handle rate limiting or other errors
                     if (response.status === 403) {
-                        console.warn('GitHub API rate limit likely exceeded.');
+                        seekarrLog.warn('GitHub API rate limit likely exceeded.');
                         throw new Error('Rate limited');
                     }
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -2352,7 +2352,7 @@ let seekarrUI = {
 
     // Add updateHomeConnectionStatus if it doesn't exist or needs adjustment
     updateHomeConnectionStatus: function() {
-        console.log('[seekarrUI] Updating home connection statuses...');
+        seekarrLog.log('[seekarrUI] Updating home connection statuses...');
         // This function should ideally call checkAppConnection for all relevant apps
         // or use the stored configuredApps status if checkAppConnection updates it.
         this.checkAppConnections(); // Re-check all connections after a save might be simplest
@@ -2368,7 +2368,7 @@ let seekarrUI = {
         // Max retry attempts - increased for better reliability
         const maxAttempts = 5;
         
-        console.log(`[StatefulInfo] Loading stateful info (attempt ${attempts + 1}, skipCache: ${skipCache})`);
+        seekarrLog.log(`[StatefulInfo] Loading stateful info (attempt ${attempts + 1}, skipCache: ${skipCache})`);
         
         // Update UI to show loading state instead of N/A on first attempt
         if (attempts === 0) {
@@ -2385,7 +2385,7 @@ let seekarrUI = {
                 
                 // Use cache if it's less than 5 minutes old while waiting for fresh data
                 if (cacheAge < 300000) {
-                    console.log('[StatefulInfo] Using cached data while fetching fresh data');
+                    seekarrLog.log('[StatefulInfo] Using cached data while fetching fresh data');
                     
                     // Display cached data
                     if (initialStateEl && parsedData.created_at_ts) {
@@ -2408,7 +2408,7 @@ let seekarrUI = {
                     }
                 }
             } catch (e) {
-                console.warn('[StatefulInfo] Error parsing cached data:', e);
+                seekarrLog.warn('[StatefulInfo] Error parsing cached data:', e);
             }
         }
         
@@ -2446,7 +2446,7 @@ let seekarrUI = {
                         // If this is the first state load attempt and no timestamp exists,
                         // it might be because the state file hasn't been created yet
                         if (attempts < maxAttempts) {
-                            console.log(`[StatefulInfo] No initial state timestamp, will retry (${attempts + 1}/${maxAttempts})`);
+                            seekarrLog.log(`[StatefulInfo] No initial state timestamp, will retry (${attempts + 1}/${maxAttempts})`);
                             setTimeout(() => {
                                 this.loadStatefulInfo(attempts + 1);
                             }, 500); // Longer delay for better chance of success
@@ -2483,7 +2483,7 @@ let seekarrUI = {
                 // Store the data for future reference
                 this._cachedStatefulData = data;
                 
-                console.log('[StatefulInfo] Successfully loaded and displayed stateful data');
+                seekarrLog.log('[StatefulInfo] Successfully loaded and displayed stateful data');
             } else {
                 throw new Error(data.message || 'Failed to load stateful info');
             }
@@ -2494,13 +2494,13 @@ let seekarrUI = {
             // Retry if we haven't reached max attempts with exponential backoff
             if (attempts < maxAttempts) {
                 const delay = Math.min(2000, 300 * Math.pow(2, attempts)); // Exponential backoff with max 2000ms
-                console.log(`[StatefulInfo] Retrying in ${delay}ms (attempt ${attempts + 1}/${maxAttempts})`);
+                seekarrLog.log(`[StatefulInfo] Retrying in ${delay}ms (attempt ${attempts + 1}/${maxAttempts})`);
                 setTimeout(() => {
                     // Double-check if still on the same page before retrying
                     if (document.getElementById('stateful_management_hours')) {
                         this.loadStatefulInfo(attempts + 1);
                     } else {
-                        console.log(`[StatefulInfo] Stateful info retry cancelled; user navigated away.`);
+                        seekarrLog.log(`[StatefulInfo] Stateful info retry cancelled; user navigated away.`);
                     }
                 }, delay);
                 return;
@@ -2510,7 +2510,7 @@ let seekarrUI = {
             const cachedStatefulData = localStorage.getItem('seekarr-stateful-data');
             if (cachedStatefulData) {
                 try {
-                    console.log('[StatefulInfo] Using cached data as fallback after failed fetch');
+                    seekarrLog.log('[StatefulInfo] Using cached data as fallback after failed fetch');
                     const parsedData = JSON.parse(cachedStatefulData);
                     
                     if (initialStateEl && parsedData.created_at_ts) {
@@ -2538,7 +2538,7 @@ let seekarrUI = {
                     
                     return;
                 } catch (e) {
-                    console.warn('[StatefulInfo] Error parsing cached data as fallback:', e);
+                    seekarrLog.warn('[StatefulInfo] Error parsing cached data as fallback:', e);
                 }
             }
             
@@ -2591,7 +2591,7 @@ let seekarrUI = {
     
     // Reset stateful management - clear all processed IDs
     resetStatefulManagement: function() {
-        console.log("Reset stateful management function called");
+        seekarrLog.log("Reset stateful management function called");
         
         // Show a loading indicator or disable the button
         const resetBtn = document.getElementById('reset_stateful_btn');
@@ -2599,13 +2599,13 @@ let seekarrUI = {
             resetBtn.disabled = true;
             const originalText = resetBtn.innerHTML;
             resetBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Resetting...';
-            console.log("Reset button found and disabled:", resetBtn);
+            seekarrLog.log("Reset button found and disabled:", resetBtn);
         } else {
             console.error("Reset button not found in the DOM!");
         }
         
         // Add debug logging
-        console.log("Sending reset request to /api/stateful/reset");
+        seekarrLog.log("Sending reset request to /api/stateful/reset");
         
         SeekarrUtils.fetchWithTimeout('/api/stateful/reset', {
             method: 'POST',
@@ -2618,14 +2618,14 @@ let seekarrUI = {
             cache: 'no-cache' // Add cache control to prevent caching
         })
         .then(response => {
-            console.log("Reset response received:", response.status, response.statusText);
+            seekarrLog.log("Reset response received:", response.status, response.statusText);
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
             return response.json();
         })
         .then(data => {
-            console.log("Reset response data:", data);
+            seekarrLog.log("Reset response data:", data);
             
             if (data.success) {
                 this.showNotification('Stateful management reset successfully', 'success');
@@ -2690,7 +2690,7 @@ let seekarrUI = {
         })
         .then(data => {
             if (data.success) {
-                console.log('[seekarrUI] Stateful expiration updated successfully:', data);
+                seekarrLog.log('[seekarrUI] Stateful expiration updated successfully:', data);
                 
                 // Get updated info to show proper dates
                 this.loadStatefulInfo(0, true);
@@ -2721,7 +2721,7 @@ let seekarrUI = {
             return;
         }
         
-        console.log(`[seekarrUI] Directly updating stateful expiration to ${hours} hours`);
+        seekarrLog.log(`[seekarrUI] Directly updating stateful expiration to ${hours} hours`);
         
         // Make a direct API call to update the stateful expiration
         SeekarrUtils.fetchWithTimeout('/api/stateful/update-expiration', {
@@ -2738,7 +2738,7 @@ let seekarrUI = {
             return response.json();
         })
         .then(data => {
-            console.log('[seekarrUI] Stateful expiration updated successfully:', data);
+            seekarrLog.log('[seekarrUI] Stateful expiration updated successfully:', data);
             // Update the expiration date display
             const expiresDateEl = document.getElementById('stateful_expires_date');
             if (expiresDateEl && data.expires_date) {
@@ -2757,7 +2757,7 @@ let seekarrUI = {
         // Reset hasUnsavedChanges when settings are saved
         document.addEventListener('settings:saved', (event) => {
             if (event.detail && event.detail.appType) {
-                console.log(`settings:saved event received for ${event.detail.appType}`);
+                seekarrLog.log(`settings:saved event received for ${event.detail.appType}`);
                 if (this.formChanged) {
                     this.formChanged[event.detail.appType] = false;
                 }
@@ -2790,7 +2790,7 @@ let seekarrUI = {
         // Check if any forms still have changes
         const hasAnyChanges = Object.values(this.formChanged).some(val => val === true);
         
-        console.log('Checking for remaining form changes:', {
+        seekarrLog.log('Checking for remaining form changes:', {
             formChanged: this.formChanged,
             hasAnyChanges: hasAnyChanges
         });
@@ -2803,13 +2803,13 @@ let seekarrUI = {
     handleUnsavedChangesBeforeUnload: function(event) {
         // Check if we should suppress the check (used for test connection functionality)
         if (this.suppressUnsavedChangesCheck || window._suppressUnsavedChangesDialog) {
-            console.log('Unsaved changes check suppressed');
+            seekarrLog.log('Unsaved changes check suppressed');
             return;
         }
         
         // If we have unsaved changes, show confirmation dialog
         if (this.hasUnsavedChanges) {
-            console.log('Preventing navigation due to unsaved changes');
+            seekarrLog.log('Preventing navigation due to unsaved changes');
             event.preventDefault();
             event.returnValue = 'You have unsaved changes. Do you want to continue without saving?';
             return event.returnValue;

@@ -17,7 +17,7 @@ function setupWhisparrForm() {
     // Use querySelector within the active panel to be safe, though IDs should be unique
     const panel = document.getElementById('whisparrSettings'); 
     if (!panel) {
-        console.warn("[whisparr.js] Whisparr settings panel not found.");
+        seekarrLog.warn("[whisparr.js] Whisparr settings panel not found.");
         return;
     }
 
@@ -29,10 +29,10 @@ function setupWhisparrForm() {
 
     // Check if elements exist and if listener already attached to prevent duplicates
     if (!testWhisparrButton || testWhisparrButton.dataset.listenerAttached === 'true') {
-         console.log("[whisparr.js] Test button not found or listener already attached.");
+         seekarrLog.log("[whisparr.js] Test button not found or listener already attached.");
         return;
     }
-     console.log("[whisparr.js] Setting up Whisparr form listeners.");
+     seekarrLog.log("[whisparr.js] Setting up Whisparr form listeners.");
      testWhisparrButton.dataset.listenerAttached = 'true'; // Mark as attached
 
     // Test connection button
@@ -117,7 +117,7 @@ function setupWhisparrForm() {
         if (typeof seekarrUI !== 'undefined' && seekarrUI.settingsChanged !== wasSettingsChanged) {
             setTimeout(() => {
                 seekarrUI.settingsChanged = wasSettingsChanged;
-                console.log("[whisparr.js] Restored settingsChanged state after version check");
+                seekarrLog.log("[whisparr.js] Restored settingsChanged state after version check");
                 
                 // If there are no actual changes, update the save button state
                 if (!wasSettingsChanged && typeof seekarrUI.updateSaveResetButtonState === 'function') {

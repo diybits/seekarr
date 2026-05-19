@@ -11,7 +11,7 @@ const GithubSponsors = {
     
     // Initialize the sponsors display
     init: function() {
-        console.log('Initializing GitHub Sponsors display');
+        seekarrLog.log('Initializing GitHub Sponsors display');
         
         // Immediately call loadSponsors with mock data for a better user experience
         // This prevents the loading spinner from staying visible
@@ -77,7 +77,7 @@ const GithubSponsors = {
         const cachedData = this.getCachedSponsors();
         
         if (!skipCache && cachedData && cachedData.sponsors) {
-            console.log('Using cached sponsors data');
+            seekarrLog.log('Using cached sponsors data');
             this.displaySponsors(cachedData.sponsors);
             return;
         }
@@ -122,7 +122,7 @@ const GithubSponsors = {
             
             // Check if cache is expired
             if (Date.now() - data.timestamp > this.cacheDuration) {
-                console.log('Sponsors cache expired');
+                seekarrLog.log('Sponsors cache expired');
                 return null;
             }
             
@@ -141,7 +141,7 @@ const GithubSponsors = {
         };
         
         localStorage.setItem('seekarr-github-sponsors', JSON.stringify(data));
-        console.log('Cached sponsors data');
+        seekarrLog.log('Cached sponsors data');
     },
     
     // Display sponsors in the UI
