@@ -6,7 +6,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
-## [Unreleased]
+## [7.2.0] — 2026-05-19
 
 ### Fixed
 
@@ -26,6 +26,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 - **Replaced flake8 with ruff** — CI lint stage now runs `ruff check src/` via `ruff.toml`. Enforces E722, F401, F541, F841, and W292. Auto-fixed 235 violations across 14 source files; manually fixed 2 bare excepts, dead variable assignments, and a duplicate log line. (`ruff.toml`, `.github/workflows/ci.yml`)
+
+### Documentation
+
+- Removed false Unraid Community App Store claim from README and installation guide; docker run command for Unraid users retained. (`README.md`, `docs/getting-started/installation.html`)
+- Replaced aggressive early-development disclaimer with a plain note explaining that unmonitoring items in the *Arr app is the standard way to exclude them from Seekarr's automated activity. (`README.md`, `docs/getting-started/quick-setup.html`, `docs/apps/*.html`)
+- "Monitored Only" setting description expanded on all five app pages to explicitly call out the curated-content use case. (`docs/apps/sonarr.html`, `radarr.html`, `lidarr.html`, `readarr.html`, `whisparr.html`)
 
 ### Maintenance
 
