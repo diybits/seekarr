@@ -8,9 +8,8 @@ import requests
 import json
 import sys
 import time
-import datetime
 import traceback
-from typing import List, Dict, Any, Optional, Union, Callable
+from typing import List, Dict, Any, Optional, Union
 # Correct the import path
 from src.primary.utils.logger import get_logger
 from src.primary.settings_manager import get_ssl_verify_setting
@@ -732,14 +731,6 @@ def get_download_queue_size(api_url: str, api_key: str, api_timeout: int) -> int
     queue_size = response.get('totalRecords', 0)
     sonarr_logger.debug(f"Sonarr download queue size: {queue_size}")
     return queue_size
-
-def refresh_series(api_url: str, api_key: str, api_timeout: int, series_id: int) -> Optional[Union[int, str]]:
-    """Refresh functionality has been removed as it was a performance bottleneck.
-    This function now returns a placeholder success value without making any API calls.
-    """
-    sonarr_logger.debug(f"Refresh functionality disabled for series ID: {series_id}")
-    # Return a placeholder command ID (123) to simulate success without actually refreshing
-    return 123
 
 def get_series_by_id(api_url: str, api_key: str, api_timeout: int, series_id: int) -> Optional[Dict[str, Any]]:
     """Get series details by ID from Sonarr."""
