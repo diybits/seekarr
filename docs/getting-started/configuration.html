@@ -220,7 +220,7 @@
 
                 <p><strong>Do not</strong> set <code>TRUSTED_PROXIES</code> when Seekarr is directly internet-facing.</p>
 
-                <h3>Nginx example</h3>
+                <h3>Nginx</h3>
                 <pre><code>location /seekarr/ {
     proxy_pass         http://seekarr:9705/;
     proxy_set_header   X-Forwarded-For    $proxy_add_x_forwarded_for;
@@ -232,7 +232,62 @@
 
                 <p>And in your <code>docker-compose.yml</code>:</p>
                 <pre><code>environment:
-  - TRUSTED_PROXIES=192.168.1.10   # your proxy's IP</code></pre>
+  - TRUSTED_PROXIES=192.168.1.10   # your Nginx container's IP</code></pre>
+
+                <h3>Caddy</h3>
+                <p>Caddy handles TLS automatically. Add a block to your <code>Caddyfile</code>:</p>
+                <pre><code>your.domain.com {
+    handle /seekarr/* {
+        uri strip_prefix /seekarr
+        reverse_proxy seekarr:9705 {
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+            header_up X-Forwarded-Host {host}
+            header_up X-Forwarded-Prefix /seekarr
+        }
+    }
+}</code></pre>
+
+                <p>Set <code>TRUSTED_PROXIES</code> to the Caddy container's IP (or <code>*</code> if Caddy and Seekarr share a Docker network):</p>
+                <pre><code>environment:
+  - TRUSTED_PROXIES=*</code></pre>
+
+                <h3>Traefik</h3>
+                <p>Add labels to the Seekarr service in <code>docker-compose.yml</code>. Replace <code>your.domain.com</code> and adjust the <code>entrypoints</code> name (<code>websecure</code>) to match your Traefik config:</p>
+                <pre><code>services:
+  seekarr:
+    image: ghcr.io/diybits/seekarr:latest
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.seekarr.rule=Host(`your.domain.com`) &amp;&amp; PathPrefix(`/seekarr`)"
+      - "traefik.http.routers.seekarr.entrypoints=websecure"
+      - "traefik.http.routers.seekarr.tls.certresolver=letsencrypt"
+      - "traefik.http.middlewares.seekarr-strip.stripprefix.prefixes=/seekarr"
+      - "traefik.http.routers.seekarr.middlewares=seekarr-strip"
+      - "traefik.http.services.seekarr.loadbalancer.server.port=9705"
+    environment:
+      - TRUSTED_PROXIES=*   # Traefik runs in the same Docker network</code></pre>
+
+                <p>Traefik forwards <code>X-Forwarded-For</code> and <code>X-Forwarded-Proto</code> automatically. The <code>stripprefix</code> middleware removes <code>/seekarr</code> before the request reaches Seekarr, and <code>X-Forwarded-Prefix</code> is set so Seekarr generates correct redirect URLs.</p>
+
+                <h3>Nginx Proxy Manager</h3>
+                <p>Nginx Proxy Manager (NPM) is a GUI wrapper around Nginx. No config files are needed — everything is done through the web UI.</p>
+                <ol>
+                    <li>In NPM, go to <strong>Proxy Hosts → Add Proxy Host</strong>.</li>
+                    <li>Set <strong>Domain Names</strong> to your hostname (e.g. <code>seekarr.home.lan</code>).</li>
+                    <li>Set <strong>Scheme</strong> to <code>http</code>, <strong>Forward Hostname/IP</strong> to <code>seekarr</code> (Docker service name or IP), and <strong>Forward Port</strong> to <code>9705</code>.</li>
+                    <li>Enable <strong>Websockets Support</strong> (Seekarr uses long-polling for live updates).</li>
+                    <li>On the <strong>SSL</strong> tab, request a Let's Encrypt certificate and enable <strong>Force SSL</strong>.</li>
+                    <li>On the <strong>Advanced</strong> tab, paste the following custom Nginx snippet to forward the required headers:</li>
+                </ol>
+                <pre><code>proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+proxy_set_header X-Forwarded-Proto $scheme;
+proxy_set_header X-Forwarded-Host $host;
+proxy_set_header Host $host;</code></pre>
+                <p>Then set <code>TRUSTED_PROXIES</code> to the NPM container's IP (find it with <code>docker inspect npm | grep IPAddress</code>), or use <code>*</code> if NPM and Seekarr are on the same Docker network:</p>
+                <pre><code>environment:
+  - TRUSTED_PROXIES=*</code></pre>
+                <p><strong>Note:</strong> NPM does not support subpath deployments (<code>/seekarr</code> prefix) through the GUI. If you need Seekarr at a subpath, use Nginx or Caddy directly.</p>
             </section>
 
             <section>
