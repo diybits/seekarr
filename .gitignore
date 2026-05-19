@@ -4,6 +4,9 @@
 # Runtime config volume (contains live API keys and credentials)
 /config/
 
+# Runtime stats/tally fallback (written by stats_manager.py when /config is unavailable)
+/data/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
