@@ -14,10 +14,10 @@ document.addEventListener('DOMContentLoaded', function() {
  * This function is now called by new-main.js when the Eros settings tab is shown.
  */
 function setupErosForm() {
-    console.log("[eros.js] Setting up Eros form...");
+    seekarrLog.log("[eros.js] Setting up Eros form...");
     const panel = document.getElementById('erosSettings'); 
     if (!panel) {
-        console.warn("[eros.js] Eros settings panel not found.");
+        seekarrLog.warn("[eros.js] Eros settings panel not found.");
         return;
     }
   
@@ -29,15 +29,15 @@ function setupErosForm() {
     
     // Check if event listener is already attached (prevents duplicate handlers)
     if (!testErosButton || testErosButton.dataset.listenerAttached === 'true') {
-         console.log("[eros.js] Test button not found or listener already attached.");
+         seekarrLog.log("[eros.js] Test button not found or listener already attached.");
          return;
     }
-     console.log("[eros.js] Setting up Eros form listeners.");
+     seekarrLog.log("[eros.js] Setting up Eros form listeners.");
      testErosButton.dataset.listenerAttached = 'true'; // Mark as attached
     
     // Add event listener for connection test
     testErosButton.addEventListener('click', function() {
-        console.log("[eros.js] Testing Eros connection...");
+        seekarrLog.log("[eros.js] Testing Eros connection...");
         
         // Basic validation
         if (!apiUrlInput.value || !apiKeyInput.value) {

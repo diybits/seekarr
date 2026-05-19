@@ -25,14 +25,14 @@
         },
 
         init: function() {
-            console.log('[Swaparr Module] Initializing...');
+            seekarrLog.log('[Swaparr Module] Initializing...');
             this.setupLogProcessor();
             
             // Add a listener for when the log tab changes to Swaparr
             const swaparrTab = document.querySelector('.log-tab[data-app="swaparr"]');
             if (swaparrTab) {
                 swaparrTab.addEventListener('click', () => {
-                    console.log('[Swaparr Module] Swaparr tab clicked');
+                    seekarrLog.log('[Swaparr Module] Swaparr tab clicked');
                     // Small delay to ensure everything is ready
                     setTimeout(() => {
                         this.ensureContentRendered();
@@ -44,7 +44,7 @@
         setupLogProcessor: function() {
             // Setup a listener for custom event from seekarrUI's log processing
             document.addEventListener('swaparrLogReceived', (event) => {
-                console.log('[Swaparr Module] Received log event:', event.detail.logData.substring(0, 100) + '...');
+                seekarrLog.log('[Swaparr Module] Received log event:', event.detail.logData.substring(0, 100) + '...');
                 this.processLogLine(event.detail.logData);
             });
         },
@@ -325,7 +325,7 @@
         
         // Make sure we display something in the Swaparr tab
         ensureContentRendered: function() {
-            console.log('[Swaparr Module] Ensuring content is rendered, has content:', this.hasRenderedAnyContent);
+            seekarrLog.log('[Swaparr Module] Ensuring content is rendered, has content:', this.hasRenderedAnyContent);
             
             // Reset rendered flag
             this.hasRenderedAnyContent = false;
@@ -363,7 +363,7 @@
                 tab.addEventListener('click', (e) => {
                     // If switching to swaparr tab, make sure we render the view
                     if (e.target.getAttribute('data-app') === 'swaparr') {
-                        console.log('[Swaparr Module] Swaparr tab clicked via delegation');
+                        seekarrLog.log('[Swaparr Module] Swaparr tab clicked via delegation');
                         // Small delay to allow logs to load
                         setTimeout(() => {
                             swaparrModule.ensureContentRendered();

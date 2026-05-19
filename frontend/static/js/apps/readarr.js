@@ -10,7 +10,7 @@
         elements: {},
 
         init: function() {
-            console.log('[Readarr Module] Initializing...');
+            seekarrLog.log('[Readarr Module] Initializing...');
             this.cacheElements();
             this.setupEventListeners();
         },
@@ -56,7 +56,7 @@
                 if (app && typeof app.updateDurationDisplay === 'function') {
                      app.updateDurationDisplay(seconds, this.elements.sleepDurationHoursSpan);
                 } else {
-                    console.warn("app.updateDurationDisplay not found, sleep duration text might not update.");
+                    seekarrLog.warn("app.updateDurationDisplay not found, sleep duration text might not update.");
                 }
             }
         }

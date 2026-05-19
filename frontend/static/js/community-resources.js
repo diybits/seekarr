@@ -22,7 +22,7 @@ function initCommunityResourcesVisibility() {
     // First check if the community hub card exists
     const communityHubCard = document.querySelector('.community-hub-card');
     if (!communityHubCard) {
-        console.log('[Community] Community hub card not found in DOM');
+        seekarrLog.log('[Community] Community hub card not found in DOM');
         return;
     }
     
@@ -35,16 +35,16 @@ function initCommunityResourcesVisibility() {
             return response.json();
         })
         .then(data => {
-            console.log('[Community] Loaded general settings:', data);
+            seekarrLog.log('[Community] Loaded general settings:', data);
             
             // Check if the setting exists and is false
             if (data.display_community_resources === false) {
                 // Hide the community hub card
-                console.log('[Community] Hiding community resources section');
+                seekarrLog.log('[Community] Hiding community resources section');
                 communityHubCard.style.display = 'none';
             } else {
                 // Show the community hub card (default)
-                console.log('[Community] Showing community resources section');
+                seekarrLog.log('[Community] Showing community resources section');
                 communityHubCard.style.display = '';
             }
         })

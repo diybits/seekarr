@@ -988,9 +988,9 @@ const SettingsForms = {
                 }
             });
         } else if (!resetStrikesBtn) {
-            console.warn('Could not find #reset_swaparr_strikes to attach listener.');
+            seekarrLog.warn('Could not find #reset_swaparr_strikes to attach listener.');
         } else {
-             console.warn('seekarrUI or seekarrUI.resetStatefulManagement is not available.');
+             seekarrLog.warn('seekarrUI or seekarrUI.resetStatefulManagement is not available.');
         }
 
         // Add confirmation dialog for local access bypass toggle
@@ -1106,7 +1106,7 @@ const SettingsForms = {
                 const enabled = enabledInput ? enabledInput.checked : true; // Default to enabled if checkbox not found
                 
                 if (!name || !url || !key) {
-                    console.warn(`Instance ${index} is missing required fields`);
+                    seekarrLog.warn(`Instance ${index} is missing required fields`);
                 }
                 
                 const instanceObj = {
@@ -1121,7 +1121,7 @@ const SettingsForms = {
             
             // Ensure we always have at least one instance
             if (instances.length === 0) {
-                console.warn('No instances found, adding a default empty instance');
+                seekarrLog.warn('No instances found, adding a default empty instance');
                 instances.push({
                     name: 'Default',
                     api_url: '',
@@ -1201,7 +1201,7 @@ const SettingsForms = {
             }
         }
         
-        console.log('Collected settings for', appType, settings);
+        seekarrLog.log('Collected settings for', appType, settings);
         return settings;
     },
     
@@ -1342,7 +1342,7 @@ const SettingsForms = {
 
         // Skip loading if seekarrUI has already loaded this data to prevent flashing
         if (window.seekarrUI && window.seekarrUI._cachedStatefulData) {
-            console.log('[SettingsForms] Using existing seekarrUI cached stateful data');
+            seekarrLog.log('[SettingsForms] Using existing seekarrUI cached stateful data');
             return; // Exit early - main.js already has this covered
         }
         
@@ -1363,7 +1363,7 @@ const SettingsForms = {
                 
                 // Use cache if it's less than 5 minutes old
                 if (cacheAge < 300000) {
-                    console.log('[SettingsForms] Using cached stateful data');
+                    seekarrLog.log('[SettingsForms] Using cached stateful data');
                     
                     if (createdDateEl && parsedData.created_at_ts) {
                         const createdDate = new Date(parsedData.created_at_ts * 1000);
@@ -1380,7 +1380,7 @@ const SettingsForms = {
                     return;
                 }
             } catch (e) {
-                console.warn('[SettingsForms] Error parsing cached stateful data:', e);
+                seekarrLog.warn('[SettingsForms] Error parsing cached stateful data:', e);
             }
         }
 
@@ -1482,7 +1482,7 @@ const SettingsForms = {
                         }
                     }
                 })
-                .catch(error => console.warn('Silent stateful info fetch failed:', error));
+                .catch(error => seekarrLog.warn('Silent stateful info fetch failed:', error));
         }
     },
     
@@ -1517,7 +1517,7 @@ const SettingsForms = {
     
     // Setup instance management - test connection buttons and add/remove instance buttons
     setupInstanceManagement: function(container, appType, initialCount) {
-        console.log(`Setting up instance management for ${appType} with ${initialCount} instances`);
+        seekarrLog.log(`Setting up instance management for ${appType} with ${initialCount} instances`);
         
         // Make sure container has the app type set
         const form = container.closest('.settings-form');
@@ -1532,7 +1532,7 @@ const SettingsForms = {
                 // Prevent any default form submission
                 e.preventDefault();
                 
-                console.log('Test connection button clicked');
+                seekarrLog.log('Test connection button clicked');
                 
                 // Get the instance panel containing this button - look for both old and new class names
                 const instancePanel = button.closest('.instance-item') || button.closest('.instance-panel');
@@ -1546,7 +1546,7 @@ const SettingsForms = {
                 const urlInput = instancePanel.querySelector('input[name="api_url"]');
                 const keyInput = instancePanel.querySelector('input[name="api_key"]');
                 
-                console.log('Found inputs:', urlInput, keyInput);
+                seekarrLog.log('Found inputs:', urlInput, keyInput);
                 
                 if (!urlInput || !keyInput) {
                     console.error('Could not find URL or API key inputs in panel', instancePanel);
@@ -1556,8 +1556,6 @@ const SettingsForms = {
                 
                 const url = urlInput.value.trim();
                 const apiKey = keyInput.value.trim();
-                
-                console.log(`Testing connection for ${appType} - URL: ${url}, API Key: ${apiKey.substring(0, 5)}...`);
                 
                 if (!url) {
                     alert('Please enter a valid URL');
@@ -1594,7 +1592,7 @@ const SettingsForms = {
                     return response.json();
                 })
                 .then(data => {
-                    console.log(`Test connection response:`, data);
+                    seekarrLog.log(`Test connection response:`, data);
                     
                     // Reset button
                     button.disabled = false;
@@ -1839,8 +1837,6 @@ const SettingsForms = {
         statusElement.textContent = 'Testing connection...';
         statusElement.style.color = '#888';
         
-        console.log(`Testing connection for ${app} - URL: ${url}, API Key: ${apiKey.substring(0, 5)}...`);
-        
         if (!url) {
             statusElement.textContent = 'Please enter a valid URL';
             statusElement.style.color = 'red';
@@ -1879,7 +1875,7 @@ const SettingsForms = {
             return response.json();
         })
         .then(data => {
-            console.log(`Test connection response:`, data);
+            seekarrLog.log(`Test connection response:`, data);
             
             // Reset button
             buttonElement.disabled = false;

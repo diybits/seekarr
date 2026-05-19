@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const resetButton = document.getElementById('reset-stats');
     
     if (resetButton) {
-        console.log('Stats reset button found, attaching handler');
+        seekarrLog.log('Stats reset button found, attaching handler');
         
         resetButton.addEventListener('click', function(e) {
             e.preventDefault();
@@ -22,9 +22,9 @@ document.addEventListener('DOMContentLoaded', function() {
             // Then make the API call to persist the changes
             resetStatsAPI()
                 .then(response => {
-                    console.log('Stats reset response:', response);
+                    seekarrLog.log('Stats reset response:', response);
                     if (!response.success) {
-                        console.warn('Server reported an error with stats reset:', response.error);
+                        seekarrLog.warn('Server reported an error with stats reset:', response.error);
                     }
                 })
                 .catch(error => {

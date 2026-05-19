@@ -4,4 +4,4 @@
  */
 
 // No active functionality needed for this information page
-console.log('Cleanuperr information module loaded');
+seekarrLog.log('Cleanuperr information module loaded');
