@@ -44,9 +44,9 @@ def arr_request(api_url: str, api_key: str, api_timeout: int, endpoint: str, met
             whisparr_logger.error(f"Invalid URL format: {api_url} - URL must start with http:// or https://")
             return None
             
-        # Construct the full URL properly
-        full_url = f"{api_url.rstrip('/')}/api/v3/{endpoint.lstrip('/')}"
-        
+        # Construct the full URL properly — Whisparr v2 primary path is /api/ (not /api/v3/)
+        full_url = f"{api_url.rstrip('/')}/api/{endpoint.lstrip('/')}"
+
         whisparr_logger.debug(f"Making {method} request to: {full_url}")
         
         # Set up headers with User-Agent to identify Seekarr
@@ -75,11 +75,10 @@ def arr_request(api_url: str, api_key: str, api_timeout: int, endpoint: str, met
                 whisparr_logger.error(f"Unsupported HTTP method: {method}")
                 return None
             
-            # If we get a 404, try with v3 path instead
+            # If we get a 404, try the v3 path as a fallback
             if response.status_code == 404:
-                api_base = "api/v3"
-                v3_url = f"{api_url.rstrip('/')}/{api_base}/{endpoint.lstrip('/')}"
-                whisparr_logger.debug(f"Standard path returned 404, trying with V3 path: {v3_url}")
+                v3_url = f"{api_url.rstrip('/')}/api/v3/{endpoint.lstrip('/')}"
+                whisparr_logger.debug(f"Standard path returned 404, trying v3 fallback: {v3_url}")
                 
                 if method == "GET":
                     response = session.get(v3_url, headers=headers, timeout=api_timeout, verify=verify_ssl)

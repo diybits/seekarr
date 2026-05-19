@@ -52,6 +52,30 @@ def test_arr_request_sends_user_agent(monkeypatch):
     assert "Seekarr" in captured.get("headers", {}).get("User-Agent", "")
 
 
+# ── arr_request — URL path correctness ───────────────────────────────────────
+
+def test_arr_request_uses_v2_primary_path(monkeypatch):
+    monkeypatch.setattr("src.primary.apps.whisparr.api.get_ssl_verify_setting", lambda: True)
+    captured = {}
+    with patch.object(whisparr_api.session, "get", side_effect=_capture_session_get({"version": "2.0"}, captured)):
+        whisparr_api.arr_request("http://whisparr:6969", "key", 30, "system/status")
+    assert captured["url"] == "http://whisparr:6969/api/system/status"
+
+
+def test_arr_request_fallback_uses_v3_path(monkeypatch):
+    monkeypatch.setattr("src.primary.apps.whisparr.api.get_ssl_verify_setting", lambda: True)
+    calls = []
+    def mock_get(url, **kwargs):
+        calls.append(url)
+        if len(calls) == 1:
+            return _mock_response({"version": "2.0"}, 404)
+        return _mock_response({"version": "2.0"}, 200)
+    with patch.object(whisparr_api.session, "get", side_effect=mock_get):
+        whisparr_api.arr_request("http://whisparr:6969", "key", 30, "system/status")
+    assert calls[0] == "http://whisparr:6969/api/system/status"
+    assert calls[1] == "http://whisparr:6969/api/v3/system/status"
+
+
 # ── arr_request — 404 fallback SSL ────────────────────────────────────────────
 
 def test_arr_request_fallback_passes_verify_false_when_ssl_disabled(monkeypatch):
