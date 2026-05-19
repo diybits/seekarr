@@ -1060,6 +1060,7 @@ const SettingsForms = {
             settings.minimum_download_queue_size = getInputValue('#minimum_download_queue_size', -1);
             settings.log_refresh_interval_seconds = getInputValue('#log_refresh_interval_seconds', 30);
             settings.ssl_verify = getInputValue('#ssl_verify', true);
+            settings.ssl_ca_bundle = getInputValue('#ssl_ca_bundle', '');
             settings.stateful_management_hours = getInputValue('#stateful_management_hours', 168);
             
             // Handle the auth_mode dropdown
@@ -1291,6 +1292,11 @@ const SettingsForms = {
                         <span class="toggle-slider" style="position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background-color:#3d4353; border-radius:20px; transition:0.4s;"></span>
                     </label>
                     <p class="setting-help" style="margin-left: -3ch !important;">Disable SSL certificate verification when using self-signed certificates in private networks.</p>
+                </div>
+                <div class="setting-item">
+                    <label for="ssl_ca_bundle"><a href="https://diybits.github.io/seekarr/getting-started/configuration.html" class="info-icon" title="Learn more about custom CA bundles" target="_blank" rel="noopener"><i class="fas fa-info-circle"></i></a>&nbsp;&nbsp;&nbsp;Custom CA Bundle Path:</label>
+                    <input type="text" id="ssl_ca_bundle" value="${settings.ssl_ca_bundle || ''}" placeholder="/config/certs/ca.crt" style="width:320px;">
+                    <p class="setting-help" style="margin-left: -3ch !important;">Path to a CA certificate file (PEM) or directory to verify self-signed <em>*Arr</em> certificates. When set, takes precedence over the SSL Verify toggle. Leave blank to use the system CA store.</p>
                 </div>
             </div>
             

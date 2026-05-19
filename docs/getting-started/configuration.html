@@ -291,6 +291,59 @@ proxy_set_header Host $host;</code></pre>
             </section>
 
             <section>
+                <h2>Self-Signed Certificates</h2>
+                <p>If your <em>*Arr</em> applications use self-signed TLS certificates, Seekarr will refuse the connection by default because the certificate cannot be verified against a trusted CA. There are three ways to handle this:</p>
+
+                <table>
+                    <tr>
+                        <th>Option</th>
+                        <th>Where to configure</th>
+                        <th>Trade-off</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Custom CA bundle</strong> <em>(recommended)</em></td>
+                        <td>Settings → General → Custom CA Bundle Path</td>
+                        <td>Full certificate validation against your own CA. Most secure.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Disable SSL verify</strong></td>
+                        <td>Settings → General → Enable SSL Verify (toggle off)</td>
+                        <td>Skips all certificate checks. Simple, but leaves connections open to MitM attacks on untrusted networks.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Mount cert into container trust store</strong></td>
+                        <td>Docker volume / bind mount</td>
+                        <td>System-level trust — works for all Python SSL calls, not just Seekarr's own HTTP client.</td>
+                    </tr>
+                </table>
+
+                <h3>Option 1 — Custom CA bundle path</h3>
+                <p>Export your CA certificate as a PEM file, place it somewhere inside the <code>/config</code> volume, then enter the path in <strong>Settings → General → Custom CA Bundle Path</strong>.</p>
+                <p>Example — if your CA cert is at <code>/your-host-path/seekarr/certs/ca.crt</code> on the host:</p>
+                <pre><code># docker-compose.yml
+services:
+  seekarr:
+    volumes:
+      - /your-host-path/seekarr:/config</code></pre>
+                <p>Inside the container the cert is at <code>/config/certs/ca.crt</code>. Set that as the CA Bundle Path. Seekarr will use it for all <em>*Arr</em> API calls without touching the system trust store.</p>
+                <p>The path can point to a single PEM file or a directory of PEM files (OpenSSL <code>c_rehash</code> format).</p>
+
+                <h3>Option 2 — Disable SSL verification</h3>
+                <p>In <strong>Settings → General</strong>, turn off the <strong>Enable SSL Verify</strong> toggle. This disables certificate checking for all outbound <em>*Arr</em> API calls. Only use this on fully trusted private networks.</p>
+                <p><strong>Note:</strong> if a Custom CA Bundle Path is set, it takes precedence over this toggle — the toggle only applies when the path field is blank.</p>
+
+                <h3>Option 3 — Mount cert into the container trust store</h3>
+                <p>This makes the CA trusted system-wide inside the container. Add a bind mount that drops your CA cert into the system CA directory:</p>
+                <pre><code># docker-compose.yml
+services:
+  seekarr:
+    volumes:
+      - /your-host-path/seekarr:/config
+      - /path/to/your/ca.crt:/usr/local/share/ca-certificates/my-ca.crt:ro</code></pre>
+                <p>Then rebuild or restart the container with the <code>update-ca-certificates</code> command baked in, or use an entrypoint script that runs it on start. This approach is more involved but makes the cert available to any tool inside the container, not just Seekarr.</p>
+            </section>
+
+            <section>
                 <h2>Environment Variables</h2>
                 <p>These variables are set at container start time and cannot be changed from the web UI.</p>
 
