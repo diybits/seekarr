@@ -1,0 +1,80 @@
+name: Bug Report
+description: Something isn't working correctly
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before opening a bug report, please check the [existing issues](https://github.com/diybits/seekarr/issues) to avoid duplicates.
+
+  - type: input
+    id: version
+    attributes:
+      label: Seekarr version
+      description: Found in the bottom-left corner of the UI or via `docker inspect seekarr | grep Image`.
+      placeholder: "e.g. 7.1.0"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: app
+    attributes:
+      label: Affected app
+      description: Which *Arr app is involved? Select all that apply.
+      multiple: true
+      options:
+        - Sonarr
+        - Radarr
+        - Lidarr
+        - Readarr
+        - Whisparr v2
+        - Whisparr v3 (Eros)
+        - Swaparr
+        - Not app-specific
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: A clear description of the bug.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect to happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Go to ...
+        2. Set ... to ...
+        3. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Paste any relevant lines from the Seekarr log (Settings → Logs in the UI, or `docker logs seekarr`). Sensitive values like API keys will be redacted automatically by GitHub.
+      render: text
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: How are you running Seekarr?
+      placeholder: |
+        - Install method: Docker / Docker Compose / Unraid
+        - Architecture: amd64 / arm64
+        - Host OS: Ubuntu 24.04 / Unraid 6.12 / etc.
+    validations:
+      required: true
