@@ -255,278 +255,116 @@ def command_status(api_url: str, api_key: str, api_timeout: int, command_id: Uni
         return response
     return {}
 
-def get_missing_episodes(api_url: str, api_key: str, api_timeout: int, monitored_only: bool, series_id: Optional[int] = None) -> List[Dict[str, Any]]:
-    """Get missing episodes from Sonarr, handling pagination."""
-    endpoint = "wanted/missing"
-    page = 1
-    page_size = 1000 # Adjust page size if needed, but 1000 is usually good
-    all_missing_episodes = []
-    retries_per_page = 2
-    retry_delay = 3
-
-    # Build standard headers for all requests in this function
-    _headers = {
+def _fetch_paginated(
+    api_url: str, api_key: str, api_timeout: int,
+    endpoint: str, extra_params: Dict[str, Any],
+    log_label: str, page_size: int = 1000
+) -> List[Dict[str, Any]]:
+    """Fetch all pages from a paginated Sonarr wanted/* endpoint with per-page retry."""
+    headers = {
         "X-Api-Key": api_key,
         "Content-Type": "application/json",
         "User-Agent": "Seekarr/7.0.0 (https://github.com/diybits/seekarr)"
     }
+    url = f"{api_url.rstrip('/')}/api/v3/{endpoint.lstrip('/')}"
+    retries_per_page = 2
+    retry_delay = 3
+    all_records: List[Dict] = []
+    page = 1
 
     while True:
         retry_count = 0
         success = False
+        records: List[Dict] = []
 
         while retry_count <= retries_per_page and not success:
-            # Parameters for the request
-            params = {
-                "page": page,
-                "pageSize": page_size,
-                "includeSeries": "true"
-            }
-
-            # Add series ID filter if provided
-            if series_id is not None:
-                params["seriesId"] = series_id
-
-            # Ensure proper URL construction with scheme
-            base_url = api_url.rstrip('/')
-            url = f"{base_url}/api/v3/{endpoint.lstrip('/')}"
-            sonarr_logger.debug(f"Requesting missing episodes page {page} (attempt {retry_count+1}/{retries_per_page+1})")
+            params = {"page": page, "pageSize": page_size, **extra_params}
+            sonarr_logger.debug(f"Requesting {log_label} page {page} (attempt {retry_count + 1}/{retries_per_page + 1})")
 
             try:
-                response = session.get(url, headers=_headers, params=params, timeout=api_timeout, verify=get_ssl_verify_setting())
-                response.raise_for_status() # Check for HTTP errors (4xx or 5xx)
+                response = session.get(url, headers=headers, params=params, timeout=api_timeout, verify=get_ssl_verify_setting())
+                response.raise_for_status()
 
                 if not response.content:
-                    sonarr_logger.warning(f"Empty response for missing episodes page {page} (attempt {retry_count+1})")
+                    sonarr_logger.warning(f"Empty response for {log_label} page {page} (attempt {retry_count + 1})")
                     if retry_count < retries_per_page:
                         retry_count += 1
                         time.sleep(retry_delay)
                         continue
-                    else:
-                        sonarr_logger.error(f"Giving up on empty response after {retries_per_page+1} attempts")
-                        break  # Exit the retry loop, continuing to next page or ending
+                    sonarr_logger.error(f"Giving up on empty response after {retries_per_page + 1} attempts")
+                    break
 
-                try:
-                    data = response.json()
-                    records = data.get('records', [])
-                    total_records_on_page = len(records)
-                    sonarr_logger.debug(f"Parsed {total_records_on_page} missing episode records from page {page}")
+                data = response.json()
+                records = data.get('records', [])
 
-                    if not records: # No more records found
-                        sonarr_logger.debug(f"No more records found on page {page}. Stopping pagination.")
-                        success = True  # Mark as successful even though no records (might be legitimate)
-                        break  # Exit retry loop, then also exit pagination loop
+                if page == 1:
+                    sonarr_logger.debug(f"Sonarr reports {data.get('totalRecords', 0)} total {log_label} records")
 
-                    all_missing_episodes.extend(records)
-
-                    # Check if this was the last page
-                    if total_records_on_page < page_size:
-                        sonarr_logger.debug(f"Received {total_records_on_page} records (less than page size {page_size}). Last page.")
-                        success = True
-                        break  # Exit retry loop, then also exit pagination loop
-
-                    # We got records and need to continue - mark success for this page
+                if not records:
+                    sonarr_logger.debug(f"No more {log_label} records on page {page}, stopping pagination")
                     success = True
-                    break  # Exit retry loop, continue to next page
+                    break
 
-                except json.JSONDecodeError as e:
-                    sonarr_logger.error(f"Failed to decode JSON response for missing episodes page {page} (attempt {retry_count+1}): {e}")
-                    if retry_count < retries_per_page:
-                        retry_count += 1
-                        time.sleep(retry_delay)
-                        continue
-                    else:
-                        sonarr_logger.error(f"Giving up after {retries_per_page+1} failed JSON decode attempts")
-                        break  # Exit retry loop, moving to next page or ending
+                all_records.extend(records)
+                success = True
+                if len(records) < page_size:
+                    sonarr_logger.debug(f"Received {len(records)} records (< page size {page_size}), last page")
+                    break
 
+            except json.JSONDecodeError as e:
+                sonarr_logger.error(f"JSON decode error for {log_label} page {page} (attempt {retry_count + 1}): {e}")
+                if retry_count < retries_per_page:
+                    retry_count += 1
+                    time.sleep(retry_delay)
+                    continue
+                break
+            except requests.exceptions.Timeout as e:
+                sonarr_logger.error(f"Timeout for {log_label} page {page} (attempt {retry_count + 1}): {e}")
+                if retry_count < retries_per_page:
+                    retry_count += 1
+                    time.sleep(retry_delay * 2)
+                    continue
+                break
             except requests.exceptions.RequestException as e:
-                sonarr_logger.error(f"Request error for missing episodes page {page} (attempt {retry_count+1}): {e}")
+                sonarr_logger.error(f"Request error for {log_label} page {page} (attempt {retry_count + 1}): {e}")
                 if retry_count < retries_per_page:
                     retry_count += 1
                     time.sleep(retry_delay)
                     continue
-                else:
-                    sonarr_logger.error(f"Giving up on request after {retries_per_page+1} failed attempts")
-                    break  # Exit retry loop
+                break
             except Exception as e:
-                sonarr_logger.error(f"Unexpected error for missing episodes page {page} (attempt {retry_count+1}): {e}")
+                sonarr_logger.error(f"Unexpected error for {log_label} page {page} (attempt {retry_count + 1}): {e}")
                 if retry_count < retries_per_page:
                     retry_count += 1
                     time.sleep(retry_delay)
                     continue
-                else:
-                    sonarr_logger.error(f"Giving up after unexpected error and {retries_per_page+1} attempts")
-                    break  # Exit retry loop
+                break
 
-        # If we didn't succeed after all retries or there are no more records, stop pagination
         if not success or not records:
             break
-
-        # Prepare for the next page
         page += 1
 
-    sonarr_logger.info(f"Total missing episodes fetched across all pages: {len(all_missing_episodes)}")
+    sonarr_logger.info(f"Fetched {len(all_records)} {log_label} records total")
+    return all_records
 
-    # Apply monitored filter after fetching all pages
+
+def get_missing_episodes(api_url: str, api_key: str, api_timeout: int, monitored_only: bool, series_id: Optional[int] = None) -> List[Dict[str, Any]]:
+    """Get missing episodes from Sonarr, handling pagination."""
+    extra: Dict[str, Any] = {"includeSeries": "true"}
+    if series_id is not None:
+        extra["seriesId"] = series_id
+    episodes = _fetch_paginated(api_url, api_key, api_timeout, "wanted/missing", extra, "missing episodes")
     if monitored_only:
-        original_count = len(all_missing_episodes)
-        filtered_missing = [
-            ep for ep in all_missing_episodes
-            if ep.get('series', {}).get('monitored', False) and ep.get('monitored', False)
-        ]
-        sonarr_logger.debug(f"Filtered for monitored_only=True: {len(filtered_missing)} monitored episodes (out of {original_count} total)")
-        return filtered_missing
-    else:
-        sonarr_logger.debug(f"Returning {len(all_missing_episodes)} episodes (monitored_only=False)")
-        return all_missing_episodes
+        return [ep for ep in episodes if ep.get('series', {}).get('monitored', False) and ep.get('monitored', False)]
+    return episodes
 
 def get_cutoff_unmet_episodes(api_url: str, api_key: str, api_timeout: int, monitored_only: bool) -> List[Dict[str, Any]]:
     """Get cutoff unmet episodes from Sonarr, handling pagination."""
-    endpoint = "wanted/cutoff"
-    page = 1
-    page_size = 1000 # Sonarr's max page size for this endpoint
-    all_cutoff_unmet = []
-    retries_per_page = 2
-    retry_delay = 3
-
-    # Build standard headers for all requests in this function
-    _headers = {
-        "X-Api-Key": api_key,
-        "Content-Type": "application/json",
-        "User-Agent": "Seekarr/7.0.0 (https://github.com/diybits/seekarr)"
-    }
-
-    sonarr_logger.debug(f"Starting fetch for cutoff unmet episodes (monitored_only={monitored_only}).")
-
-    while True:
-        retry_count = 0
-        success = False
-        records = []
-
-        while retry_count <= retries_per_page and not success:
-            # Parameters for the request
-            params = {
-                "page": page,
-                "pageSize": page_size,
-                "includeSeries": "true", # Include series info for filtering
-                "sortKey": "airDateUtc",
-                "sortDir": "asc"
-            }
-            url = f"{api_url}/api/v3/{endpoint}"
-            sonarr_logger.debug(f"Requesting cutoff unmet page {page} (attempt {retry_count+1}/{retries_per_page+1})")
-
-            try:
-                response = session.get(url, headers=_headers, params=params, timeout=api_timeout, verify=get_ssl_verify_setting())
-                sonarr_logger.debug(f"Sonarr API response status code for cutoff unmet page {page}: {response.status_code}")
-                response.raise_for_status() # Check for HTTP errors
-
-                if not response.content:
-                    sonarr_logger.warning(f"Empty response for cutoff unmet episodes page {page} (attempt {retry_count+1})")
-                    if retry_count < retries_per_page:
-                        retry_count += 1
-                        time.sleep(retry_delay)
-                        continue
-                    else:
-                        sonarr_logger.error(f"Giving up on empty response after {retries_per_page+1} attempts")
-                        break
-
-                try:
-                    data = response.json()
-                    records = data.get('records', [])
-                    total_records_on_page = len(records)
-                    total_records_reported = data.get('totalRecords', 0)
-
-                    if page == 1:
-                        sonarr_logger.info(f"Sonarr API reports {total_records_reported} total cutoff unmet records.")
-
-                    sonarr_logger.debug(f"Parsed {total_records_on_page} cutoff unmet records from page {page}")
-
-                    if not records: # No more records found
-                        sonarr_logger.debug(f"No more cutoff unmet records found on page {page}. Stopping pagination.")
-                        success = True
-                        break
-
-                    all_cutoff_unmet.extend(records)
-
-                    # Check if this was the last page
-                    if total_records_on_page < page_size:
-                        sonarr_logger.debug(f"Received {total_records_on_page} records (less than page size {page_size}). Last page.")
-                        success = True
-                        break
-
-                    # Success for this page
-                    success = True
-                    break
-
-                except json.JSONDecodeError as e:
-                    sonarr_logger.error(f"Failed to decode JSON for cutoff unmet page {page} (attempt {retry_count+1}): {e}")
-                    if retry_count < retries_per_page:
-                        retry_count += 1
-                        time.sleep(retry_delay)
-                        continue
-                    else:
-                        sonarr_logger.error(f"Giving up after {retries_per_page+1} failed JSON decode attempts")
-                        break
-
-            except requests.exceptions.Timeout as e:
-                sonarr_logger.error(f"Timeout for cutoff unmet page {page} (attempt {retry_count+1}): {e}")
-                if retry_count < retries_per_page:
-                    retry_count += 1
-                    # Use a slightly longer retry delay for timeouts
-                    time.sleep(retry_delay * 2)
-                    continue
-                else:
-                    sonarr_logger.error(f"Giving up after {retries_per_page+1} timeout failures")
-                    break
-
-            except requests.exceptions.RequestException as e:
-                error_details = f"Error: {e}"
-                if hasattr(e, 'response') and e.response is not None:
-                    error_details += f", Status Code: {e.response.status_code}"
-                    if hasattr(e.response, 'text') and e.response.text:
-                        error_details += f", Response: {e.response.text[:500]}"
-
-                sonarr_logger.error(f"Request error for cutoff unmet page {page} (attempt {retry_count+1}): {error_details}")
-                if retry_count < retries_per_page:
-                    retry_count += 1
-                    time.sleep(retry_delay)
-                    continue
-                else:
-                    sonarr_logger.error(f"Giving up on request after {retries_per_page+1} failed attempts")
-                    break
-
-            except Exception as e:
-                sonarr_logger.error(f"Unexpected error for cutoff unmet page {page} (attempt {retry_count+1}): {e}", exc_info=True)
-                if retry_count < retries_per_page:
-                    retry_count += 1
-                    time.sleep(retry_delay)
-                    continue
-                else:
-                    sonarr_logger.error(f"Giving up after unexpected error and {retries_per_page+1} attempts")
-                    break
-
-        # If we didn't succeed after all retries or there are no more records, stop pagination
-        if not success or not records:
-            break
-
-        # Prepare for the next page
-        page += 1
-
-    sonarr_logger.info(f"Total cutoff unmet episodes fetched across all pages: {len(all_cutoff_unmet)}")
-
-    # Apply monitored filter after fetching all pages
+    extra = {"includeSeries": "true", "sortKey": "airDateUtc", "sortDir": "asc"}
+    episodes = _fetch_paginated(api_url, api_key, api_timeout, "wanted/cutoff", extra, "cutoff unmet episodes")
     if monitored_only:
-        original_count = len(all_cutoff_unmet)
-        # Ensure series and episode are monitored
-        filtered_cutoff_unmet = [
-            ep for ep in all_cutoff_unmet
-            if ep.get('series', {}).get('monitored', False) and ep.get('monitored', False)
-        ]
-        sonarr_logger.debug(f"Filtered for monitored_only=True: {len(filtered_cutoff_unmet)} monitored cutoff unmet episodes remain (out of {original_count} total).")
-        return filtered_cutoff_unmet
-    else:
-        sonarr_logger.debug(f"Returning {len(all_cutoff_unmet)} cutoff unmet episodes (monitored_only=False).")
-        return all_cutoff_unmet
+        return [ep for ep in episodes if ep.get('series', {}).get('monitored', False) and ep.get('monitored', False)]
+    return episodes
 
 def get_cutoff_unmet_episodes_random_page(api_url: str, api_key: str, api_timeout: int, monitored_only: bool, count: int) -> List[Dict[str, Any]]:
     """
@@ -744,147 +582,16 @@ def search_season(api_url: str, api_key: str, api_timeout: int, series_id: int, 
     return None
 
 def get_cutoff_unmet_episodes_for_series(api_url: str, api_key: str, api_timeout: int, series_id: int, monitored_only: bool = True) -> List[Dict[str, Any]]:
-    """
-    Get all cutoff unmet episodes for a specific series, handling pagination.
-
-    Args:
-        api_url: The base URL of the Sonarr API
-        api_key: The API key for authentication
-        api_timeout: Timeout for the API request
-        series_id: The series ID to fetch cutoff unmet episodes for
-        monitored_only: Whether to include only monitored episodes
-
-    Returns:
-        A list of all cutoff unmet episodes for the specified series
-    """
-    endpoint = "wanted/cutoff"
-    page = 1
-    page_size = 1000 # Sonarr's max page size for this endpoint
-    all_cutoff_unmet = []
-    retries_per_page = 2
-    retry_delay = 3
-
-    # Build standard headers for all requests in this function
-    _headers = {
-        "X-Api-Key": api_key,
-        "Content-Type": "application/json",
-        "User-Agent": "Seekarr/7.0.0 (https://github.com/diybits/seekarr)"
-    }
-
-    sonarr_logger.debug(f"Fetching cutoff unmet episodes for series ID {series_id} using direct API filter (monitored_only={monitored_only})")
-
-    # Use a more targeted approach with a direct endpoint filter
-    while True:
-        retry_count = 0
-        success = False
-        records = []
-
-        while retry_count <= retries_per_page and not success:
-            # Parameters for the request with series ID as a direct filter
-            params = {
-                "page": page,
-                "pageSize": page_size,
-                "includeSeries": "true", # Include series info for filtering
-                "sortKey": "airDateUtc",
-                "sortDir": "asc",
-                "seriesId": series_id  # Filter by series ID - this limits results to only this series
-            }
-            url = f"{api_url}/api/v3/{endpoint}"
-            sonarr_logger.debug(f"Requesting cutoff unmet page {page} for series {series_id} (attempt {retry_count+1}/{retries_per_page+1})")
-
-            try:
-                response = session.get(url, headers=_headers, params=params, timeout=api_timeout, verify=get_ssl_verify_setting())
-                sonarr_logger.debug(f"Sonarr API response status code for cutoff unmet page {page}: {response.status_code}")
-                response.raise_for_status() # Check for HTTP errors
-
-                if not response.content:
-                    sonarr_logger.warning(f"Empty response for cutoff unmet episodes page {page} (attempt {retry_count+1})")
-                    if retry_count < retries_per_page:
-                        retry_count += 1
-                        time.sleep(retry_delay)
-                        continue
-                    else:
-                        sonarr_logger.error(f"Giving up on empty response after {retries_per_page+1} attempts")
-                        break
-
-                try:
-                    data = response.json()
-                    records = data.get('records', [])
-                    total_records_on_page = len(records)
-                    total_records_reported = data.get('totalRecords', 0)
-
-                    if page == 1:
-                        # Don't log the total_records_reported as it's the global count, not series-specific
-                        sonarr_logger.info(f"Fetching cutoff unmet records for series {series_id}...")
-
-                    sonarr_logger.debug(f"Parsed {total_records_on_page} cutoff unmet records from page {page}")
-
-                    if not records: # No more records found
-                        sonarr_logger.debug(f"No more cutoff unmet records found on page {page}. Stopping pagination.")
-                        success = True
-                        break
-
-                    all_cutoff_unmet.extend(records)
-
-                    # Check if this was the last page
-                    if total_records_on_page < page_size:
-                        sonarr_logger.debug(f"Received {total_records_on_page} records (less than page size {page_size}). Last page.")
-                        success = True
-                        break
-
-                    # Success for this page
-                    success = True
-                    break
-
-                except json.JSONDecodeError as e:
-                    sonarr_logger.error(f"Failed to decode JSON for cutoff unmet page {page} (attempt {retry_count+1}): {e}")
-                    if retry_count < retries_per_page:
-                        retry_count += 1
-                        time.sleep(retry_delay)
-                        continue
-                    else:
-                        sonarr_logger.error(f"Giving up on JSON decode error after {retries_per_page+1} attempts")
-                        break
-
-            except requests.exceptions.RequestException as e:
-                sonarr_logger.error(f"Request error for cutoff unmet page {page} (attempt {retry_count+1}): {e}")
-                if retry_count < retries_per_page:
-                    retry_count += 1
-                    time.sleep(retry_delay)
-                    continue
-                else:
-                    sonarr_logger.error(f"Giving up after unexpected error and {retries_per_page+1} attempts")
-                    break  # Exit retry loop
-
-        # If we didn't succeed after all retries or there are no more records, stop pagination
-        if not success or not records:
-            break
-
-        # Prepare for the next page
-        page += 1
-
-    # Double-check that all episodes belong to the requested series
-    # (sometimes the API can return episodes from other series)
-    verified_episodes = []
-    for episode in all_cutoff_unmet:
-        if episode.get('seriesId') == series_id:
-            verified_episodes.append(episode)
-        else:
-            sonarr_logger.warning(f"Filtered out episode that doesn't belong to series {series_id}")
-
-    sonarr_logger.info(f"Found {len(verified_episodes)} cutoff unmet episodes for series {series_id}")
-
-    # Apply monitored filter after verifying series
+    """Get all cutoff unmet episodes for a specific series, handling pagination."""
+    extra = {"includeSeries": "true", "sortKey": "airDateUtc", "sortDir": "asc", "seriesId": series_id}
+    episodes = _fetch_paginated(api_url, api_key, api_timeout, "wanted/cutoff", extra, f"cutoff unmet for series {series_id}")
+    verified = [ep for ep in episodes if ep.get('seriesId') == series_id]
+    if len(verified) < len(episodes):
+        sonarr_logger.warning(f"Filtered out {len(episodes) - len(verified)} episodes not belonging to series {series_id}")
+    sonarr_logger.info(f"Found {len(verified)} cutoff unmet episodes for series {series_id}")
     if monitored_only:
-        original_count = len(verified_episodes)
-        filtered_episodes = [
-            ep for ep in verified_episodes
-            if ep.get('series', {}).get('monitored', False) and ep.get('monitored', False)
-        ]
-        sonarr_logger.debug(f"Filtered for monitored_only=True: {len(filtered_episodes)} monitored episodes (out of {original_count} total)")
-        return filtered_episodes
-    else:
-        return verified_episodes
+        return [ep for ep in verified if ep.get('series', {}).get('monitored', False) and ep.get('monitored', False)]
+    return verified
 
 def get_series_with_missing_episodes(api_url: str, api_key: str, api_timeout: int, monitored_only: bool = True, limit: int = 50, random_mode: bool = True) -> List[Dict[str, Any]]:
     """
