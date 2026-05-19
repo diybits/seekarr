@@ -159,12 +159,12 @@ def get_queue_items(app_name, api_url, api_key, api_timeout=120):
     page_size = 100  # Request a large page size to reduce API calls
     
     while True:
-        # Add pagination parameters
-        queue_url = f"{api_url.rstrip('/')}/api/{api_version}/queue?page={page}&pageSize={page_size}"
+        queue_url = f"{api_url.rstrip('/')}/api/{api_version}/queue"
         headers = {'X-Api-Key': api_key}
-        
+        params = {"page": page, "pageSize": page_size}
+
         try:
-            response = requests.get(queue_url, headers=headers, timeout=api_timeout, verify=get_ssl_verify_setting())
+            response = requests.get(queue_url, headers=headers, params=params, timeout=api_timeout, verify=get_ssl_verify_setting())
             response.raise_for_status()
             queue_data = response.json()
             
@@ -263,11 +263,12 @@ def delete_download(app_name, api_url, api_key, download_id, remove_from_client=
     }
     
     api_version = api_version_map.get(app_name, "v3")
-    delete_url = f"{api_url.rstrip('/')}/api/{api_version}/queue/{download_id}?removeFromClient={str(remove_from_client).lower()}&blocklist=true"
+    delete_url = f"{api_url.rstrip('/')}/api/{api_version}/queue/{download_id}"
     headers = {'X-Api-Key': api_key}
-    
+    params = {"removeFromClient": str(remove_from_client).lower(), "blocklist": "true"}
+
     try:
-        response = requests.delete(delete_url, headers=headers, timeout=api_timeout, verify=get_ssl_verify_setting())
+        response = requests.delete(delete_url, headers=headers, params=params, timeout=api_timeout, verify=get_ssl_verify_setting())
         response.raise_for_status()
         swaparr_logger.info(f"Successfully removed download {download_id} from {app_name}")
         return True
