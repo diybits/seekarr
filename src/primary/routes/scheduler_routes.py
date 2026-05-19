@@ -53,7 +53,7 @@ def load_schedules():
                     schedules.update(loaded_data)
             scheduler_logger.info(f"Loaded schedules from {SCHEDULE_FILE}")
         else:
-            scheduler_logger.info(f"No schedule file found at {SCHEDULE_FILE}, returning empty schedules")
+            scheduler_logger.debug(f"No schedule file found at {SCHEDULE_FILE}, returning empty schedules")
         
         # Add CORS headers
         response = Response(json.dumps(schedules))
