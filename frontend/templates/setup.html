@@ -496,6 +496,25 @@
             
             <div id="twoFactorSetup" class="setup-section">
                 <h2>Setup Two-Factor Authentication</h2>
+                <div id="recoveryCodesPanel" style="display: none;">
+                    <div class="success-message">
+                        <i class="fas fa-shield-alt"></i> Two-factor authentication enabled!
+                    </div>
+                    <p style="margin-bottom: 15px; color: rgba(255,255,255,0.85); font-size: 14px; line-height: 1.5;">
+                        Save these recovery codes somewhere safe. Each code can only be used <strong>once</strong> to sign in if you ever lose your authenticator.
+                    </p>
+                    <div id="recoveryCodesList" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px;"></div>
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <button type="button" id="copyAllCodesButton" class="copy-button">
+                            <i class="fas fa-copy"></i> Copy All
+                        </button>
+                    </div>
+                    <div class="form-actions" style="justify-content: center;">
+                        <button type="button" id="savedCodesButton" class="next-button">
+                            <i class="fas fa-check"></i> I've Saved My Codes
+                        </button>
+                    </div>
+                </div>
                 <div class="qr-container">
                     <p>Scan this QR code with your auth app:</p>
                     <div class="qr-code" id="qrCode">
@@ -842,7 +861,19 @@
                 .then(data => {
                     if (data.success) {
                         twoFactorEnabled = true;
-                        showStep(3); // Go to Auth Mode step
+                        // Show recovery codes before advancing
+                        const qrContainer = document.querySelector('#twoFactorSetup .qr-container');
+                        const recoveryPanel = document.getElementById('recoveryCodesPanel');
+                        const codesList = document.getElementById('recoveryCodesList');
+                        codesList.innerHTML = '';
+                        (data.recovery_codes || []).forEach(code => {
+                            const div = document.createElement('div');
+                            div.style.cssText = 'font-family: monospace; padding: 8px 12px; background: rgba(28,36,54,0.8); border-radius: 6px; border: 1px solid rgba(90,109,137,0.3); color: #fff; text-align: center; font-size: 15px;';
+                            div.textContent = code;
+                            codesList.appendChild(div);
+                        });
+                        if (qrContainer) qrContainer.style.display = 'none';
+                        if (recoveryPanel) recoveryPanel.style.display = 'block';
                     } else {
                         showError(data.message || 'Invalid verification code');
                     }
@@ -853,6 +884,37 @@
                 });
             });
             
+            // Copy all recovery codes to clipboard (with HTTP fallback)
+            document.getElementById('copyAllCodesButton').addEventListener('click', function() {
+                const codes = Array.from(document.getElementById('recoveryCodesList').children)
+                    .map(el => el.textContent)
+                    .join('\n');
+                const btn = this;
+                function doFallback() {
+                    const ta = document.createElement('textarea');
+                    ta.value = codes;
+                    ta.style.cssText = 'position:fixed;opacity:0;pointer-events:none;';
+                    document.body.appendChild(ta);
+                    ta.focus(); ta.select();
+                    try { document.execCommand('copy'); btn.innerHTML = '<i class="fas fa-check"></i> Copied!'; }
+                    catch(e) { btn.innerHTML = '<i class="fas fa-times"></i> Failed'; }
+                    document.body.removeChild(ta);
+                    setTimeout(() => { btn.innerHTML = '<i class="fas fa-copy"></i> Copy All'; }, 2000);
+                }
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(codes)
+                        .then(() => { btn.innerHTML = '<i class="fas fa-check"></i> Copied!'; setTimeout(() => { btn.innerHTML = '<i class="fas fa-copy"></i> Copy All'; }, 2000); })
+                        .catch(doFallback);
+                } else {
+                    doFallback();
+                }
+            });
+
+            // Continue after acknowledging recovery codes
+            document.getElementById('savedCodesButton').addEventListener('click', function() {
+                showStep(3);
+            });
+
             // Skip 2FA setup
             skip2FALink.addEventListener('click', function() {
                 showStep(3); // Go to Auth Mode step

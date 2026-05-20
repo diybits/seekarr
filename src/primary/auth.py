@@ -17,7 +17,7 @@ import io
 import qrcode
 import pyotp # Ensure pyotp is imported
 import bcrypt
-from typing import Dict, Any, Optional, Tuple
+from typing import Dict, Any, List, Optional, Tuple
 from flask import request, redirect, session
 from .utils.logger import logger # Ensure logger is imported
 
@@ -273,19 +273,22 @@ def verify_user(username: str, password: str, otp_code: str = None) -> Tuple[boo
                 logger.debug(f"OTP code provided: {bool(otp_code)}")
                 
                 if two_fa_enabled:
-                    # If 2FA code was provided, verify it
                     if otp_code:
+                        # Try TOTP first
                         totp = pyotp.TOTP(user_data.get("2fa_secret"))
                         valid_code = totp.verify(otp_code, valid_window=1)
                         logger.debug(f"OTP code validation result: {valid_code}")
                         if valid_code:
                             logger.info(f"User '{username}' authenticated successfully with 2FA.")
                             return True, False
-                        else:
-                            logger.warning(f"Login attempt failed for user '{username}': Invalid 2FA code.")
-                            return False, True
+                        # TOTP failed — try recovery code
+                        if use_recovery_code(otp_code):
+                            logger.info(f"User '{username}' authenticated successfully with a recovery code.")
+                            return True, False
+                        logger.warning(f"Login attempt failed for user '{username}': Invalid 2FA/recovery code.")
+                        return False, True
                     else:
-                        # No OTP code provided but 2FA is enabled
+                        # No code provided — prompt for one
                         logger.warning(f"Login attempt failed for user '{username}': 2FA code required but not provided.")
                         logger.debug("Returning needs_2fa=True to trigger 2FA input display")
                         return False, True
@@ -361,8 +364,10 @@ def authenticate_request():
     api_setup_path = f"{script_root}/api/setup"
     favicon_path = f"{script_root}/favicon.ico"
     health_check_path = f"{script_root}/api/health"
-    
-    if request.path.startswith((static_path, login_path, api_login_path, setup_path, api_setup_path)) or request.path in (favicon_path, health_check_path):
+    logout_path = f"{script_root}/logout"
+    ping_path = f"{script_root}/ping"
+
+    if request.path.startswith((static_path, login_path, api_login_path, setup_path, api_setup_path)) or request.path in (favicon_path, health_check_path, logout_path, ping_path):
         return None
     
     # Load general settings
@@ -496,31 +501,39 @@ def generate_2fa_secret(username: str) -> Tuple[str, str]:
         logger.error(f"Error generating 2FA QR code for user '{username}': {e}", exc_info=True)
         raise
 
-def verify_2fa_code(username: str, code: str, enable_on_verify: bool = False) -> bool:
-    """Verify a 2FA code against the temporary secret"""
+def verify_2fa_code(username: str, code: str, enable_on_verify: bool = False) -> Tuple[bool, List[str]]:
+    """Verify a 2FA code against the temporary secret.
+
+    Returns:
+        (success, recovery_codes) — recovery_codes is non-empty only when enable_on_verify
+        is True and verification succeeds (i.e. on first-time 2FA enable).
+    """
     user_data = get_user_data()
     temp_secret = user_data.get("temp_2fa_secret")
-    
+
     if not temp_secret:
         logger.warning(f"2FA verification attempt for '{username}' failed: No temporary secret found.")
-        return False
-    
+        return False, []
+
     totp = pyotp.TOTP(temp_secret)
     if totp.verify(code, valid_window=1):
         logger.info(f"2FA code verified successfully for user '{username}'.")
         if enable_on_verify:
+            recovery_codes = generate_recovery_codes()
             user_data["2fa_enabled"] = True
             user_data["2fa_secret"] = temp_secret
+            user_data["recovery_codes"] = _hash_recovery_codes(recovery_codes)
             user_data.pop("temp_2fa_secret", None)
             if save_user_data(user_data):
-                logger.info(f"2FA enabled permanently for user '{username}'.")
+                logger.info(f"2FA enabled permanently for user '{username}'. {_RECOVERY_CODE_COUNT} recovery codes generated.")
             else:
                 logger.error(f"Failed to save user data after enabling 2FA for '{username}'.")
-                return False
-        return True
+                return False, []
+            return True, recovery_codes
+        return True, []
     else:
         logger.warning(f"Invalid 2FA code provided by user '{username}'.")
-        return False
+        return False, []
 
 def disable_2fa(password: str) -> bool:
     """Disable 2FA for the current user (using only password - kept for potential other uses)"""
@@ -530,6 +543,7 @@ def disable_2fa(password: str) -> bool:
     if verify_password(user_data.get("password", ""), password):
         user_data["2fa_enabled"] = False
         user_data["2fa_secret"] = None
+        user_data["recovery_codes"] = []
         if save_user_data(user_data):
             logger.info("2FA disabled successfully (password only).")
             return True
@@ -564,12 +578,71 @@ def disable_2fa_with_password_and_otp(username: str, password: str, otp_code: st
     # 3. Both verified, proceed to disable
     user_data["2fa_enabled"] = False
     user_data["2fa_secret"] = None
+    user_data["recovery_codes"] = []
+    user_data.pop("temp_2fa_secret", None)
     if save_user_data(user_data):
         logger.info(f"2FA disabled successfully for '{username}' after verifying password and OTP.")
         return True
     else:
         logger.error(f"Failed to save user data after disabling 2FA for '{username}'.")
         return False
+
+# Recovery code alphabet — unambiguous chars (no 0/O, 1/I/L)
+_RECOVERY_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"
+_RECOVERY_CODE_COUNT = 8
+_RECOVERY_CODE_LENGTH = 10  # stored as XXXXX-XXXXX
+
+
+def generate_recovery_codes() -> List[str]:
+    """Generate fresh plaintext recovery codes. Does NOT save them."""
+    codes = []
+    for _ in range(_RECOVERY_CODE_COUNT):
+        raw = "".join(secrets.choice(_RECOVERY_ALPHABET) for _ in range(_RECOVERY_CODE_LENGTH))
+        codes.append(f"{raw[:5]}-{raw[5:]}")
+    return codes
+
+
+def _hash_recovery_codes(codes: List[str]) -> List[str]:
+    """Return bcrypt hashes of the given recovery codes (normalised to upper, no hyphen)."""
+    return [
+        bcrypt.hashpw(c.replace("-", "").upper().encode(), bcrypt.gensalt()).decode()
+        for c in codes
+    ]
+
+
+def store_recovery_codes(codes: List[str]) -> bool:
+    """Hash and persist recovery codes for the current user."""
+    user_data = get_user_data()
+    user_data["recovery_codes"] = _hash_recovery_codes(codes)
+    return save_user_data(user_data)
+
+
+def get_recovery_code_count() -> int:
+    """Return the number of unused recovery codes remaining."""
+    return len(get_user_data().get("recovery_codes") or [])
+
+
+def use_recovery_code(code: str) -> bool:
+    """Validate and consume a single-use recovery code. Returns True if valid."""
+    normalised = code.replace("-", "").upper().encode()
+    user_data = get_user_data()
+    stored = user_data.get("recovery_codes") or []
+    for i, hashed in enumerate(stored):
+        try:
+            if bcrypt.checkpw(normalised, hashed.encode()):
+                stored.pop(i)
+                user_data["recovery_codes"] = stored
+                save_user_data(user_data)
+                remaining = len(stored)
+                logger.warning(
+                    f"Recovery code used — {remaining} code(s) remaining. "
+                    "Generate new codes when possible."
+                )
+                return True
+        except Exception:
+            continue
+    return False
+
 
 def change_username(current_username: str, new_username: str, password: str) -> bool:
     """Change the username for the current user"""

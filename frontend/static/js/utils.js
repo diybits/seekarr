@@ -41,6 +41,9 @@ const SeekarrUtils = {
         return fetch(url, fetchOptions)
             .then(response => {
                 clearTimeout(timeoutId);
+                if (response.status === 401) {
+                    window.location.href = SeekarrUtils.basePath + '/login';
+                }
                 return response;
             })
             .catch(error => {
@@ -53,10 +56,27 @@ const SeekarrUtils = {
             });
     },
     
-    /**
-     * Get the global API timeout value in seconds
-     * @returns {number} - API timeout in seconds
-     */
+    copyToClipboard: function(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+            return navigator.clipboard.writeText(text);
+        }
+        // Fallback for HTTP non-localhost contexts (execCommand is deprecated but widely supported)
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.cssText = 'position:fixed;opacity:0;pointer-events:none;';
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        try {
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            return Promise.resolve();
+        } catch (e) {
+            document.body.removeChild(ta);
+            return Promise.reject(e);
+        }
+    },
+
     getApiTimeout: function() {
         // Default value
         let timeout = 120;
