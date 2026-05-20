@@ -18,9 +18,9 @@ session = requests.Session()
 # Default API timeout in seconds - used as fallback only
 API_TIMEOUT = 30
 
-def arr_request(endpoint: str, method: str = "GET", data: Dict = None, app_type: str = "readarr",
-                api_url: str = None, api_key: str = None, api_timeout: int = None,
-                params: Dict = None, instance_data: Dict = None) -> Any:
+def arr_request(api_url: str = None, api_key: str = None, api_timeout: int = None,
+                endpoint: str = "", method: str = "GET", data: Dict = None,
+                app_type: str = "readarr", params: Dict = None, instance_data: Dict = None) -> Any:
     """
     Make a request to the Readarr API.
 
@@ -114,7 +114,7 @@ def check_connection(api_url: str, api_key: str, api_timeout: int) -> bool:
     if not (api_url.startswith('http://') or api_url.startswith('https://')):
         logger.error(f"Invalid URL format: {api_url} - URL must start with http:// or https://")
         return False
-    response = arr_request("system/status", api_url=api_url, api_key=api_key, api_timeout=api_timeout)
+    response = arr_request(api_url, api_key, api_timeout, "system/status")
     if response and isinstance(response, dict):
         logger.debug("Successfully connected to Readarr.")
         return True
@@ -125,7 +125,7 @@ def check_connection(api_url: str, api_key: str, api_timeout: int) -> bool:
 def get_download_queue_size(api_url: str, api_key: str, api_timeout: int) -> int:
     """Get the current size of the download queue."""
     try:
-        response = arr_request("queue", api_url=api_url, api_key=api_key, api_timeout=api_timeout)
+        response = arr_request(api_url, api_key, api_timeout, "queue")
         if response and "totalRecords" in response:
             return response["totalRecords"]
         return 0
@@ -147,7 +147,7 @@ def get_cutoff_unmet_books(api_url: Optional[str] = None, api_key: Optional[str]
     Returns:
         A list of book objects that need quality upgrades
     """
-    books = arr_request("wanted/cutoff?cutoffUnmet=true", api_url=api_url, api_key=api_key, api_timeout=api_timeout)
+    books = arr_request(api_url, api_key, api_timeout, "wanted/cutoff?cutoffUnmet=true")
     if not books or "records" not in books:
         return []
 
@@ -177,8 +177,7 @@ def get_wanted_missing_books(api_url: str, api_key: str, api_timeout: int, monit
 
     while True:
         params = {'page': page, 'pageSize': page_size}
-        data = arr_request("wanted/missing", api_url=api_url, api_key=api_key,
-                           api_timeout=api_timeout, params=params)
+        data = arr_request(api_url, api_key, api_timeout, "wanted/missing", params=params)
 
         if not data or 'records' not in data or not data['records']:
             break
@@ -197,7 +196,7 @@ def get_wanted_missing_books(api_url: str, api_key: str, api_timeout: int, monit
 
 def get_author_details(api_url: str, api_key: str, author_id: int, api_timeout: int = 120) -> Optional[Dict]:
     """Fetches details for a specific author from the Readarr API."""
-    response = arr_request(f"author/{author_id}", api_url=api_url, api_key=api_key, api_timeout=api_timeout)
+    response = arr_request(api_url, api_key, api_timeout, f"author/{author_id}")
     if response is None:
         logger.error(f"Error fetching author details for ID {author_id}.")
     else:
@@ -208,8 +207,7 @@ def get_author_details(api_url: str, api_key: str, author_id: int, api_timeout: 
 def search_books(api_url: str, api_key: str, book_ids: List[int], api_timeout: int = 120) -> Optional[Dict]:
     """Triggers a search for specific book IDs in Readarr."""
     payload = {'name': 'BookSearch', 'bookIds': book_ids}
-    response = arr_request("command", method="POST", data=payload,
-                           api_url=api_url, api_key=api_key, api_timeout=api_timeout)
+    response = arr_request(api_url, api_key, api_timeout, "command", method="POST", data=payload)
     if response:
         command_id = response.get('id')
         logger.info(f"Successfully triggered BookSearch command for book IDs: {book_ids}. Command ID: {command_id}")
