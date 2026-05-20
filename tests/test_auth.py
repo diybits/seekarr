@@ -64,17 +64,25 @@ def test_hash_username_different_inputs_differ():
 # ── Password strength ─────────────────────────────────────────────────────────
 
 def test_validate_password_too_short():
-    result = auth.validate_password_strength("short")
+    result = auth.validate_password_strength("Sh0rt!")
     assert result is not None
-    assert "8" in result
+    assert "12" in result
 
 
-def test_validate_password_exactly_8_chars_passes():
-    assert auth.validate_password_strength("exactly8") is None
+def test_validate_password_no_digit():
+    result = auth.validate_password_strength("NoDigitsHere!!")
+    assert result is not None
+    assert "number" in result
 
 
-def test_validate_password_long_passes():
-    assert auth.validate_password_strength("averylongandsecurepassword") is None
+def test_validate_password_no_special():
+    result = auth.validate_password_strength("NoSpecialChar1234")
+    assert result is not None
+    assert "special" in result
+
+
+def test_validate_password_valid():
+    assert auth.validate_password_strength("ValidPass1!secure") is None
 
 
 # ── Sessions ──────────────────────────────────────────────────────────────────
