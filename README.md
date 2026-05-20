@@ -77,7 +77,7 @@ For detailed documentation, please visit the [Seekarr Docs](https://diybits.gith
 
 ## Web Interface
 
-Seekarr's live homepage will provide you statics about how many hunts have been pursed regarding missing media and upgrade searches! Note: Numbers reflected are but all required for testing. 
+Seekarr's live homepage provides statistics on how many missing items and quality upgrades have been processed.
 
 <p align="center">
   <img width="100%" alt="Homepage" src="docs/images/home.png" />
@@ -198,21 +198,7 @@ docker run -d --name seekarr \
 
 ## Troubleshooting
 
-- **API Connection Issues**: Verify your API key and URL in the Settings page (check for missing http:// or https://)
-- **Config URLs**: It is best practice to omit the trailing slash (/) at the end of the URL for each service. For Sonarr, use http://10.10.10.1:8989 instead of http://10.10.10.1:8989/
-- **Authentication Problems**: If you forget your password, delete `/config/user/credentials.json` and restart
-- **Two-Factor Authentication**: If locked out of 2FA, remove credentials file to reset your account
-- **Web Interface Not Loading**: Confirm port 9705 is correctly mapped and not blocked by firewalls
-- **Logs Not Showing**: Check permissions on the `/config/logs/` directory inside your container
-- **Missing State Data**: State files in `/config/stateful/` track processed items; verify permissions
-- **Docker Volume Issues**: Ensure your volume mount for `/config` has correct permissions and ownership
-- **Command Timeouts**: Default values are now command_wait_delay=1s and command_wait_attempts=600
-- **Debug Information**: Enable Debug Mode temporarily to see detailed API responses in the logs
-- **API Timeout Errors**: All apps now use universal timeout settings (120s) from general.json
-- **Consistent Log Filtering**: If app-specific logs show mixed content, reduce historical data from 5KB to 1KB
-- **Swaparr Issues**: Ensure proper handling of non-dictionary records in queue data
-- **App-Specific Problems**: Check GitHub Issues for known problems and solutions
-- **Session Errors After Migration**: If you move your `/config` volume and sessions stop working, delete `/config/secret_key` and restart — a new key will be generated (all existing sessions will be invalidated)
+For common problems and step-by-step solutions — connection test failures, SSL errors, no items found, Whisparr v2 vs Eros, log location, and more — see the **[Troubleshooting Guide](https://diybits.github.io/seekarr/getting-started/troubleshooting.html)**.
 
 ## Security
 
