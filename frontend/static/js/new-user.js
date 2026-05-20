@@ -144,11 +144,10 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                showStatus(statusElement, 'Password updated successfully', 'success');
-                // Clear form fields
-                document.getElementById('currentPassword').value = '';
-                document.getElementById('newPassword').value = '';
-                document.getElementById('confirmPassword').value = '';
+                showStatus(statusElement, 'Password changed. Redirecting to login...', 'success');
+                setTimeout(() => {
+                    window.location.href = SeekarrUtils.basePath + '/login';
+                }, 1500);
             } else {
                 showStatus(statusElement, data.error || 'Failed to update password', 'error');
             }

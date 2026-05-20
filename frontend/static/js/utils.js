@@ -41,6 +41,9 @@ const SeekarrUtils = {
         return fetch(url, fetchOptions)
             .then(response => {
                 clearTimeout(timeoutId);
+                if (response.status === 401) {
+                    window.location.href = SeekarrUtils.basePath + '/login';
+                }
                 return response;
             })
             .catch(error => {

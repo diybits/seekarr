@@ -2000,28 +2000,15 @@ let seekarrUI = {
         }
     },
     
-    logout: function(e) { // Added logout function
-        e.preventDefault(); // Prevent default link behavior
+    logout: function(e) {
+        e.preventDefault();
         seekarrLog.log('[seekarrUI] Logging out...');
-        SeekarrUtils.fetchWithTimeout('/logout', { // Use the correct endpoint defined in Flask
+        fetch(SeekarrUtils.prependBase('/logout'), {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            headers: { 'Content-Type': 'application/json' }
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                seekarrLog.log('[seekarrUI] Logout successful, redirecting to login.');
-                window.location.href = SeekarrUtils.basePath + '/login'; // Redirect to login page
-            } else {
-                console.error('[seekarrUI] Logout failed:', data.message);
-                this.showNotification('Logout failed. Please try again.', 'error');
-            }
-        })
-        .catch(error => {
-            console.error('Error during logout:', error);
-            this.showNotification('An error occurred during logout.', 'error');
+        .finally(() => {
+            window.location.href = SeekarrUtils.basePath + '/login';
         });
     },
     

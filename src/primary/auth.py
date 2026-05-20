@@ -364,8 +364,10 @@ def authenticate_request():
     api_setup_path = f"{script_root}/api/setup"
     favicon_path = f"{script_root}/favicon.ico"
     health_check_path = f"{script_root}/api/health"
-    
-    if request.path.startswith((static_path, login_path, api_login_path, setup_path, api_setup_path)) or request.path in (favicon_path, health_check_path):
+    logout_path = f"{script_root}/logout"
+    ping_path = f"{script_root}/ping"
+
+    if request.path.startswith((static_path, login_path, api_login_path, setup_path, api_setup_path)) or request.path in (favicon_path, health_check_path, logout_path, ping_path):
         return None
     
     # Load general settings
