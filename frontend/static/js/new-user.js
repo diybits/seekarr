@@ -270,11 +270,16 @@
     
     // Helper function for validation
     function validatePassword(password) {
-        // Only check for minimum length of 8 characters
-        if (password.length < 8) {
-            return 'Password must be at least 8 characters long.';
+        if (password.length < 12) {
+            return 'Password must be at least 12 characters long.';
         }
-        return null; // Password is valid
+        if (!/\d/.test(password)) {
+            return 'Password must contain at least one number.';
+        }
+        if (!/[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]/.test(password)) {
+            return 'Password must contain at least one special character (!@#$%^&*()_+-=[]{}|;:,.<>?).';
+        }
+        return null;
     }
     
     // Helper function to show status messages
