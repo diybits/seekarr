@@ -12,6 +12,7 @@ from ..auth import (
     validate_password_strength, logout, verify_session, disable_2fa_with_password_and_otp,
     user_exists, create_user, generate_2fa_secret, verify_2fa_code, is_2fa_enabled,
     is_locked_out, record_failed_attempt, clear_failed_attempts,
+    generate_recovery_codes, store_recovery_codes, get_recovery_code_count,
 )
 from ..utils.logger import logger # Ensure logger is imported
 from .. import settings_manager # Import settings_manager
@@ -319,19 +320,18 @@ def verify_2fa():
     data = request.json
     otp_code = data.get('code') # Match frontend key 'code'
 
-    if not otp_code or len(otp_code) != 6 or not otp_code.isdigit(): # Add validation
+    if not otp_code or len(otp_code) != 6 or not otp_code.isdigit():
         logger.warning(f"2FA verification for '{username}' failed: Invalid code format provided.")
         return jsonify({"success": False, "error": "Invalid or missing 6-digit OTP code"}), 400
 
     logger.info(f"Attempting to verify 2FA code for user '{username}'.")
-    # Pass username to verify_2fa_code
-    if verify_2fa_code(username, otp_code, enable_on_verify=True): # This function should now be defined via import
-        logger.info(f"Successfully verified and enabled 2FA for user: {username}") # Add logging
-        return jsonify({"success": True})
+    success, recovery_codes = verify_2fa_code(username, otp_code, enable_on_verify=True)
+    if success:
+        logger.info(f"Successfully verified and enabled 2FA for user: {username}")
+        return jsonify({"success": True, "recovery_codes": recovery_codes})
     else:
-        # Reason logged in verify_2fa_code
-        logger.warning(f"2FA verification failed for user: {username}. Check logs in auth.py.")
-        return jsonify({"success": False, "error": "Invalid OTP code"}), 400 # Use 400 for bad request
+        logger.warning(f"2FA verification failed for user: {username}.")
+        return jsonify({"success": False, "error": "Invalid OTP code"}), 400
 
 @common_bp.route('/api/user/2fa/disable', methods=['POST'])
 def disable_2fa_route():
@@ -365,6 +365,46 @@ def disable_2fa_route():
         # Provide a more specific error if possible, otherwise generic
         # The auth function should log the specific reason (bad pass, bad otp)
         return jsonify({"success": False, "error": "Failed to disable 2FA. Invalid password or OTP code."}), 400
+
+@common_bp.route('/api/user/2fa/recovery-codes', methods=['GET'])
+def get_recovery_code_count_route():
+    session_token = request.cookies.get(SESSION_COOKIE_NAME)
+    if not get_username_from_session(session_token):
+        return jsonify({"error": "Not authenticated"}), 401
+    return jsonify({"remaining": get_recovery_code_count()})
+
+
+@common_bp.route('/api/user/2fa/recovery-codes/regenerate', methods=['POST'])
+def regenerate_recovery_codes():
+    session_token = request.cookies.get(SESSION_COOKIE_NAME)
+    username = get_username_from_session(session_token)
+    if not username:
+        return jsonify({"error": "Not authenticated"}), 401
+
+    data = request.json or {}
+    password = data.get('password')
+    otp_code = data.get('code')
+
+    if not password or not otp_code:
+        return jsonify({"success": False, "error": "Password and current OTP code are required"}), 400
+
+    from ..auth import verify_password, get_user_data
+    import pyotp as _pyotp
+    user_data = get_user_data()
+    if not verify_password(user_data.get("password", ""), password):
+        return jsonify({"success": False, "error": "Invalid password"}), 400
+    if not user_data.get("2fa_enabled") or not user_data.get("2fa_secret"):
+        return jsonify({"success": False, "error": "2FA is not enabled"}), 400
+    totp = _pyotp.TOTP(user_data["2fa_secret"])
+    if not totp.verify(otp_code, valid_window=1):
+        return jsonify({"success": False, "error": "Invalid OTP code"}), 400
+
+    codes = generate_recovery_codes()
+    if store_recovery_codes(codes):
+        logger.info(f"Recovery codes regenerated for user '{username}'.")
+        return jsonify({"success": True, "recovery_codes": codes})
+    return jsonify({"success": False, "error": "Failed to save recovery codes"}), 500
+
 
 # --- Theme Setting Route ---
 @common_bp.route('/api/settings/theme', methods=['POST'])

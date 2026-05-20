@@ -261,6 +261,7 @@
         const twoFactorContainer = document.getElementById('twoFactorContainer');
         let otpInput = null;
         let twoFactorMode = false;
+        let recoveryMode = false;
         
         // Toggle password visibility
         togglePassword.addEventListener('click', function() {
@@ -293,7 +294,7 @@
                     return;
                 }
                 
-                if (otpCode.length !== 6 || !/^\d+$/.test(otpCode)) {
+                if (!recoveryMode && (otpCode.length !== 6 || !/^\d+$/.test(otpCode))) {
                     showError('Two-factor code must be 6 digits.');
                     return;
                 }
@@ -345,27 +346,57 @@
                     <div class="form-group" id="twoFactorGroup">
                         <label for="twoFactorCode">
                             <i class="fas fa-shield-alt"></i>
-                            <span>Two-Factor Code</span>
+                            <span id="twoFactorLabel">Two-Factor Code</span>
                         </label>
-                        <input type="text" id="twoFactorCode" name="twoFactorCode" 
+                        <input type="text" id="twoFactorCode" name="twoFactorCode"
                                placeholder="Enter your 6-digit code" maxlength="6"
-                               style="width: 100%; padding: 12px 15px; border: 1px solid rgba(90, 109, 137, 0.2); 
-                                      border-radius: 8px; background-color: rgba(28, 36, 54, 0.6); 
+                               style="width: 100%; padding: 12px 15px; border: 1px solid rgba(90, 109, 137, 0.2);
+                                      border-radius: 8px; background-color: rgba(28, 36, 54, 0.6);
                                       color: #fff; font-size: 16px;">
+                        <div style="margin-top: 8px; text-align: right;">
+                            <a href="#" id="useRecoveryCode" style="font-size: 13px; color: #7b8ab8;">
+                                Use a recovery code instead
+                            </a>
+                        </div>
                     </div>`;
                     
                     // Update reference to the new input
                     otpInput = document.getElementById('twoFactorCode');
+                    recoveryMode = false;
                     if (otpInput) {
                         otpInput.focus();
-                        
-                        // Add input validation
+
+                        // Digits-only filter — bypassed in recovery mode
                         otpInput.addEventListener('input', function() {
-                            // Only allow digits
-                            this.value = this.value.replace(/[^0-9]/g, '');
+                            if (!recoveryMode) {
+                                this.value = this.value.replace(/[^0-9]/g, '');
+                            }
                         });
                     }
-                    
+
+                    // Wire up the recovery code toggle
+                    const useRecoveryBtn = document.getElementById('useRecoveryCode');
+                    if (useRecoveryBtn) {
+                        useRecoveryBtn.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            recoveryMode = !recoveryMode;
+                            const label = document.getElementById('twoFactorLabel');
+                            if (recoveryMode) {
+                                label.textContent = 'Recovery Code';
+                                otpInput.removeAttribute('maxlength');
+                                otpInput.placeholder = 'XXXXX-XXXXX';
+                                this.textContent = 'Use authenticator code instead';
+                            } else {
+                                label.textContent = 'Two-Factor Code';
+                                otpInput.setAttribute('maxlength', '6');
+                                otpInput.placeholder = 'Enter your 6-digit code';
+                                this.textContent = 'Use a recovery code instead';
+                            }
+                            otpInput.value = '';
+                            otpInput.focus();
+                        });
+                    }
+
                     // Reset button
                     loginButton.innerHTML = originalText;
                     loginButton.disabled = false;

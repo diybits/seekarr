@@ -1,5 +1,6 @@
 """Tests for src/primary/auth.py — password hashing, validation, sessions."""
 import json
+import re
 import time
 
 import bcrypt
@@ -120,6 +121,112 @@ def test_get_username_from_session(config_dir):
 
 def test_get_username_from_invalid_session_returns_none(config_dir):
     assert auth.get_username_from_session("badtoken") is None
+
+
+# ── Recovery codes ────────────────────────────────────────────────────────────
+
+def test_generate_recovery_codes_count():
+    codes = auth.generate_recovery_codes()
+    assert len(codes) == auth._RECOVERY_CODE_COUNT
+
+
+def test_generate_recovery_codes_format():
+    codes = auth.generate_recovery_codes()
+    pattern = re.compile(r'^[A-Z0-9]{5}-[A-Z0-9]{5}$')
+    for code in codes:
+        assert pattern.match(code), f"Unexpected format: {code}"
+
+
+def test_generate_recovery_codes_unique():
+    codes = auth.generate_recovery_codes()
+    assert len(set(codes)) == len(codes)
+
+
+def test_store_and_count_recovery_codes(config_dir):
+    # Write a minimal credentials file first
+    user_data = {
+        "username": auth.hash_username("alice"),
+        "password": auth.hash_password("ValidPass1!"),
+        "2fa_enabled": False,
+        "2fa_secret": None,
+    }
+    with open(auth.USER_FILE, "w") as f:
+        json.dump(user_data, f)
+
+    codes = auth.generate_recovery_codes()
+    assert auth.store_recovery_codes(codes) is True
+    assert auth.get_recovery_code_count() == auth._RECOVERY_CODE_COUNT
+
+
+def test_use_recovery_code_valid(config_dir):
+    user_data = {
+        "username": auth.hash_username("alice"),
+        "password": auth.hash_password("ValidPass1!"),
+        "2fa_enabled": False,
+        "2fa_secret": None,
+    }
+    with open(auth.USER_FILE, "w") as f:
+        json.dump(user_data, f)
+
+    codes = auth.generate_recovery_codes()
+    auth.store_recovery_codes(codes)
+
+    assert auth.use_recovery_code(codes[0]) is True
+    # One code consumed
+    assert auth.get_recovery_code_count() == auth._RECOVERY_CODE_COUNT - 1
+
+
+def test_use_recovery_code_invalid(config_dir):
+    user_data = {
+        "username": auth.hash_username("alice"),
+        "password": auth.hash_password("ValidPass1!"),
+        "2fa_enabled": False,
+        "2fa_secret": None,
+    }
+    with open(auth.USER_FILE, "w") as f:
+        json.dump(user_data, f)
+
+    codes = auth.generate_recovery_codes()
+    auth.store_recovery_codes(codes)
+
+    assert auth.use_recovery_code("AAAAA-BBBBB") is False
+    # Count unchanged
+    assert auth.get_recovery_code_count() == auth._RECOVERY_CODE_COUNT
+
+
+def test_use_recovery_code_single_use(config_dir):
+    user_data = {
+        "username": auth.hash_username("alice"),
+        "password": auth.hash_password("ValidPass1!"),
+        "2fa_enabled": False,
+        "2fa_secret": None,
+    }
+    with open(auth.USER_FILE, "w") as f:
+        json.dump(user_data, f)
+
+    codes = auth.generate_recovery_codes()
+    auth.store_recovery_codes(codes)
+
+    assert auth.use_recovery_code(codes[0]) is True
+    assert auth.use_recovery_code(codes[0]) is False  # already consumed
+
+
+def test_use_recovery_code_case_insensitive(config_dir):
+    user_data = {
+        "username": auth.hash_username("alice"),
+        "password": auth.hash_password("ValidPass1!"),
+        "2fa_enabled": False,
+        "2fa_secret": None,
+    }
+    with open(auth.USER_FILE, "w") as f:
+        json.dump(user_data, f)
+
+    codes = auth.generate_recovery_codes()
+    auth.store_recovery_codes(codes)
+
+    # Codes are uppercase; submit lowercase with hyphen — should still match
+    lower = codes[0].lower()
+    assert auth.use_recovery_code(lower) is True
 
 
 # ── bcrypt migration ──────────────────────────────────────────────────────────

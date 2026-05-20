@@ -118,20 +118,23 @@ def test_generate_2fa_secret_is_valid_base32(config_dir):
 
 def test_verify_2fa_code_no_temp_secret_returns_false(config_dir):
     _make_user(config_dir)
-    assert auth.verify_2fa_code("testuser", "123456") is False
+    success, _ = auth.verify_2fa_code("testuser", "123456")
+    assert success is False
 
 
 def test_verify_2fa_code_valid_code_returns_true(config_dir):
     _make_user(config_dir)
     secret, _ = auth.generate_2fa_secret("testuser")
     code = pyotp.TOTP(secret).now()
-    assert auth.verify_2fa_code("testuser", code) is True
+    success, _ = auth.verify_2fa_code("testuser", code)
+    assert success is True
 
 
 def test_verify_2fa_code_invalid_code_returns_false(config_dir):
     _make_user(config_dir)
     auth.generate_2fa_secret("testuser")
-    assert auth.verify_2fa_code("testuser", "000000") is False
+    success, _ = auth.verify_2fa_code("testuser", "000000")
+    assert success is False
 
 
 def test_verify_2fa_code_enable_on_verify_sets_2fa_enabled(config_dir):
