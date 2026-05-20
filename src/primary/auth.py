@@ -37,6 +37,10 @@ SESSION_COOKIE_NAME = "seekarr_session"
 _session_lock = threading.Lock()
 _SESSIONS_FILE = pathlib.Path("/config/sessions.json")
 
+# Credentials file mutex — RLock so verify_user (read) can call save_user_data (write)
+# on the same thread during bcrypt migration without deadlocking
+_user_data_lock = threading.RLock()
+
 active_sessions: Dict[str, Dict] = {}
 
 # Brute-force protection — per-IP in-memory counters
@@ -118,41 +122,38 @@ _load_sessions()
 # --- Add Helper functions for user data ---
 def get_user_data() -> Dict[str, Any]:
     """Load user data from the credentials file."""
-    if not USER_FILE.exists():
-        logger.warning(f"Attempted to get user data, but file not found: {USER_FILE}")
-        return {}
-    try:
-        with open(USER_FILE, 'r') as f:
-            return json.load(f)
-    except json.JSONDecodeError:
-        logger.error(f"Error decoding JSON from user file: {USER_FILE}")
-        return {}
-    except Exception as e:
-        logger.error(f"Error reading user file {USER_FILE}: {e}", exc_info=True)
-        return {}
+    with _user_data_lock:
+        if not USER_FILE.exists():
+            logger.warning(f"Attempted to get user data, but file not found: {USER_FILE}")
+            return {}
+        try:
+            with open(USER_FILE, 'r') as f:
+                return json.load(f)
+        except json.JSONDecodeError:
+            logger.error(f"Error decoding JSON from user file: {USER_FILE}")
+            return {}
+        except Exception as e:
+            logger.error(f"Error reading user file {USER_FILE}: {e}", exc_info=True)
+            return {}
 
 def save_user_data(user_data: Dict[str, Any]) -> bool:
     """Save user data to the credentials file."""
-    try:
-        logger.debug(f"Attempting to save user data to: {USER_FILE}")
-        # Ensure directory exists (though it should from startup)
-        USER_DIR.mkdir(parents=True, exist_ok=True)
-        
-        with open(USER_FILE, 'w') as f:
-            json.dump(user_data, f, indent=4) # Add indent for readability
-        
-        # Set permissions after writing
+    with _user_data_lock:
         try:
-            os.chmod(USER_FILE, 0o600)
-            logger.debug(f"Set permissions 0o600 on {USER_FILE}")
-        except Exception as e_perm:
-            logger.warning(f"Could not set permissions on file {USER_FILE}: {e_perm}")
-            
-        logger.info(f"User data saved successfully to {USER_FILE}")
-        return True
-    except Exception as e:
-        logger.error(f"Error saving user file {USER_FILE}: {e}", exc_info=True)
-        return False
+            logger.debug(f"Attempting to save user data to: {USER_FILE}")
+            USER_DIR.mkdir(parents=True, exist_ok=True)
+            with open(USER_FILE, 'w') as f:
+                json.dump(user_data, f, indent=4)
+            try:
+                os.chmod(USER_FILE, 0o600)
+                logger.debug(f"Set permissions 0o600 on {USER_FILE}")
+            except Exception as e_perm:
+                logger.warning(f"Could not set permissions on file {USER_FILE}: {e_perm}")
+            logger.info(f"User data saved successfully to {USER_FILE}")
+            return True
+        except Exception as e:
+            logger.error(f"Error saving user file {USER_FILE}: {e}", exc_info=True)
+            return False
 # --- End Helper functions ---
 
 def hash_password(password: str) -> str:
@@ -230,20 +231,11 @@ def create_user(username: str, password: str) -> bool:
         "2fa_secret": None
     }
     
-    try:
-        logger.info(f"Writing user file: {USER_FILE}")
-        with open(USER_FILE, 'w') as f:
-            json.dump(user_data, f)
-        # Set appropriate permissions on the file
-        try:
-            logger.info(f"Setting permissions on file: {USER_FILE}")
-            os.chmod(USER_FILE, 0o600)
-        except Exception as e:
-            logger.warning(f"Could not set permissions on file {USER_FILE}: {e}")
+    if save_user_data(user_data):
         logger.info("User creation successful")
         return True
-    except Exception as e:
-        logger.error(f"Error creating user file {USER_FILE}: {e}", exc_info=True)
+    else:
+        logger.error(f"Error creating user file {USER_FILE}")
         return False
 
 def verify_user(username: str, password: str, otp_code: str = None) -> Tuple[bool, bool]:
@@ -258,9 +250,8 @@ def verify_user(username: str, password: str, otp_code: str = None) -> Tuple[boo
         return False, False
         
     try:
-        with open(USER_FILE, 'r') as f:
-            user_data = json.load(f)
-            
+        user_data = get_user_data()
+
         # Hash the provided username
         username_hash = hash_username(username)
         
