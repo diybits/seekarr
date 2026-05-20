@@ -192,10 +192,12 @@ def validate_password_strength(password: str) -> Optional[str]:
     Returns:
         An error message string if validation fails, None otherwise.
     """
-    if len(password) < 8:
-        return "Password must be at least 8 characters long."
-    
-    # If check passes
+    if len(password) < 12:
+        return "Password must be at least 12 characters long."
+    if not any(c.isdigit() for c in password):
+        return "Password must contain at least one number."
+    if not any(c in '!@#$%^&*()_+-=[]{}|;:,.<>?' for c in password):
+        return "Password must contain at least one special character (!@#$%^&*()_+-=[]{}|;:,.<>?)."
     return None
 
 def user_exists() -> bool:
