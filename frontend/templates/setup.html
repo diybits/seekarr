@@ -884,15 +884,30 @@
                 });
             });
             
-            // Copy all recovery codes to clipboard
+            // Copy all recovery codes to clipboard (with HTTP fallback)
             document.getElementById('copyAllCodesButton').addEventListener('click', function() {
                 const codes = Array.from(document.getElementById('recoveryCodesList').children)
                     .map(el => el.textContent)
                     .join('\n');
-                navigator.clipboard.writeText(codes).then(() => {
-                    this.innerHTML = '<i class="fas fa-check"></i> Copied!';
-                    setTimeout(() => { this.innerHTML = '<i class="fas fa-copy"></i> Copy All'; }, 2000);
-                });
+                const btn = this;
+                function doFallback() {
+                    const ta = document.createElement('textarea');
+                    ta.value = codes;
+                    ta.style.cssText = 'position:fixed;opacity:0;pointer-events:none;';
+                    document.body.appendChild(ta);
+                    ta.focus(); ta.select();
+                    try { document.execCommand('copy'); btn.innerHTML = '<i class="fas fa-check"></i> Copied!'; }
+                    catch(e) { btn.innerHTML = '<i class="fas fa-times"></i> Failed'; }
+                    document.body.removeChild(ta);
+                    setTimeout(() => { btn.innerHTML = '<i class="fas fa-copy"></i> Copy All'; }, 2000);
+                }
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(codes)
+                        .then(() => { btn.innerHTML = '<i class="fas fa-check"></i> Copied!'; setTimeout(() => { btn.innerHTML = '<i class="fas fa-copy"></i> Copy All'; }, 2000); })
+                        .catch(doFallback);
+                } else {
+                    doFallback();
+                }
             });
 
             // Continue after acknowledging recovery codes

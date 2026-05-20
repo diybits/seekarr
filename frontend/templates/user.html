@@ -10,23 +10,17 @@
             margin: 0 auto;
         }
         
-        /* Desktop layout for cards side by side with intelligent wrapping */
+        /* Desktop: stable 2-column grid — username + password side by side, 2FA full width */
         @media (min-width: 992px) {
             .user-section {
-                display: flex;
-                flex-wrap: wrap;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
                 gap: 20px;
+                align-items: start;
             }
-            
-            .user-card {
-                flex: 1 1 250px; /* Base width, but allow growth and shrinking */
-            }
-        }
-        
-        /* Medium displays - show just two cards side by side */
-        @media (min-width: 992px) and (max-width: 1200px) {
+
             .user-section .user-card:nth-child(3) {
-                flex-basis: 100%; /* Third card takes full width */
+                grid-column: 1 / -1;
             }
         }
         
@@ -429,6 +423,24 @@
                         <div id="verifyStatus" class="status-message" style="display: none;"></div>
                     </div>
                     
+                    <div id="recoveryCodesSection" style="display: none;">
+                        <div style="background-color: rgba(40,167,69,0.2); color: #2ecc71; border-left: 3px solid #28a745; padding: 8px; border-radius: 6px; margin-bottom: 12px; font-size: 13px;">
+                            <i class="fas fa-shield-alt"></i> Two-factor authentication enabled!
+                        </div>
+                        <p style="font-size: 13px; color: rgba(255,255,255,0.85); margin-bottom: 10px; line-height: 1.5;">
+                            Save these recovery codes. Each can only be used <strong>once</strong> if you lose your authenticator.
+                        </p>
+                        <div id="userRecoveryCodesList" style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 6px; margin-bottom: 14px;"></div>
+                        <div class="form-actions">
+                            <button id="copyUserRecoveryCodes" class="action-button secondary-button">
+                                <i class="fas fa-copy"></i> Copy All
+                            </button>
+                            <button id="doneWithRecoveryCodes" class="action-button primary-button">
+                                <i class="fas fa-check"></i> I've Saved My Codes
+                            </button>
+                        </div>
+                    </div>
+
                     <div id="disableTwoFactorSection" style="display: none;">
                         <div class="form-group">
                             <label for="currentPasswordFor2FADisable">Current Password:</label>

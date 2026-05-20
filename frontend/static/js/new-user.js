@@ -53,6 +53,30 @@
         if (enableTwoFactorBtn) {
             enableTwoFactorBtn.addEventListener('click', handleEnableTwoFactor);
         }
+
+        const copyCodesBtn = document.getElementById('copyUserRecoveryCodes');
+        if (copyCodesBtn) {
+            copyCodesBtn.addEventListener('click', function() {
+                const codes = Array.from(document.getElementById('userRecoveryCodesList').children)
+                    .map(el => el.textContent).join('\n');
+                const btn = this;
+                SeekarrUtils.copyToClipboard(codes).then(() => {
+                    btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                    setTimeout(() => { btn.innerHTML = '<i class="fas fa-copy"></i> Copy All'; }, 2000);
+                }).catch(() => {
+                    btn.innerHTML = '<i class="fas fa-times"></i> Failed';
+                    setTimeout(() => { btn.innerHTML = '<i class="fas fa-copy"></i> Copy All'; }, 2000);
+                });
+            });
+        }
+
+        const doneCodesBtn = document.getElementById('doneWithRecoveryCodes');
+        if (doneCodesBtn) {
+            doneCodesBtn.addEventListener('click', function() {
+                updateVisibility('recoveryCodesSection', false);
+                update2FAStatus(true);
+            });
+        }
         
         const verifyTwoFactorBtn = document.getElementById('verifyTwoFactor');
         if (verifyTwoFactorBtn) {
@@ -207,12 +231,18 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                showStatus(verifyStatusElement, '2FA enabled successfully', 'success');
-                // Update UI state
-                setTimeout(() => {
-                    update2FAStatus(true);
-                    document.getElementById('verificationCode').value = '';
-                }, 1500); // Short delay to allow user to see success message
+                document.getElementById('verificationCode').value = '';
+                // Populate and show the recovery codes panel
+                const codesList = document.getElementById('userRecoveryCodesList');
+                codesList.innerHTML = '';
+                (data.recovery_codes || []).forEach(code => {
+                    const div = document.createElement('div');
+                    div.style.cssText = 'font-family: monospace; padding: 6px 10px; background: rgba(28,36,54,0.8); border-radius: 5px; border: 1px solid rgba(90,109,137,0.3); color: #fff; text-align: center; font-size: 14px;';
+                    div.textContent = code;
+                    codesList.appendChild(div);
+                });
+                updateVisibility('setupTwoFactorSection', false);
+                updateVisibility('recoveryCodesSection', true);
             } else {
                 showStatus(verifyStatusElement, data.error || 'Invalid verification code', 'error');
             }
@@ -343,6 +373,7 @@
         // Update visibility of relevant sections
         updateVisibility('enableTwoFactorSection', !isEnabled);
         updateVisibility('setupTwoFactorSection', false);
+        updateVisibility('recoveryCodesSection', false);
         updateVisibility('disableTwoFactorSection', isEnabled);
     }
     

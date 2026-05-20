@@ -32,6 +32,17 @@
                 <input type="password" id="newPassword" class="form-control">
                 <i class="toggle-password fas fa-eye" data-target="newPassword"></i>
             </div>
+            <div style="margin-top: 8px; font-size: 13px; color: rgba(255,255,255,0.7);">
+                <div id="req-length" style="display: flex; align-items: center; margin-bottom: 3px;">
+                    <i class="fas fa-times-circle" style="margin-right: 6px; font-size: 12px; color: #dc3545;"></i> At least 12 characters
+                </div>
+                <div id="req-digit" style="display: flex; align-items: center; margin-bottom: 3px;">
+                    <i class="fas fa-times-circle" style="margin-right: 6px; font-size: 12px; color: #dc3545;"></i> At least one number
+                </div>
+                <div id="req-special" style="display: flex; align-items: center;">
+                    <i class="fas fa-times-circle" style="margin-right: 6px; font-size: 12px; color: #dc3545;"></i> At least one special character (!@#$%^&amp;*()_+-=[]{}|;:,&lt;&gt;?)
+                </div>
+            </div>
         </div>
         <div class="form-group">
             <label for="confirmPassword">Confirm Password:</label>
@@ -90,6 +101,24 @@
             </div>
             <div id="verifyStatus" class="status-message" style="display: none;"></div>
         </div>
+
+        <div id="recoveryCodesSection" style="display: none;">
+            <div class="status-message status-success" style="display: block; margin-bottom: 12px;">
+                <i class="fas fa-shield-alt"></i> Two-factor authentication enabled!
+            </div>
+            <p style="font-size: 13px; color: rgba(255,255,255,0.85); margin-bottom: 12px; line-height: 1.5;">
+                Save these recovery codes in a safe place. Each code can only be used <strong>once</strong> if you ever lose your authenticator.
+            </p>
+            <div id="userRecoveryCodesList" style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 14px;"></div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button id="copyUserRecoveryCodes" class="action-button secondary-button" style="font-size: 13px; padding: 6px 12px;">
+                    <i class="fas fa-copy"></i> Copy All
+                </button>
+                <button id="doneWithRecoveryCodes" class="action-button primary-button" style="font-size: 13px; padding: 6px 12px;">
+                    <i class="fas fa-check"></i> I've Saved My Codes
+                </button>
+            </div>
+        </div>
         
         <div id="disableTwoFactorSection" style="display: none;">
             <div class="form-actions">
@@ -120,6 +149,48 @@
         });
     });
     
+    // Recovery codes copy + done buttons
+    document.getElementById('copyUserRecoveryCodes').addEventListener('click', function() {
+        const codes = Array.from(document.getElementById('userRecoveryCodesList').children)
+            .map(el => el.textContent).join('\n');
+        const btn = this;
+        SeekarrUtils.copyToClipboard(codes).then(() => {
+            btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            setTimeout(() => { btn.innerHTML = '<i class="fas fa-copy"></i> Copy All'; }, 2000);
+        }).catch(() => {
+            btn.innerHTML = '<i class="fas fa-times"></i> Failed';
+            setTimeout(() => { btn.innerHTML = '<i class="fas fa-copy"></i> Copy All'; }, 2000);
+        });
+    });
+
+    document.getElementById('doneWithRecoveryCodes').addEventListener('click', function() {
+        updateVisibility('recoveryCodesSection', false);
+        update2FAStatus(true);
+    });
+
+    // Live password requirement indicators
+    (function() {
+        const newPw = document.getElementById('newPassword');
+        const reqs = {
+            length:  { el: document.getElementById('req-length'),  check: p => p.length >= 12 },
+            digit:   { el: document.getElementById('req-digit'),   check: p => /\d/.test(p) },
+            special: { el: document.getElementById('req-special'), check: p => /[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]/.test(p) },
+        };
+        newPw.addEventListener('input', function() {
+            const p = this.value;
+            Object.values(reqs).forEach(({ el, check }) => {
+                const icon = el.querySelector('i');
+                if (check(p)) {
+                    icon.className = 'fas fa-check-circle';
+                    icon.style.cssText = 'margin-right: 6px; font-size: 12px; color: #28a745;';
+                } else {
+                    icon.className = 'fas fa-times-circle';
+                    icon.style.cssText = 'margin-right: 6px; font-size: 12px; color: #dc3545;';
+                }
+            });
+        });
+    })();
+
     // Copy secret key to clipboard
     function copySecretKey() {
         const secretKey = document.getElementById('secretKey').textContent;

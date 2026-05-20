@@ -579,6 +579,7 @@ def disable_2fa_with_password_and_otp(username: str, password: str, otp_code: st
     user_data["2fa_enabled"] = False
     user_data["2fa_secret"] = None
     user_data["recovery_codes"] = []
+    user_data.pop("temp_2fa_secret", None)
     if save_user_data(user_data):
         logger.info(f"2FA disabled successfully for '{username}' after verifying password and OTP.")
         return True
