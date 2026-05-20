@@ -19,7 +19,7 @@ whisparr_logger = get_logger("whisparr")
 # Use a session for better performance
 session = requests.Session()
 
-def arr_request(api_url: str, api_key: str, api_timeout: int, endpoint: str, method: str = "GET", data: Dict = None) -> Any:
+def arr_request(api_url: str, api_key: str, api_timeout: int, endpoint: str, method: str = "GET", data: Dict = None, params: Dict = None) -> Any:
     """
     Make a request to the Whisparr API.
     
@@ -64,7 +64,7 @@ def arr_request(api_url: str, api_key: str, api_timeout: int, endpoint: str, met
         
         try:
             if method.upper() == "GET":
-                response = session.get(full_url, headers=headers, timeout=api_timeout, verify=verify_ssl)
+                response = session.get(full_url, headers=headers, params=params, timeout=api_timeout, verify=verify_ssl)
             elif method.upper() == "POST":
                 response = session.post(full_url, headers=headers, json=data, timeout=api_timeout, verify=verify_ssl)
             elif method.upper() == "PUT":
@@ -81,7 +81,7 @@ def arr_request(api_url: str, api_key: str, api_timeout: int, endpoint: str, met
                 whisparr_logger.debug(f"Standard path returned 404, trying v3 fallback: {v3_url}")
                 
                 if method == "GET":
-                    response = session.get(v3_url, headers=headers, timeout=api_timeout, verify=verify_ssl)
+                    response = session.get(v3_url, headers=headers, params=params, timeout=api_timeout, verify=verify_ssl)
                 elif method == "POST":
                     response = session.post(v3_url, headers=headers, json=data, timeout=api_timeout, verify=verify_ssl)
                 elif method == "PUT":

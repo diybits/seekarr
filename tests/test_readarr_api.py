@@ -41,7 +41,7 @@ def test_arr_request_passes_verify_false_when_ssl_disabled(monkeypatch):
     monkeypatch.setattr("src.primary.apps.readarr.api.get_ssl_verify_setting", lambda: False)
     captured = {}
     with patch.object(readarr_api.session, "get", side_effect=_capture_session_get({"version": "0.3.0"}, captured)):
-        readarr_api.arr_request("system/status", api_url="http://readarr:8787", api_key="key", api_timeout=30)
+        readarr_api.arr_request("http://readarr:8787", "key", 30, "system/status")
     assert captured.get("verify") is False
 
 
@@ -49,7 +49,7 @@ def test_arr_request_passes_verify_true_when_ssl_enabled(monkeypatch):
     monkeypatch.setattr("src.primary.apps.readarr.api.get_ssl_verify_setting", lambda: True)
     captured = {}
     with patch.object(readarr_api.session, "get", side_effect=_capture_session_get({"version": "0.3.0"}, captured)):
-        readarr_api.arr_request("system/status", api_url="http://readarr:8787", api_key="key", api_timeout=30)
+        readarr_api.arr_request("http://readarr:8787", "key", 30, "system/status")
     assert captured.get("verify") is True
 
 
@@ -57,7 +57,7 @@ def test_arr_request_sends_user_agent(monkeypatch):
     monkeypatch.setattr("src.primary.apps.readarr.api.get_ssl_verify_setting", lambda: True)
     captured = {}
     with patch.object(readarr_api.session, "get", side_effect=_capture_session_get({"version": "0.3.0"}, captured)):
-        readarr_api.arr_request("system/status", api_url="http://readarr:8787", api_key="key", api_timeout=30)
+        readarr_api.arr_request("http://readarr:8787", "key", 30, "system/status")
     assert "Seekarr" in captured.get("headers", {}).get("User-Agent", "")
 
 
@@ -65,14 +65,14 @@ def test_arr_request_uses_v1_api_path(monkeypatch):
     monkeypatch.setattr("src.primary.apps.readarr.api.get_ssl_verify_setting", lambda: True)
     captured = {}
     with patch.object(readarr_api.session, "get", side_effect=_capture_session_get({"version": "0.3.0"}, captured)):
-        readarr_api.arr_request("system/status", api_url="http://readarr:8787", api_key="key", api_timeout=30)
+        readarr_api.arr_request("http://readarr:8787", "key", 30, "system/status")
     assert "/api/v1/" in captured.get("url", "")
 
 
 def test_arr_request_returns_none_on_request_error(monkeypatch):
     monkeypatch.setattr("src.primary.apps.readarr.api.get_ssl_verify_setting", lambda: True)
     with patch.object(readarr_api.session, "get", side_effect=_requests.exceptions.ConnectionError("conn")):
-        result = readarr_api.arr_request("system/status", api_url="http://readarr:8787", api_key="key", api_timeout=30)
+        result = readarr_api.arr_request("http://readarr:8787", "key", 30, "system/status")
     assert result is None
 
 
