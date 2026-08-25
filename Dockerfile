@@ -1,4 +1,4 @@
-FROM python:3.11-slim
+FROM python:3.11.16-slim
 
 LABEL org.opencontainers.image.title="Seekarr" \
       org.opencontainers.image.description="Automated media collection management for Arr apps" \
@@ -13,6 +13,10 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends \
     net-tools \
     && rm -rf /var/lib/apt/lists/*
+
+# Refresh the pip toolchain bundled with the base image (pip 24.0 /
+# setuptools 79.0.1 / wheel 0.45.1 have known CVEs)
+RUN python3 -m pip install --upgrade --no-cache-dir pip setuptools wheel
 
 # Install required packages from the root requirements file
 COPY requirements.txt /app/

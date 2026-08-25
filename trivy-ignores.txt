@@ -1,0 +1,15 @@
+# Trivy vulnerability ignore list (see .github/workflows/security.yml)
+#
+# Every entry needs a justification. Remove entries as soon as the
+# underlying issue is fixed in a released update.
+
+# pip 26.x vendors msgpack 1.1.2 inside pip/_vendor and declares it in
+# pip's own SBOM (pip/_vendor/bom.cdx.json). Trivy flags the vendored
+# copy even though msgpack is not an installed dependency of this app.
+# Nothing to do until pip re-vendors msgpack >= 1.2.1.
+GHSA-6v7p-g79w-8964
+
+# Same mechanism as above: pip 26.x's vendored SBOM lists setuptools
+# 70.3.0 as a component, but the installed setuptools is >= 84 (see the
+# pip-toolchain upgrade step in the Dockerfile). False positive.
+CVE-2025-47273
