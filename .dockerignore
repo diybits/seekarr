@@ -8,6 +8,7 @@
 .claude
 
 # Development tooling
+trivy-ignores.txt
 .venv
 .venv*/
 *.pyc

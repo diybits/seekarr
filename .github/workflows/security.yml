@@ -46,6 +46,12 @@ jobs:
           format: 'sarif'
           output: 'trivy-results.sarif'
           severity: 'CRITICAL,HIGH'
+          # OS packages are maintained by the base image / Debian; hide
+          # CVEs for which no fixed package version exists yet. Once the
+          # fix ships, the next dependabot base-image bump clears it.
+          ignore-unfixed: true
+          # Documented false positives (see the file for justifications)
+          ignorefile: 'trivy-ignores.txt'
 
       - name: Upload results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v4

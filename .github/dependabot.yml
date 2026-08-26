@@ -1,0 +1,24 @@
+version: 2
+updates:
+  # Python dependencies (requirements.txt)
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+
+  # GitHub Actions (workflows)
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+
+  # Docker base image (Dockerfile) — keeps the pinned python:3.11.x-slim
+  # tag on the latest 3.11.x patch so Debian security updates land
+  - package-ecosystem: "docker"
+    directory: "/"
+    file: "Dockerfile"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
