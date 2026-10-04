@@ -1,0 +1,47 @@
+name: Deploy
+
+# Dispatches the Ansible deploy (jeblankenship/AnsibleLearning
+# deploy_seekarr.yml). release_version is the published image tag, without the
+# leading v (e.g. 7.4.0); that version is what gets deployed.
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: 'Image tag/version to deploy (e.g. 7.4.0)'
+        required: true
+      environment:
+        type: choice
+        description: 'Environment to deploy to'
+        required: true
+        options:
+          - homelab
+
+env:
+  DEPLOY_REPO_OWNER: jeblankenship
+  DEPLOY_REPO: AnsibleLearning
+  DEPLOY_WORKFLOW_ID: deploy_seekarr.yml
+  DEPLOY_REPO_BRANCH: main
+
+jobs:
+  trigger_deployment:
+    name: Trigger Deployment to ${{ github.event.inputs.environment }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+
+    steps:
+      - name: Trigger Ansible ${{ github.event.inputs.environment }} Deployment for ${{ github.event.inputs.release_version }}
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          github-token: ${{ secrets.GH_PAT_SEEKARR_DEPLOY }}
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: '${{ env.DEPLOY_REPO_OWNER }}',
+              repo: '${{ env.DEPLOY_REPO }}',
+              workflow_id: '${{ env.DEPLOY_WORKFLOW_ID }}',
+              ref: '${{ env.DEPLOY_REPO_BRANCH }}',
+              inputs: {
+                release_version: '${{ github.event.inputs.release_version }}',
+                environment: '${{ github.event.inputs.environment }}',
+                triggering_actor: '${{ github.actor }}'
+              }
+            })
