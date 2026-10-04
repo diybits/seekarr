@@ -101,9 +101,14 @@ def run_web_server():
 def main_shutdown_handler(signum, frame):
     """Gracefully shut down the application."""
     seekarr_logger.warning(f"Received signal {signal.Signals(signum).name}. Initiating shutdown...")
-    if not stop_event.is_set():
-        stop_event.set()
-    # The rest of the cleanup happens after run_web_server() returns or in the finally block.
+    if stop_event.is_set():
+        return  # Already shutting down (e.g. a second signal during cleanup)
+    stop_event.set()
+    # The main thread is blocked in the web server, which does not watch
+    # stop_event. Raising here (signal handlers run in the main thread) ends
+    # Waitress's loop: it catches KeyboardInterrupt, shuts its workers down, and
+    # returns, so the finally block below runs the rest of the cleanup.
+    raise KeyboardInterrupt
 
 if __name__ == '__main__':
     # Register signal handlers for graceful shutdown in the main process

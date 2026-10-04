@@ -4,6 +4,15 @@ All notable changes to Seekarr are documented here.
 
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [7.4.1] — 2026-10-04
+
+### Fixed
+
+- **SIGTERM/SIGINT now stop Seekarr** — the signal handler set the stop event but the main
+  thread stayed in Waitress `serve()`, so `docker stop` waited out its timeout and killed the
+  process (exit 137) before the shutdown cleanup ran. The handler now ends the server loop;
+  `docker stop` takes under a second and exits 0. (#88) (`main.py`)
+
 ## [7.4.0] — 2026-10-04
 
 ### Security
