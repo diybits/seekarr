@@ -11,6 +11,20 @@ permissions:
   contents: read
 
 jobs:
+  # ── Gated build: the image must build before merge (no push) ─────────────────
+  gated_build:
+    name: Gated Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v4
+
+      - uses: docker/build-push-action@v7
+        with:
+          context: .
+          push: false
+
   # ── Stage 1: Lint ────────────────────────────────────────────────────────────
   lint:
     name: Lint
