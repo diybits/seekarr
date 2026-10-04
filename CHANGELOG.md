@@ -4,6 +4,28 @@ All notable changes to Seekarr are documented here.
 
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [7.4.0] — 2026-10-04
+
+### Security
+
+- **Per-IP login lockout** — repeated failed logins from one IP are locked out. (#75)
+- **Sessions invalidated on password change** — every existing session is signed out. (#78)
+- **Stronger passwords** — at least 12 characters with a digit and a special character. (#81)
+- **2FA recovery codes** — one-time codes to sign in when the authenticator is unavailable. (#82)
+- **Credentials file locking** — an RLock guards concurrent writes to `credentials.json`. (#80)
+- **Dependencies and image** — outdated dependencies updated, unused `pywin32` dropped,
+  base image pinned, Dependabot added, Trivy scan hardened. (#84, #85)
+
+### Added
+
+- **Custom CA bundle** for *Arr instances using self-signed certificates. (#76)
+- **Troubleshooting guide** and reverse proxy examples. (#74, #77)
+
+### Fixed
+
+- **`arr_request()` signatures** aligned across apps; stale rebrand comment removed. (#83)
+- README typo and stale troubleshooting list. (#79)
+
 ## [7.3.0] — 2026-05-19
 
 ### Security
