@@ -1,6 +1,6 @@
 name: Deploy
 
-# Dispatches the Ansible deploy (jeblankenship/AnsibleLearning
+# Dispatches the Ansible deploy (diybits/infra
 # deploy_seekarr.yml). release_version is the published image tag, without the
 # leading v (e.g. 7.4.0); that version is what gets deployed.
 on:
@@ -17,8 +17,8 @@ on:
           - homelab
 
 env:
-  DEPLOY_REPO_OWNER: jeblankenship
-  DEPLOY_REPO: AnsibleLearning
+  DEPLOY_REPO_OWNER: diybits
+  DEPLOY_REPO: infra
   DEPLOY_WORKFLOW_ID: deploy_seekarr.yml
   DEPLOY_REPO_BRANCH: main
 
