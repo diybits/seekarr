@@ -4,6 +4,17 @@ All notable changes to Seekarr are documented here.
 
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+### Fixed
+
+- **Readarr cutoff hunts** — `get_cutoff_unmet_books()` was sending a bogus `cutoffUnmet` query param (not part of Readarr's `wanted/cutoff` API) and never paginating, silently capping results at 10 books. It now paginates properly and returns `None` on API failure so the upgrade hunt reports the error instead of "no books eligible". (#96)
+- **Readarr `monitored_only` setting honored for upgrades** — the cutoff hunt now passes the setting through, and `get_wanted_missing_books()` now actually forwards it (the parameter was accepted but dropped). `monitored_only=False` performs one pass per monitored value, matching Readarr's binary upstream filter. (#96)
+
+### Documentation
+
+- **Readarr retirement noted** — README states that Readarr was retired/archived upstream (2025-06-27); Seekarr maintains support against the final API. (#96)
+
 ## [7.4.1] — 2026-10-04
 
 ### Fixed

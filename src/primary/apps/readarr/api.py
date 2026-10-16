@@ -134,24 +134,53 @@ def get_download_queue_size(api_url: str, api_key: str, api_timeout: int) -> int
         return 0
 
 
-def get_cutoff_unmet_books(api_url: Optional[str] = None, api_key: Optional[str] = None, api_timeout: Optional[int] = None) -> List[Dict]:
+def get_cutoff_unmet_books(api_url: Optional[str] = None, api_key: Optional[str] = None,
+                           api_timeout: Optional[int] = None, monitored_only: bool = True) -> Optional[List[Dict]]:
     """
     Get a list of books that don't meet their quality profile cutoff.
-    Accepts optional API credentials.
+    Accepts optional API credentials (falls back to stored settings).
+
+    Uses Readarr's native GET /api/v1/wanted/cutoff endpoint. Note that
+    Readarr was retired and archived upstream (2025-06-27); this targets
+    the final API, which is stable.
+
+    Readarr's `monitored` query param is a binary filter (default true:
+    book AND author must be monitored), so "include unmonitored too"
+    requires one pass per value.
 
     Args:
         api_url: Optional API URL
         api_key: Optional API key
         api_timeout: Optional API timeout
+        monitored_only: If True, only return monitored books.
 
     Returns:
-        A list of book objects that need quality upgrades
+        A list of book objects (BookResource records) that need quality
+        upgrades, or None if the request failed.
     """
-    books = arr_request(api_url, api_key, api_timeout, "wanted/cutoff?cutoffUnmet=true")
-    if not books or "records" not in books:
-        return []
+    monitored_values = [True] if monitored_only else [True, False]
 
-    return books.get("records", [])
+    page_size = 1000
+    unmet_books = []
+    for monitored in monitored_values:
+        fetched = 0
+        page = 1
+        while True:
+            params = {"page": page, "pageSize": page_size, "monitored": monitored}
+            data = arr_request(api_url, api_key, api_timeout, "wanted/cutoff", params=params)
+            if data is None:
+                logger.error(f"Failed to retrieve cutoff unmet books from Readarr API (monitored={monitored}).")
+                return None
+            records = data.get("records", [])
+            unmet_books.extend(records)
+            fetched += len(records)
+            total_records = data.get("totalRecords", fetched)
+            if not records or fetched >= total_records:
+                break
+            page += 1
+
+    logger.debug(f"Found {len(unmet_books)} cutoff unmet books (monitored_only={monitored_only}).")
+    return unmet_books
 
 
 def get_wanted_missing_books(api_url: str, api_key: str, api_timeout: int, monitored_only: bool = True) -> List[Dict]:
@@ -171,24 +200,30 @@ def get_wanted_missing_books(api_url: str, api_key: str, api_timeout: int, monit
         logger.error(f"Invalid URL format: {api_url}")
         return []
 
+    # Readarr's `monitored` query param is a binary filter (default true),
+    # so "include unmonitored too" requires one pass per value.
+    monitored_values = [True] if monitored_only else [True, False]
+
     all_missing_books = []
-    page = 1
     page_size = 100
+    for monitored in monitored_values:
+        fetched = 0
+        page = 1
+        while True:
+            params = {'page': page, 'pageSize': page_size, 'monitored': monitored}
+            data = arr_request(api_url, api_key, api_timeout, "wanted/missing", params=params)
 
-    while True:
-        params = {'page': page, 'pageSize': page_size}
-        data = arr_request(api_url, api_key, api_timeout, "wanted/missing", params=params)
+            if not data or 'records' not in data or not data['records']:
+                break
 
-        if not data or 'records' not in data or not data['records']:
-            break
+            all_missing_books.extend(data['records'])
+            fetched += len(data['records'])
 
-        all_missing_books.extend(data['records'])
+            total_records = data.get('totalRecords', 0)
+            if fetched >= total_records:
+                break
 
-        total_records = data.get('totalRecords', 0)
-        if len(all_missing_books) >= total_records:
-            break
-
-        page += 1
+            page += 1
 
     logger.info(f"Successfully fetched {len(all_missing_books)} missing books from Readarr.")
     return all_missing_books

@@ -52,11 +52,12 @@ def process_cutoff_upgrades(
     # Extract necessary settings
     instance_name = app_settings.get("instance_name", "Readarr Default")
     hunt_upgrade_books = app_settings.get("hunt_upgrade_books", 0)
+    monitored_only = app_settings.get("monitored_only", True)
 
     # Get books eligible for upgrade
     readarr_logger.info("Retrieving books eligible for quality upgrade...")
     # Pass API credentials explicitly
-    upgrade_eligible_data = readarr_api.get_cutoff_unmet_books(api_url=api_url, api_key=api_key, api_timeout=api_timeout)
+    upgrade_eligible_data = readarr_api.get_cutoff_unmet_books(api_url=api_url, api_key=api_key, api_timeout=api_timeout, monitored_only=monitored_only)
     
     if upgrade_eligible_data is None: # Check if the API call failed (assuming it returns None on error)
         readarr_logger.error("Error retrieving books eligible for upgrade from Readarr API.")

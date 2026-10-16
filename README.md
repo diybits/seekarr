@@ -17,13 +17,15 @@
 | Sonarr      | **✅ Ready**  |
 | Radarr      | **✅ Ready**  |
 | Lidarr      | **✅ Ready**  |
-| Readarr     | **✅ Ready**  |
+| Readarr     | **✅ Ready** *(upstream archived)* |
 | Whisparr v2 | **✅ Ready**  |
 | Whisparr v3 (Eros) | **✅ Ready**  |
 | Bazarr      | **❌ Not Ready** |
 
 
 > **Note for curated collections:** Seekarr only processes items that are marked as *monitored* in your \*Arr application. If you have hand-selected media you don't want auto-searched or upgraded, unmonitor those items in Sonarr/Radarr/etc. before enabling Seekarr — this is the standard way to exclude specific content from any automated activity.
+>
+> **Note for Readarr:** Readarr was [retired and archived upstream](https://github.com/Readarr/Readarr) on 2025-06-27. Seekarr continues to support it against the final API, so existing Readarr instances keep working — but no new Readarr releases are coming, and new features in Seekarr may not target Readarr.
 
 ## Table of Contents
 - [Overview](#overview)

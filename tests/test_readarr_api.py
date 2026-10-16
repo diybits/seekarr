@@ -150,6 +150,97 @@ def test_get_wanted_missing_books_returns_empty_for_invalid_url():
     assert result == []
 
 
+def test_get_wanted_missing_books_passes_monitored_param(monkeypatch):
+    """monitored_only=False does one pass per monitored value (true then false)."""
+    monkeypatch.setattr("src.primary.apps.readarr.api.get_ssl_verify_setting", lambda: True)
+    params_by_call = []
+    def mock_get(url, **kwargs):
+        params_by_call.append(dict(kwargs.get("params", {})))
+        return _mock_response({"records": [{"id": 1}], "totalRecords": 1})
+    with patch.object(readarr_api.session, "get", side_effect=mock_get):
+        result = readarr_api.get_wanted_missing_books("http://readarr:8787", "key", 30, monitored_only=False)
+    assert [p.get("monitored") for p in params_by_call] == [True, False]
+    assert len(result) == 2  # one book from each pass
+
+
+def test_get_wanted_missing_books_monitored_only_sends_single_pass(monkeypatch):
+    monkeypatch.setattr("src.primary.apps.readarr.api.get_ssl_verify_setting", lambda: True)
+    params_by_call = []
+    def mock_get(url, **kwargs):
+        params_by_call.append(dict(kwargs.get("params", {})))
+        return _mock_response({"records": [{"id": 1}], "totalRecords": 1})
+    with patch.object(readarr_api.session, "get", side_effect=mock_get):
+        result = readarr_api.get_wanted_missing_books("http://readarr:8787", "key", 30, monitored_only=True)
+    assert len(params_by_call) == 1
+    assert params_by_call[0]["monitored"] is True
+    assert len(result) == 1
+
+
+# ── get_cutoff_unmet_books — native wanted/cutoff endpoint ────────────────────
+
+def _paged_session_get(pages_by_key, captured_calls):
+    """Mock session.get that serves a different page per (monitored, page) key."""
+    def _get(url, **kwargs):
+        params = kwargs.get("params", {})
+        captured_calls.append({
+            "url": url,
+            "params": dict(params),
+            "verify": kwargs.get("verify"),
+        })
+        key = (params.get("monitored"), params.get("page", 1))
+        return _mock_response(pages_by_key.get(key, {"records": [], "totalRecords": 0}))
+    return _get
+
+
+def test_get_cutoff_unmet_books_paginates(monkeypatch):
+    """All pages are fetched and concatenated; monitored=True is sent."""
+    monkeypatch.setattr("src.primary.apps.readarr.api.get_ssl_verify_setting", lambda: False)
+    page1 = {"records": [{"id": i} for i in range(1000)], "totalRecords": 1500}
+    page2 = {"records": [{"id": i} for i in range(1000, 1500)], "totalRecords": 1500}
+    calls = []
+    with patch.object(readarr_api.session, "get", side_effect=_paged_session_get({
+        (True, 1): page1,
+        (True, 2): page2,
+    }, calls)):
+        result = readarr_api.get_cutoff_unmet_books("http://readarr:8787", "key", 30)
+    assert len(result) == 1500
+    assert all(c["url"] == "http://readarr:8787/api/v1/wanted/cutoff" for c in calls)
+    assert all(c["params"]["monitored"] is True for c in calls)
+    assert [c["params"]["page"] for c in calls] == [1, 2]
+    assert all(c["verify"] is False for c in calls)
+
+
+def test_get_cutoff_unmet_books_includes_unmonitored_when_requested(monkeypatch):
+    """monitored_only=False does one pass per monitored value (true and false)."""
+    monkeypatch.setattr("src.primary.apps.readarr.api.get_ssl_verify_setting", lambda: True)
+    calls = []
+    with patch.object(readarr_api.session, "get", side_effect=_paged_session_get({
+        (True, 1): {"records": [{"id": 1}], "totalRecords": 1},
+        (False, 1): {"records": [{"id": 2}, {"id": 3}], "totalRecords": 2},
+    }, calls)):
+        result = readarr_api.get_cutoff_unmet_books("http://readarr:8787", "key", 30, monitored_only=False)
+    assert [b["id"] for b in result] == [1, 2, 3]
+    assert [(c["params"]["monitored"], c["params"]["page"]) for c in calls] == [(True, 1), (False, 1)]
+
+
+def test_get_cutoff_unmet_books_empty_when_no_records(monkeypatch):
+    monkeypatch.setattr("src.primary.apps.readarr.api.get_ssl_verify_setting", lambda: True)
+    calls = []
+    with patch.object(readarr_api.session, "get", side_effect=_paged_session_get({
+        (True, 1): {"records": [], "totalRecords": 0},
+    }, calls)):
+        result = readarr_api.get_cutoff_unmet_books("http://readarr:8787", "key", 30)
+    assert result == []
+    assert len(calls) == 1  # no second page requested
+
+
+def test_get_cutoff_unmet_books_returns_none_on_failure(monkeypatch):
+    monkeypatch.setattr("src.primary.apps.readarr.api.get_ssl_verify_setting", lambda: True)
+    with patch.object(readarr_api.session, "get", side_effect=_requests.exceptions.ConnectionError("timeout")):
+        result = readarr_api.get_cutoff_unmet_books("http://readarr:8787", "key", 30)
+    assert result is None
+
+
 # ── get_author_details ─────────────────────────────────────────────────────────
 
 def test_get_author_details_uses_ssl_setting(monkeypatch):
