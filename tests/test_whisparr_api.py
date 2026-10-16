@@ -79,6 +79,27 @@ def test_arr_request_makes_single_request_on_404(monkeypatch):
     assert result is None
 
 
+# ── get_download_queue_size — totalRecords from paginated queue ─────────────
+
+def test_get_download_queue_size_reads_total_records(monkeypatch):
+    """Queue size comes from totalRecords, not len(records) of the first page."""
+    monkeypatch.setattr("src.primary.apps.whisparr.api.get_ssl_verify_setting", lambda: False)
+    captured = {}
+    with patch.object(whisparr_api.session, "get", side_effect=_capture_session_get({"totalRecords": 250, "records": [{"id": 1}]}, captured)):
+        result = whisparr_api.get_download_queue_size("http://whisparr:6969", "key", 30)
+    assert captured.get("verify") is False
+    assert captured["url"] == "http://whisparr:6969/api/v3/queue"
+    assert captured.get("params") == {"page": 1, "pageSize": 1}
+    assert result == 250
+
+
+def test_get_download_queue_size_returns_minus_one_on_failure(monkeypatch):
+    monkeypatch.setattr("src.primary.apps.whisparr.api.get_ssl_verify_setting", lambda: True)
+    with patch.object(whisparr_api.session, "get", side_effect=requests.exceptions.ConnectionError("timeout")):
+        result = whisparr_api.get_download_queue_size("http://whisparr:6969", "key", 30)
+    assert result == -1
+
+
 # ── item_search — SSL verification ────────────────────────────────────────────
 
 def test_item_search_uses_ssl_setting(monkeypatch):
