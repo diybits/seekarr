@@ -4,10 +4,11 @@ All notable changes to Seekarr are documented here.
 
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [7.5.0] — 2026-10-16
 
 ### Added
 
+- **Radarr native `wanted/cutoff` for upgrade hunts** — the quality-upgrade hunt now uses Radarr's dedicated `GET /api/v3/wanted/cutoff` endpoint instead of fetching every movie and every quality profile each cycle and comparing raw quality IDs client-side. This also fixes a correctness gap: the client-side comparison ignored custom-format cutoff scores (`cutoffFormatScore`) that Radarr's own upgradable logic includes. (#95)
 - **Shared *Arr HTTP client** — new `src/primary/utils/arr_client.py` consolidates the request plumbing (validation, per-app logging, SSL setting, session reuse, JSON/error logging) into one implementation with 21 unit tests. No behavior change yet: per-app `arr_request()` wrappers keep their signatures and migrate to the shared client in follow-up PRs. The shared client builds the User-Agent from a single version source (`version.txt`, so it will reflect the running release instead of the stale hardcoded `Seekarr/7.0.0` once apps migrate). (#98)
 
 ### Changed
@@ -20,9 +21,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - **Readarr cutoff hunts** — `get_cutoff_unmet_books()` was sending a bogus `cutoffUnmet` query param (not part of Readarr's `wanted/cutoff` API) and never paginating, silently capping results at 10 books. It now paginates properly and returns `None` on API failure so the upgrade hunt reports the error instead of "no books eligible". (#96)
 - **Readarr `monitored_only` setting honored for upgrades** — the cutoff hunt now passes the setting through, and `get_wanted_missing_books()` now actually forwards it (the parameter was accepted but dropped). `monitored_only=False` performs one pass per monitored value, matching Readarr's binary upstream filter. (#96)
+- **Whisparr download queue size** — the `queue` endpoint is a paginated `PagingResource` (default page size ~10), so `get_download_queue_size()` silently capped at the first page's count and the "skip the hunt while the download queue is busy" throttle never fired for larger queues. It now reads `totalRecords` with `page=1&pageSize=1`. (#94)
+- **Whisparr v2 API path** — Whisparr v2 serves its REST API exclusively under `/api/v3/`, but Seekarr requested the legacy `/api/` path first and fell back on 404, so every request was actually two (the first always 404s), doubling latency and API rate-cap consumption and spamming 404 errors into the logs. `arr_request()` now builds `/api/v3/{endpoint}` directly. (#92)
 
 ### Documentation
 
+- **Readarr retirement noted in docs site** — the Readarr app page and app card now carry the upstream-retirement notice, the state-directory table gains the missing `/config/state/eros/` row, and the stale footer version badge is fixed. (#102)
 - **Readarr retirement noted** — README states that Readarr was retired/archived upstream (2025-06-27); Seekarr maintains support against the final API. (#96)
 
 ### Removed
