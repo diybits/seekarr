@@ -1,4 +1,4 @@
-FROM python:3.11.16-slim
+FROM python:3.11.17-slim
 
 LABEL org.opencontainers.image.title="Seekarr" \
       org.opencontainers.image.description="Automated media collection management for Arr apps" \
@@ -9,9 +9,13 @@ LABEL org.opencontainers.image.title="Seekarr" \
 
 WORKDIR /app
 
-# Install system dependencies including net-tools for health checks
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    net-tools \
+# Install system dependencies including net-tools for health checks,
+# then upgrade all OS packages so Debian security patches land in the
+# image at build time (independent of base-image freshness)
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends net-tools \
+    && apt-get upgrade -y \
+    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 # Refresh the pip toolchain bundled with the base image (pip 24.0 /

@@ -11,5 +11,15 @@ GHSA-6v7p-g79w-8964
 
 # Same mechanism as above: pip 26.x's vendored SBOM lists setuptools
 # 70.3.0 as a component, but the installed setuptools is >= 84 (see the
-# pip-toolchain upgrade step in the Dockerfile). False positive.
+# pip-toolchain upgrade step in the Dockerfile). False positives for
+# both CVEs (fixed in 78.1.1 and 83.0.0 respectively).
 CVE-2025-47273
+CVE-2026-59890
+
+# Same mechanism as above: pip 26.x's vendored SBOM lists urllib3 2.7.0
+# as a component, but the app's installed urllib3 is pinned to 2.8.0 in
+# requirements.txt (direct import + transitive dep of requests). False
+# positives until pip re-vendors urllib3 >= 2.8.0.
+CVE-2026-97687
+CVE-2026-97688
+CVE-2026-97689
