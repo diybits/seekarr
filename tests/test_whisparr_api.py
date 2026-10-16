@@ -203,3 +203,21 @@ def test_check_connection_returns_false_for_unexpected_version(monkeypatch):
     with patch.object(whisparr_api.session, "get", side_effect=_capture_session_get({"version": "3.0.0"}, {})):
         result = whisparr_api.check_connection("http://whisparr:6969", "key", 30)
     assert result is False
+
+
+# ── Shared client delegation (T6d) ───────────────────────────────────────────
+
+def test_session_is_shared_arr_client_session():
+    import src.primary.utils.arr_client as arr_client
+    assert whisparr_api.session is arr_client.session
+
+
+def test_arr_request_uses_shared_user_agent(monkeypatch):
+    import src.primary.utils.arr_client as arr_client
+    monkeypatch.setattr("src.primary.apps.whisparr.api.get_ssl_verify_setting", lambda: True)
+    captured = {}
+    with patch.object(whisparr_api.session, "get", side_effect=_capture_session_get({"version": "2.0.0.0"}, captured)):
+        whisparr_api.arr_request("http://whisparr:6969", "key", 30, "system/status")
+    # UA comes from the shared version source (version.txt), not a hardcoded string
+    assert captured["headers"]["User-Agent"] == arr_client.get_user_agent()
+    assert "/api/v3/" in captured["url"]

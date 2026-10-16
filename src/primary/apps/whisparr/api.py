@@ -7,17 +7,16 @@ Uses the /api/v3/ endpoint path. Connection check verifies application
 version starts with '2' to confirm this is a v2 instance.
 """
 
-import requests
-import json
 from typing import List, Dict, Any, Optional
 from src.primary.utils.logger import get_logger
 from src.primary.settings_manager import get_ssl_verify_setting
+import src.primary.utils.arr_client as arr_client
 
 # Get logger for the Whisparr app
 whisparr_logger = get_logger("whisparr")
 
-# Use a session for better performance
-session = requests.Session()
+# Shared session (re-exported so callers/tests can keep using whisparr_api.session)
+session = arr_client.session
 
 def arr_request(api_url: str, api_key: str, api_timeout: int, endpoint: str, method: str = "GET", data: Dict = None, params: Dict = None) -> Any:
     """
@@ -34,75 +33,17 @@ def arr_request(api_url: str, api_key: str, api_timeout: int, endpoint: str, met
     Returns:
         The parsed JSON response or None if the request failed
     """
-    try:
-        if not api_url or not api_key:
-            whisparr_logger.error("No URL or API key provided")
-            return None
-        
-        # Ensure api_url has a scheme
-        if not (api_url.startswith('http://') or api_url.startswith('https://')):
-            whisparr_logger.error(f"Invalid URL format: {api_url} - URL must start with http:// or https://")
-            return None
-            
-        # Whisparr v2 serves its REST API exclusively under /api/v3/
-        # (upstream Whisparr.Api.V3 controllers), so that is the only path we use.
-        full_url = f"{api_url.rstrip('/')}/api/v3/{endpoint.lstrip('/')}"
-
-        whisparr_logger.debug(f"Making {method} request to: {full_url}")
-        
-        # Set up headers with User-Agent to identify Seekarr
-        headers = {
-            "X-Api-Key": api_key,
-            "Content-Type": "application/json",
-            "User-Agent": "Seekarr/7.0.0 (https://github.com/diybits/seekarr)"
-        }
-        
-        # Get SSL verification setting
-        verify_ssl = get_ssl_verify_setting()
-        
-        if not verify_ssl:
-            whisparr_logger.debug("SSL verification disabled by user setting")
-        
-        try:
-            if method.upper() == "GET":
-                response = session.get(full_url, headers=headers, params=params, timeout=api_timeout, verify=verify_ssl)
-            elif method.upper() == "POST":
-                response = session.post(full_url, headers=headers, json=data, timeout=api_timeout, verify=verify_ssl)
-            elif method.upper() == "PUT":
-                response = session.put(full_url, headers=headers, json=data, timeout=api_timeout, verify=verify_ssl)
-            elif method.upper() == "DELETE":
-                response = session.delete(full_url, headers=headers, timeout=api_timeout, verify=verify_ssl)
-            else:
-                whisparr_logger.error(f"Unsupported HTTP method: {method}")
-                return None
-            
-            # Check if the request was successful
-            try:
-                response.raise_for_status()
-            except requests.exceptions.HTTPError as e:
-                whisparr_logger.error(f"Error during {method} request to {endpoint}: {e}, Status Code: {response.status_code}")
-                whisparr_logger.debug(f"Response content: {response.text[:200]}")
-                return None
-            
-            # Try to parse JSON response
-            try:
-                if response.text:
-                    result = response.json()
-                    whisparr_logger.debug(f"Response from {response.url}: Status {response.status_code}, JSON parsed successfully")
-                    return result
-                else:
-                    whisparr_logger.debug(f"Response from {response.url}: Status {response.status_code}, Empty response")
-                    return {}
-            except json.JSONDecodeError:
-                whisparr_logger.error(f"Invalid JSON response from API: {response.text[:200]}")
-                return None
-            
-        except requests.exceptions.RequestException as e:
-            whisparr_logger.error(f"Request failed: {e}")
-            return None
-    except Exception as e:
-        whisparr_logger.error(f"Unexpected error during API request: {e}")
-        return None
+    # Delegated to the shared *Arr client (src/primary/utils/arr_client.py).
+    # Whisparr v2 serves its REST API exclusively under /api/v3/
+    # (upstream Whisparr.Api.V3 controllers), so that is the only path we use.
+    # get_ssl_verify_setting() is resolved here (app namespace) so existing
+    # test monkeypatches on this module keep working.
+    return arr_client.arr_request(
+        "whisparr", api_url, api_key, api_timeout, endpoint,
+        method=method, data=data, params=params,
+        api_prefix="v3",
+        ssl_verify=get_ssl_verify_setting(),
+    )
 
 def get_download_queue_size(api_url: str, api_key: str, api_timeout: int) -> int:
     """
