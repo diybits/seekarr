@@ -109,3 +109,20 @@ def test_stop_mid_loop_aborts(monkeypatch):
     calls = iter([False, False, True])
     result = eros_upgrade.process_cutoff_upgrades(SETTINGS, lambda: next(calls, True))
     assert result is False
+
+
+def test_scene_search_mode_falls_back_to_movie(monkeypatch):
+    """A legacy search_mode='scene' setting must not break the hunt or reach the api layer."""
+    _patch(monkeypatch, eligible=[{"id": 1, "title": "Movie", "movieFile": {}}])
+    seen = {}
+    def _capture(*a, **k):
+        seen["args"] = a
+        seen["kwargs"] = k
+        return [{"id": 1, "title": "Movie", "movieFile": {}}]
+    monkeypatch.setattr("src.primary.apps.eros.api.get_quality_upgrades", _capture)
+    s = {**SETTINGS, "search_mode": "scene"}
+    result = eros_upgrade.process_cutoff_upgrades(s, _NO_STOP)
+    assert result is True  # hunt still runs in movie mode
+    # api function takes (api_url, api_key, api_timeout, monitored_only) — no search_mode
+    assert len(seen["args"]) == 4
+    assert "scene" not in seen["args"] and "scene" not in seen["kwargs"].values()

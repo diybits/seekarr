@@ -131,20 +131,20 @@ def test_get_download_queue_size_returns_minus_one_on_failure(monkeypatch):
 
 # ── get_items_with_missing ────────────────────────────────────────────────────
 
-def test_get_items_with_missing_movie_mode_list(monkeypatch):
+def test_get_items_with_missing_filters_items_without_file(monkeypatch):
     monkeypatch.setattr("src.primary.apps.eros.api.get_ssl_verify_setting", lambda: True)
     items = [{"id": 1, "hasFile": False, "monitored": True}, {"id": 2, "hasFile": True, "monitored": True}]
     with patch.object(eros_api, "arr_request", return_value=items):
-        result = eros_api.get_items_with_missing("http://eros:6969", "key", 30, False, "movie")
+        result = eros_api.get_items_with_missing("http://eros:6969", "key", 30, False)
     assert len(result) == 1
     assert result[0]["id"] == 1
 
 
-def test_get_items_with_missing_movie_mode_dict_records(monkeypatch):
+def test_get_items_with_missing_dict_records(monkeypatch):
     monkeypatch.setattr("src.primary.apps.eros.api.get_ssl_verify_setting", lambda: True)
     payload = {"records": [{"id": 1, "hasFile": False, "monitored": True}]}
     with patch.object(eros_api, "arr_request", return_value=payload):
-        result = eros_api.get_items_with_missing("http://eros:6969", "key", 30, False, "movie")
+        result = eros_api.get_items_with_missing("http://eros:6969", "key", 30, False)
     assert len(result) == 1
 
 
@@ -155,44 +155,15 @@ def test_get_items_with_missing_filters_monitored(monkeypatch):
         {"id": 2, "hasFile": False, "monitored": False},
     ]
     with patch.object(eros_api, "arr_request", return_value=items):
-        result = eros_api.get_items_with_missing("http://eros:6969", "key", 30, True, "movie")
+        result = eros_api.get_items_with_missing("http://eros:6969", "key", 30, True)
     assert len(result) == 1
     assert result[0]["id"] == 1
-
-
-def test_get_items_with_missing_scene_mode(monkeypatch):
-    monkeypatch.setattr("src.primary.apps.eros.api.get_ssl_verify_setting", lambda: True)
-    payload = {"records": [{"id": 10, "monitored": True}]}
-    with patch.object(eros_api, "arr_request", return_value=payload):
-        result = eros_api.get_items_with_missing("http://eros:6969", "key", 30, False, "scene")
-    assert result == [{"id": 10, "monitored": True}]
-
-
-def test_get_items_with_missing_scene_fallback_to_movie(monkeypatch):
-    monkeypatch.setattr("src.primary.apps.eros.api.get_ssl_verify_setting", lambda: True)
-    items = [{"id": 5, "hasFile": False, "monitored": True}]
-    calls = []
-    def mock_arr(url, key, timeout, endpoint, **kwargs):
-        calls.append(endpoint)
-        if "scene" in endpoint:
-            return None
-        return items
-    with patch.object(eros_api, "arr_request", side_effect=mock_arr):
-        result = eros_api.get_items_with_missing("http://eros:6969", "key", 30, False, "scene")
-    assert any("scene" in c for c in calls)
-    assert result == items
-
-
-def test_get_items_with_missing_invalid_mode(monkeypatch):
-    monkeypatch.setattr("src.primary.apps.eros.api.get_ssl_verify_setting", lambda: True)
-    result = eros_api.get_items_with_missing("http://eros:6969", "key", 30, False, "invalid")
-    assert result is None
 
 
 def test_get_items_with_missing_returns_none_on_failure(monkeypatch):
     monkeypatch.setattr("src.primary.apps.eros.api.get_ssl_verify_setting", lambda: True)
     with patch.object(eros_api, "arr_request", return_value=None):
-        result = eros_api.get_items_with_missing("http://eros:6969", "key", 30, False, "movie")
+        result = eros_api.get_items_with_missing("http://eros:6969", "key", 30, False)
     assert result is None
 
 
@@ -224,43 +195,22 @@ def test_get_cutoff_unmet_items_returns_none_on_failure(monkeypatch):
 
 # ── get_quality_upgrades ──────────────────────────────────────────────────────
 
-def test_get_quality_upgrades_movie_mode(monkeypatch):
+def test_get_quality_upgrades_filters_cutoff_unmet_with_file(monkeypatch):
     monkeypatch.setattr("src.primary.apps.eros.api.get_ssl_verify_setting", lambda: True)
     items = [
         {"id": 1, "hasFile": True, "qualityCutoffNotMet": True, "monitored": True},
         {"id": 2, "hasFile": False, "qualityCutoffNotMet": True, "monitored": True},
     ]
     with patch.object(eros_api, "arr_request", return_value=items):
-        result = eros_api.get_quality_upgrades("http://eros:6969", "key", 30, False, "movie")
+        result = eros_api.get_quality_upgrades("http://eros:6969", "key", 30, False)
     assert len(result) == 1
     assert result[0]["id"] == 1
 
 
-def test_get_quality_upgrades_scene_mode(monkeypatch):
+def test_get_quality_upgrades_returns_none_on_failure(monkeypatch):
     monkeypatch.setattr("src.primary.apps.eros.api.get_ssl_verify_setting", lambda: True)
-    payload = {"records": [{"id": 10, "monitored": True}]}
-    with patch.object(eros_api, "arr_request", return_value=payload):
-        result = eros_api.get_quality_upgrades("http://eros:6969", "key", 30, False, "scene")
-    assert result == [{"id": 10, "monitored": True}]
-
-
-def test_get_quality_upgrades_scene_fallback_to_movie(monkeypatch):
-    monkeypatch.setattr("src.primary.apps.eros.api.get_ssl_verify_setting", lambda: True)
-    items = [{"id": 5, "hasFile": True, "qualityCutoffNotMet": True, "monitored": True}]
-    calls = []
-    def mock_arr(url, key, timeout, endpoint, **kwargs):
-        calls.append(endpoint)
-        if "scene" in endpoint:
-            return None
-        return items
-    with patch.object(eros_api, "arr_request", side_effect=mock_arr):
-        result = eros_api.get_quality_upgrades("http://eros:6969", "key", 30, False, "scene")
-    assert result == items
-
-
-def test_get_quality_upgrades_invalid_mode(monkeypatch):
-    monkeypatch.setattr("src.primary.apps.eros.api.get_ssl_verify_setting", lambda: True)
-    result = eros_api.get_quality_upgrades("http://eros:6969", "key", 30, False, "bad")
+    with patch.object(eros_api, "arr_request", return_value=None):
+        result = eros_api.get_quality_upgrades("http://eros:6969", "key", 30, False)
     assert result is None
 
 
