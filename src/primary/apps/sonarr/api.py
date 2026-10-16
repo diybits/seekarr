@@ -7,17 +7,17 @@ Handles all communication with the Sonarr API
 import requests
 import json
 import time
-import traceback
 from typing import List, Dict, Any, Optional, Union
 # Correct the import path
 from src.primary.utils.logger import get_logger
 from src.primary.settings_manager import get_ssl_verify_setting
+import src.primary.utils.arr_client as arr_client
 
 # Get logger for the Sonarr app
 sonarr_logger = get_logger("sonarr")
 
-# Use a session for better performance
-session = requests.Session()
+# Shared session (re-exported so callers/tests can keep using sonarr_api.session)
+session = arr_client.session
 
 def arr_request(api_url: str, api_key: str, api_timeout: int, endpoint: str, method: str = "GET", data: Dict = None, params: Dict = None) -> Any:
     """
@@ -35,79 +35,15 @@ def arr_request(api_url: str, api_key: str, api_timeout: int, endpoint: str, met
     Returns:
         The parsed JSON response or None if the request failed
     """
-    try:
-        if not api_url or not api_key:
-            sonarr_logger.error("No URL or API key provided")
-            return None
-
-        # Ensure api_url has a scheme
-        if not (api_url.startswith('http://') or api_url.startswith('https://')):
-            sonarr_logger.error(f"Invalid URL format: {api_url} - URL must start with http:// or https://")
-            return None
-
-        # Construct the full URL properly
-        full_url = f"{api_url.rstrip('/')}/api/v3/{endpoint.lstrip('/')}"
-
-        sonarr_logger.debug(f"Making {method} request to: {full_url}")
-
-        # Set up headers with User-Agent to identify Seekarr
-        headers = {
-            "X-Api-Key": api_key,
-            "Content-Type": "application/json",
-            "User-Agent": "Seekarr/7.0.0 (https://github.com/diybits/seekarr)"
-        }
-
-        # Get SSL verification setting
-        verify_ssl = get_ssl_verify_setting()
-
-        if not verify_ssl:
-            sonarr_logger.debug("SSL verification disabled by user setting")
-
-        try:
-            if method.upper() == "GET":
-                response = session.get(full_url, headers=headers, params=params, timeout=api_timeout, verify=verify_ssl)
-            elif method.upper() == "POST":
-                response = session.post(full_url, headers=headers, json=data, timeout=api_timeout, verify=verify_ssl)
-            elif method.upper() == "PUT":
-                response = session.put(full_url, headers=headers, json=data, timeout=api_timeout, verify=verify_ssl)
-            elif method.upper() == "DELETE":
-                response = session.delete(full_url, headers=headers, timeout=api_timeout, verify=verify_ssl)
-            else:
-                sonarr_logger.error(f"Unsupported HTTP method: {method}")
-                return None
-
-            # Check for successful response
-            response.raise_for_status()
-
-            # Check if there's any content before trying to parse JSON
-            if response.content:
-                try:
-                    return response.json()
-                except json.JSONDecodeError as jde:
-                    # Log detailed information about the malformed response
-                    sonarr_logger.error(f"Error decoding JSON response from {endpoint}: {str(jde)}")
-                    sonarr_logger.error(f"Response status code: {response.status_code}")
-                    sonarr_logger.error(f"Response content (first 200 chars): {response.content[:200]}")
-                    return None
-            else:
-                sonarr_logger.debug(f"Empty response content from {endpoint}, returning empty dict")
-                return {}
-
-        except requests.exceptions.RequestException as e:
-            # Add detailed error logging
-            error_details = str(e)
-            if hasattr(e, 'response') and e.response is not None:
-                error_details += f", Status Code: {e.response.status_code}"
-                if e.response.content:
-                    error_details += f", Content: {e.response.content[:200]}"
-
-            sonarr_logger.error(f"Error during {method} request to {endpoint}: {error_details}")
-            return None
-    except Exception as e:
-        # Catch all exceptions and log them with traceback
-        sonarr_logger.error(f"CRITICAL ERROR in arr_request: {str(e)}")
-        sonarr_logger.error(f"Full traceback: {traceback.format_exc()}")
-        return None
+    # Delegated to the shared *Arr client (src/primary/utils/arr_client.py).
+    # get_ssl_verify_setting() is resolved here (app namespace) so existing
+    # test monkeypatches on this module keep working.
+    return arr_client.arr_request(
+        "sonarr", api_url, api_key, api_timeout, endpoint,
+        method=method, data=data, params=params,
+        api_prefix="v3",
+        ssl_verify=get_ssl_verify_setting(),
+    )
 
 def check_connection(api_url: str, api_key: str, api_timeout: int) -> bool:
     """Checks connection by fetching system status."""
@@ -260,7 +196,7 @@ def _fetch_paginated(
     headers = {
         "X-Api-Key": api_key,
         "Content-Type": "application/json",
-        "User-Agent": "Seekarr/7.0.0 (https://github.com/diybits/seekarr)"
+        "User-Agent": arr_client.get_user_agent(),
     }
     url = f"{api_url.rstrip('/')}/api/v3/{endpoint.lstrip('/')}"
     retries_per_page = 2

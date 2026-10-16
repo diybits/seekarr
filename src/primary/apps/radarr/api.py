@@ -4,18 +4,18 @@ Radarr-specific API functions
 Handles all communication with the Radarr API
 """
 
-import requests
 import time
 from typing import List, Dict, Any, Optional
 # Correct the import path
 from src.primary.utils.logger import get_logger
 from src.primary.settings_manager import get_ssl_verify_setting
+import src.primary.utils.arr_client as arr_client
 
 # Get logger for the Radarr app
 radarr_logger = get_logger("radarr")
 
-# Use a session for better performance
-session = requests.Session()
+# Shared session (re-exported so callers/tests can keep using radarr_api.session)
+session = arr_client.session
 
 def arr_request(api_url: str, api_key: str, api_timeout: int, endpoint: str, method: str = "GET", data: Dict = None, params: Dict = None) -> Any:
     """
@@ -32,53 +32,15 @@ def arr_request(api_url: str, api_key: str, api_timeout: int, endpoint: str, met
     Returns:
         The parsed JSON response or None if the request failed
     """
-    try:
-        if not api_url or not api_key:
-            radarr_logger.error("No URL or API key provided")
-            return None
-        
-        # Construct the full URL properly
-        full_url = f"{api_url.rstrip('/')}/api/v3/{endpoint.lstrip('/')}"
-        
-        radarr_logger.debug(f"Making {method} request to: {full_url}")
-        
-        # Set up headers with the API key
-        headers = {
-            "X-Api-Key": api_key,
-            "Content-Type": "application/json",
-            "User-Agent": "Seekarr/7.0.0 (https://github.com/diybits/seekarr)"
-        }
-        
-        # Get SSL verification setting
-        verify_ssl = get_ssl_verify_setting()
-        
-        if not verify_ssl:
-            radarr_logger.debug("SSL verification disabled by user setting")
-        
-        # Make the request based on the method
-        if method.upper() == "GET":
-            response = session.get(full_url, headers=headers, params=params, timeout=api_timeout, verify=verify_ssl)
-        elif method.upper() == "POST":
-            response = session.post(full_url, headers=headers, json=data, timeout=api_timeout, verify=verify_ssl)
-        elif method.upper() == "PUT":
-            response = session.put(full_url, headers=headers, json=data, timeout=api_timeout, verify=verify_ssl)
-        elif method.upper() == "DELETE":
-            response = session.delete(full_url, headers=headers, timeout=api_timeout, verify=verify_ssl)
-        else:
-            radarr_logger.error(f"Unsupported HTTP method: {method}")
-            return None
-        
-        # Check for errors
-        response.raise_for_status()
-        
-        # Parse JSON response
-        if response.text:
-            return response.json()
-        return {}
-        
-    except requests.exceptions.RequestException as e:
-        radarr_logger.error(f"API request failed: {e}")
-        return None
+    # Delegated to the shared *Arr client (src/primary/utils/arr_client.py).
+    # get_ssl_verify_setting() is resolved here (app namespace) so existing
+    # test monkeypatches on this module keep working.
+    return arr_client.arr_request(
+        "radarr", api_url, api_key, api_timeout, endpoint,
+        method=method, data=data, params=params,
+        api_prefix="v3",
+        ssl_verify=get_ssl_verify_setting(),
+    )
 
 def get_download_queue_size(api_url: str, api_key: str, api_timeout: int) -> int:
     """

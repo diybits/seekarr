@@ -68,6 +68,7 @@ def arr_request(
     data: Optional[Dict] = None,
     params: Optional[Dict] = None,
     api_prefix: str = "v3",
+    ssl_verify: Optional[bool] = None,
 ) -> Any:
     """
     Make a request to an *Arr instance API.
@@ -83,6 +84,10 @@ def arr_request(
         params: Optional query parameters (sent on GET requests).
         api_prefix: API version path segment ("v3" for Sonarr/Radarr/Whisparr v2/Eros,
             "v1" for Lidarr/Readarr).
+        ssl_verify: Optional explicit SSL verification override. When None (the
+            default) the user setting is read via get_ssl_verify_setting().
+            Per-app wrappers pass the resolved setting so their existing
+            test/monkeypatch points on the app module keep working.
 
     Returns:
         The parsed JSON response, an empty dict for an empty 2xx response,
@@ -108,7 +113,7 @@ def arr_request(
             "User-Agent": get_user_agent(),
         }
 
-        verify_ssl = get_ssl_verify_setting()
+        verify_ssl = get_ssl_verify_setting() if ssl_verify is None else ssl_verify
 
         if not verify_ssl:
             app_logger.debug("SSL verification disabled by user setting")
