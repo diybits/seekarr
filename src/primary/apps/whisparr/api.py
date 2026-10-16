@@ -44,8 +44,9 @@ def arr_request(api_url: str, api_key: str, api_timeout: int, endpoint: str, met
             whisparr_logger.error(f"Invalid URL format: {api_url} - URL must start with http:// or https://")
             return None
             
-        # Construct the full URL properly — Whisparr v2 primary path is /api/ (not /api/v3/)
-        full_url = f"{api_url.rstrip('/')}/api/{endpoint.lstrip('/')}"
+        # Whisparr v2 serves its REST API exclusively under /api/v3/
+        # (upstream Whisparr.Api.V3 controllers), so that is the only path we use.
+        full_url = f"{api_url.rstrip('/')}/api/v3/{endpoint.lstrip('/')}"
 
         whisparr_logger.debug(f"Making {method} request to: {full_url}")
         
@@ -74,22 +75,6 @@ def arr_request(api_url: str, api_key: str, api_timeout: int, endpoint: str, met
             else:
                 whisparr_logger.error(f"Unsupported HTTP method: {method}")
                 return None
-            
-            # If we get a 404, try the v3 path as a fallback
-            if response.status_code == 404:
-                v3_url = f"{api_url.rstrip('/')}/api/v3/{endpoint.lstrip('/')}"
-                whisparr_logger.debug(f"Standard path returned 404, trying v3 fallback: {v3_url}")
-                
-                if method == "GET":
-                    response = session.get(v3_url, headers=headers, params=params, timeout=api_timeout, verify=verify_ssl)
-                elif method == "POST":
-                    response = session.post(v3_url, headers=headers, json=data, timeout=api_timeout, verify=verify_ssl)
-                elif method == "PUT":
-                    response = session.put(v3_url, headers=headers, json=data, timeout=api_timeout, verify=verify_ssl)
-                elif method == "DELETE":
-                    response = session.delete(v3_url, headers=headers, timeout=api_timeout, verify=verify_ssl)
-                
-                whisparr_logger.debug(f"V3 path request returned status code: {response.status_code}")
             
             # Check if the request was successful
             try:
@@ -240,53 +225,27 @@ def item_search(api_url: str, api_key: str, api_timeout: int, item_ids: List[int
         The command ID if the search command was triggered successfully, None otherwise
     """
     try:
+        if not item_ids:
+            whisparr_logger.warning("No item IDs provided for search.")
+            return None
+
         whisparr_logger.debug(f"Searching for items with IDs: {item_ids}")
-        
-        # Always use the same payload format since we're always using v2 API
+
         payload = {
             "name": "EpisodeSearch",
             "episodeIds": item_ids
         }
-        
-        # For commands, we need to directly try both path formats
-        command_endpoint = "command"
-        url = f"{api_url.rstrip('/')}/api/{command_endpoint}"
-        backup_url = f"{api_url.rstrip('/')}/api/v3/{command_endpoint}"
-        
-        verify_ssl = get_ssl_verify_setting()
-        headers = {
-            "X-Api-Key": api_key,
-            "Content-Type": "application/json",
-            "User-Agent": "Seekarr/7.0.0 (https://github.com/diybits/seekarr)"
-        }
 
-        # Try standard API path first
-        whisparr_logger.debug(f"Attempting command with standard API path: {url}")
-        try:
-            response = session.post(url, headers=headers, json=payload, timeout=api_timeout, verify=verify_ssl)
-            # If we get a 404 or 405, try the v3 path
-            if response.status_code in [404, 405]:
-                whisparr_logger.debug(f"Standard path returned {response.status_code}, trying with V3 path: {backup_url}")
-                response = session.post(backup_url, headers=headers, json=payload, timeout=api_timeout, verify=verify_ssl)
-                
-            response.raise_for_status()
-            result = response.json()
-            
-            if result and "id" in result:
-                command_id = result["id"]
-                whisparr_logger.debug(f"Search command triggered with ID {command_id}")
-                return command_id
-            else:
-                whisparr_logger.error("Failed to trigger search command - no command ID returned")
-                return None
-        except requests.exceptions.HTTPError as e:
-            whisparr_logger.error(f"HTTP error during search command: {e}, Status Code: {response.status_code}")
-            whisparr_logger.debug(f"Response content: {response.text[:200]}")
-            return None
-        except Exception as e:
-            whisparr_logger.error(f"Error sending search command: {e}")
-            return None
-        
+        result = arr_request(api_url, api_key, api_timeout, "command", method="POST", data=payload)
+
+        if result and isinstance(result, dict) and "id" in result:
+            command_id = result["id"]
+            whisparr_logger.debug(f"Search command triggered with ID {command_id}")
+            return command_id
+
+        whisparr_logger.error(f"Failed to trigger search command - no command ID returned. Response: {result}")
+        return None
+
     except Exception as e:
         whisparr_logger.error(f"Error searching for items: {str(e)}")
         return None
@@ -308,43 +267,14 @@ def get_command_status(api_url: str, api_key: str, api_timeout: int, command_id:
         whisparr_logger.error("No command ID provided for status check.")
         return None
         
-    try:
-        # For commands, we need to directly try both path formats
-        command_endpoint = f"command/{command_id}"
-        url = f"{api_url.rstrip('/')}/api/{command_endpoint}"
-        backup_url = f"{api_url.rstrip('/')}/api/v3/{command_endpoint}"
-        
-        headers = {
-            "X-Api-Key": api_key,
-            "Content-Type": "application/json"
-        }
-        
-        # Try standard API path first
-        verify_ssl = get_ssl_verify_setting()
-        whisparr_logger.debug(f"Checking command status with standard API path: {url}")
-        try:
-            response = session.get(url, headers=headers, timeout=api_timeout, verify=verify_ssl)
-            # If we get a 404, try the v3 path
-            if response.status_code == 404:
-                whisparr_logger.debug(f"Standard path returned 404, trying with V3 path: {backup_url}")
-                response = session.get(backup_url, headers=headers, timeout=api_timeout, verify=verify_ssl)
-                
-            response.raise_for_status()
-            result = response.json()
-            
-            whisparr_logger.debug(f"Command {command_id} status: {result.get('status', 'unknown')}")
-            return result
-        except requests.exceptions.HTTPError as e:
-            whisparr_logger.error(f"HTTP error getting command status: {e}, Status Code: {response.status_code}")
-            whisparr_logger.debug(f"Response content: {response.text[:200]}")
-            return None
-        except Exception as e:
-            whisparr_logger.error(f"Error getting command status: {e}")
-            return None
-            
-    except Exception as e:
-        whisparr_logger.error(f"Error getting command status for ID {command_id}: {e}")
-        return None
+    # Commands live under /api/v3/command — a single arr_request call is enough.
+    result = arr_request(api_url, api_key, api_timeout, f"command/{command_id}")
+    if isinstance(result, dict):
+        whisparr_logger.debug(f"Command {command_id} status: {result.get('status', 'unknown')}")
+        return result
+
+    whisparr_logger.error(f"Failed to get command status for ID {command_id}")
+    return None
 
 def check_connection(api_url: str, api_key: str, api_timeout: int) -> bool:
     """
@@ -359,43 +289,24 @@ def check_connection(api_url: str, api_key: str, api_timeout: int) -> bool:
         True if the connection is successful, False otherwise
     """
     try:
-        # For Whisparr V2, we need to handle both regular and v3 API formats
         whisparr_logger.debug(f"Checking connection to Whisparr V2 instance at {api_url}")
-        
-        # First try with standard path
-        endpoint = "system/status"
-        response = arr_request(api_url, api_key, api_timeout, endpoint)
-        
-        # If that failed, try with v3 path format
-        if response is None:
-            whisparr_logger.debug("Standard API path failed, trying v3 format...")
-            # Try direct HTTP request to v3 endpoint without using arr_request
-            url = f"{api_url.rstrip('/')}/api/v3/system/status"
-            headers = {'X-Api-Key': api_key}
-            
-            try:
-                resp = session.get(url, headers=headers, timeout=api_timeout, verify=get_ssl_verify_setting())
-                resp.raise_for_status()
-                response = resp.json()
-            except Exception as e:
-                whisparr_logger.debug(f"V3 API path also failed: {str(e)}")
-                return False
-        
-        if response is not None:
-            # Get the version information if available
-            version = response.get("version", "unknown")
-            
-            # Check if this is a v2.x version
-            if version and version.startswith('2'):
-                whisparr_logger.debug(f"Successfully connected to Whisparr V2 API version: {version}")
-                return True
-            else:
-                whisparr_logger.warning(f"Connected to Whisparr but found unexpected version: {version}, expected 2.x")
-                return False
-        else:
+
+        response = arr_request(api_url, api_key, api_timeout, "system/status")
+
+        if not isinstance(response, dict):
             whisparr_logger.error("Failed to connect to Whisparr V2 API")
             return False
-            
+
+        version = response.get("version", "unknown")
+
+        # Only accept v2.x instances (v1 used a different API layout).
+        if isinstance(version, str) and version.startswith('2'):
+            whisparr_logger.debug(f"Successfully connected to Whisparr V2 API version: {version}")
+            return True
+
+        whisparr_logger.warning(f"Connected to Whisparr but found unexpected version: {version}, expected 2.x")
+        return False
+
     except Exception as e:
         whisparr_logger.error(f"Error checking connection to Whisparr V2 API: {str(e)}")
         return False
