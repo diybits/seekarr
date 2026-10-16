@@ -1,6 +1,9 @@
 # Claude Code local config
 .claude/
 
+# Local working plans/notes (not for version control)
+.local/
+
 # Runtime config volume (contains live API keys and credentials)
 /config/
 
