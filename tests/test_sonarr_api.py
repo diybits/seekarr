@@ -259,3 +259,21 @@ def test_get_series_with_missing_uses_ssl_setting(monkeypatch):
     with patch.object(sonarr_api.session, "get", side_effect=mock_get):
         sonarr_api.get_series_with_missing_episodes("http://sonarr:8989", "key", 30, True, 1, False)
     assert all(v is False for v in calls)
+
+
+# ── Shared client delegation (T6b) ───────────────────────────────────────────
+
+def test_session_is_shared_arr_client_session():
+    import src.primary.utils.arr_client as arr_client
+    assert sonarr_api.session is arr_client.session
+
+
+def test_arr_request_uses_shared_user_agent(monkeypatch):
+    import src.primary.utils.arr_client as arr_client
+    monkeypatch.setattr("src.primary.apps.sonarr.api.get_ssl_verify_setting", lambda: True)
+    captured = {}
+    with patch.object(sonarr_api.session, "get", side_effect=_capture_session_get({"version": "4.0.0"}, captured)):
+        sonarr_api.arr_request("http://sonarr:8989", "key", 30, "system/status")
+    # UA comes from the shared version source (version.txt), not a hardcoded string
+    assert captured["headers"]["User-Agent"] == arr_client.get_user_agent()
+    assert "Seekarr/" in captured["headers"]["User-Agent"]

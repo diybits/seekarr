@@ -193,3 +193,21 @@ def test_get_cutoff_unmet_movies_returns_none_on_failure(monkeypatch):
     with patch.object(radarr_api.session, "get", side_effect=_requests.exceptions.ConnectionError("timeout")):
         result = radarr_api.get_cutoff_unmet_movies("http://radarr:7878", "key", 30, monitored_only=True)
     assert result is None
+
+
+# ── Shared client delegation (T6b) ───────────────────────────────────────────
+
+def test_session_is_shared_arr_client_session():
+    import src.primary.utils.arr_client as arr_client
+    assert radarr_api.session is arr_client.session
+
+
+def test_arr_request_uses_shared_user_agent(monkeypatch):
+    import src.primary.utils.arr_client as arr_client
+    monkeypatch.setattr("src.primary.apps.radarr.api.get_ssl_verify_setting", lambda: True)
+    captured = {}
+    with patch.object(radarr_api.session, "get", side_effect=_capture_session_get({"version": "6.0.0"}, captured)):
+        radarr_api.arr_request("http://radarr:7878", "key", 30, "system/status")
+    # UA comes from the shared version source (version.txt), not a hardcoded string
+    assert captured["headers"]["User-Agent"] == arr_client.get_user_agent()
+    assert "Seekarr/" in captured["headers"]["User-Agent"]
