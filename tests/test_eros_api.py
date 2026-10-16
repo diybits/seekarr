@@ -294,3 +294,21 @@ def test_check_connection_returns_false_on_exception(monkeypatch):
     with patch.object(eros_api, "arr_request", side_effect=Exception("boom")):
         result = eros_api.check_connection("http://eros:6969", "key", 30)
     assert result is False
+
+
+# ── Shared client delegation (T6d) ───────────────────────────────────────────
+
+def test_session_is_shared_arr_client_session():
+    import src.primary.utils.arr_client as arr_client
+    assert eros_api.session is arr_client.session
+
+
+def test_arr_request_uses_shared_user_agent(monkeypatch):
+    import src.primary.utils.arr_client as arr_client
+    monkeypatch.setattr("src.primary.apps.eros.api.get_ssl_verify_setting", lambda: True)
+    captured = {}
+    with patch.object(eros_api.session, "get", side_effect=_capture_session_get({"version": "3.0.0.1234"}, captured)):
+        eros_api.arr_request("http://eros:9706", "key", 30, "system/status")
+    # UA comes from the shared version source (version.txt), not a hardcoded string
+    assert captured["headers"]["User-Agent"] == arr_client.get_user_agent()
+    assert "/api/v3/" in captured["url"]
