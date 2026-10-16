@@ -275,3 +275,21 @@ def test_search_books_returns_none_on_failure(monkeypatch):
     with patch.object(readarr_api.session, "post", side_effect=_requests.exceptions.ConnectionError("conn")):
         result = readarr_api.search_books("http://readarr:8787", "key", [1], 30)
     assert result is None
+
+
+# ── Shared client delegation (T6c) ───────────────────────────────────────────
+
+def test_session_is_shared_arr_client_session():
+    import src.primary.utils.arr_client as arr_client
+    assert readarr_api.session is arr_client.session
+
+
+def test_arr_request_uses_shared_user_agent(monkeypatch):
+    import src.primary.utils.arr_client as arr_client
+    monkeypatch.setattr("src.primary.apps.readarr.api.get_ssl_verify_setting", lambda: True)
+    captured = {}
+    with patch.object(readarr_api.session, "get", side_effect=_capture_session_get({"version": "0.3.0"}, captured)):
+        readarr_api.arr_request("http://readarr:8787", "key", 30, "system/status")
+    # UA comes from the shared version source (version.txt), not a hardcoded string
+    assert captured["headers"]["User-Agent"] == arr_client.get_user_agent()
+    assert "/api/v1/" in captured["url"]

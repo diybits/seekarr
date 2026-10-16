@@ -4,16 +4,16 @@ Readarr-specific API functions
 Handles all communication with the Readarr API
 """
 
-import requests
 from typing import List, Dict, Any, Optional
 from src.primary.utils.logger import get_logger
 from src.primary.settings_manager import load_settings, get_ssl_verify_setting
+import src.primary.utils.arr_client as arr_client
 
 # Get app-specific logger
 logger = get_logger("readarr")
 
-# Use a session for better performance
-session = requests.Session()
+# Shared session (re-exported so callers/tests can keep using readarr_api.session)
+session = arr_client.session
 
 # Default API timeout in seconds - used as fallback only
 API_TIMEOUT = 30
@@ -41,8 +41,14 @@ def arr_request(api_url: str = None, api_key: str = None, api_timeout: int = Non
     Returns:
         The parsed JSON response or None if the request failed
     """
-    logger = get_logger(app_type)
+    app_logger = get_logger(app_type)
 
+    # Readarr-specific: resolve credentials from (in order) explicit
+    # instance_data, explicit args, or stored settings. The HTTP request
+    # itself is delegated to the shared *Arr client
+    # (src/primary/utils/arr_client.py); get_ssl_verify_setting() is
+    # resolved here (app namespace) so existing test monkeypatches on
+    # this module keep working.
     if instance_data:
         url = instance_data.get('api_url', '')
         key = instance_data.get('api_key', '')
@@ -58,52 +64,19 @@ def arr_request(api_url: str = None, api_key: str = None, api_timeout: int = Non
             key = settings.get('api_key', '')
             timeout = api_timeout or settings.get('api_timeout', 60)
         except Exception as e:
-            logger.error(f"Error loading {app_type} settings: {e}")
+            app_logger.error(f"Error loading {app_type} settings: {e}")
             return None
 
     if not url or not key:
-        logger.error(f"Missing API URL or key for {app_type}")
+        app_logger.error(f"Missing API URL or key for {app_type}")
         return None
 
-    url = url.rstrip('/')
-    endpoint = endpoint.lstrip('/')
-    full_url = f"{url}/api/v1/{endpoint}"
-
-    headers = {
-        "X-Api-Key": key,
-        "Content-Type": "application/json",
-        "User-Agent": "Seekarr/7.0.0 (https://github.com/diybits/seekarr)"
-    }
-
-    verify_ssl = get_ssl_verify_setting()
-
-    if not verify_ssl:
-        logger.debug("SSL verification disabled by user setting")
-
-    logger.debug(f"Making {method} request to {full_url}")
-
-    try:
-        if method.upper() == "GET":
-            response = session.get(full_url, headers=headers, params=params, timeout=timeout, verify=verify_ssl)
-        elif method.upper() == "POST":
-            response = session.post(full_url, headers=headers, json=data, timeout=timeout, verify=verify_ssl)
-        elif method.upper() == "PUT":
-            response = session.put(full_url, headers=headers, json=data, timeout=timeout, verify=verify_ssl)
-        elif method.upper() == "DELETE":
-            response = session.delete(full_url, headers=headers, timeout=timeout, verify=verify_ssl)
-        else:
-            logger.error(f"Unsupported HTTP method: {method}")
-            return None
-
-        response.raise_for_status()
-
-        if response.text:
-            return response.json()
-        return {}
-
-    except requests.exceptions.RequestException as e:
-        logger.error(f"API request failed: {e}")
-        return None
+    return arr_client.arr_request(
+        app_type, url, key, timeout, endpoint,
+        method=method, data=data, params=params,
+        api_prefix="v1",
+        ssl_verify=get_ssl_verify_setting(),
+    )
 
 
 def check_connection(api_url: str, api_key: str, api_timeout: int) -> bool:

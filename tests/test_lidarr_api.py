@@ -28,21 +28,13 @@ def _capture_session_get(json_data, captured):
     return _get
 
 
-def _capture_session_request(json_data, captured):
-    def _request(method, url, **kwargs):
-        captured["method"] = method
-        captured["url"] = url
-        captured.update(kwargs)
-        return _mock_response(json_data)
-    return _request
-
 
 # ── arr_request — SSL verification ────────────────────────────────────────────
 
 def test_arr_request_passes_verify_false_when_ssl_disabled(monkeypatch):
     monkeypatch.setattr("src.primary.apps.lidarr.api.get_ssl_verify_setting", lambda: False)
     captured = {}
-    with patch.object(lidarr_api.session, "request", side_effect=_capture_session_request({"version": "2.0.0"}, captured)):
+    with patch.object(lidarr_api.session, "get", side_effect=_capture_session_get({"version": "2.0.0"}, captured)):
         lidarr_api.arr_request("http://lidarr:8686", "key", 30, "system/status")
     assert captured.get("verify") is False
 
@@ -50,7 +42,7 @@ def test_arr_request_passes_verify_false_when_ssl_disabled(monkeypatch):
 def test_arr_request_passes_verify_true_when_ssl_enabled(monkeypatch):
     monkeypatch.setattr("src.primary.apps.lidarr.api.get_ssl_verify_setting", lambda: True)
     captured = {}
-    with patch.object(lidarr_api.session, "request", side_effect=_capture_session_request({"version": "2.0.0"}, captured)):
+    with patch.object(lidarr_api.session, "get", side_effect=_capture_session_get({"version": "2.0.0"}, captured)):
         lidarr_api.arr_request("http://lidarr:8686", "key", 30, "system/status")
     assert captured.get("verify") is True
 
@@ -58,7 +50,7 @@ def test_arr_request_passes_verify_true_when_ssl_enabled(monkeypatch):
 def test_arr_request_sends_user_agent(monkeypatch):
     monkeypatch.setattr("src.primary.apps.lidarr.api.get_ssl_verify_setting", lambda: True)
     captured = {}
-    with patch.object(lidarr_api.session, "request", side_effect=_capture_session_request({"version": "2.0.0"}, captured)):
+    with patch.object(lidarr_api.session, "get", side_effect=_capture_session_get({"version": "2.0.0"}, captured)):
         lidarr_api.arr_request("http://lidarr:8686", "key", 30, "system/status")
     assert "Seekarr" in captured.get("headers", {}).get("User-Agent", "")
 
@@ -66,7 +58,7 @@ def test_arr_request_sends_user_agent(monkeypatch):
 def test_arr_request_uses_v1_api_path(monkeypatch):
     monkeypatch.setattr("src.primary.apps.lidarr.api.get_ssl_verify_setting", lambda: True)
     captured = {}
-    with patch.object(lidarr_api.session, "request", side_effect=_capture_session_request({"version": "2.0.0"}, captured)):
+    with patch.object(lidarr_api.session, "get", side_effect=_capture_session_get({"version": "2.0.0"}, captured)):
         lidarr_api.arr_request("http://lidarr:8686", "key", 30, "system/status")
     assert "/api/v1/" in captured.get("url", "")
 
@@ -76,7 +68,7 @@ def test_arr_request_uses_v1_api_path(monkeypatch):
 def test_get_system_status_respects_ssl_disabled(monkeypatch):
     monkeypatch.setattr("src.primary.apps.lidarr.api.get_ssl_verify_setting", lambda: False)
     captured = {}
-    with patch.object(lidarr_api.session, "request", side_effect=_capture_session_request({"version": "2.0.0"}, captured)):
+    with patch.object(lidarr_api.session, "get", side_effect=_capture_session_get({"version": "2.0.0"}, captured)):
         result = lidarr_api.get_system_status("http://lidarr:8686", "key", 30)
     assert captured.get("verify") is False
     assert result.get("version") == "2.0.0"
@@ -85,14 +77,14 @@ def test_get_system_status_respects_ssl_disabled(monkeypatch):
 def test_get_system_status_respects_ssl_enabled(monkeypatch):
     monkeypatch.setattr("src.primary.apps.lidarr.api.get_ssl_verify_setting", lambda: True)
     captured = {}
-    with patch.object(lidarr_api.session, "request", side_effect=_capture_session_request({"version": "2.0.0"}, captured)):
+    with patch.object(lidarr_api.session, "get", side_effect=_capture_session_get({"version": "2.0.0"}, captured)):
         result = lidarr_api.get_system_status("http://lidarr:8686", "key", 30)
     assert captured.get("verify") is True
 
 
 def test_get_system_status_returns_empty_dict_on_failure(monkeypatch):
     monkeypatch.setattr("src.primary.apps.lidarr.api.get_ssl_verify_setting", lambda: True)
-    with patch.object(lidarr_api.session, "request", side_effect=Exception("conn refused")):
+    with patch.object(lidarr_api.session, "get", side_effect=Exception("conn refused")):
         result = lidarr_api.get_system_status("http://lidarr:8686", "key", 30)
     assert result == {}
 
@@ -102,7 +94,7 @@ def test_get_system_status_returns_empty_dict_on_failure(monkeypatch):
 def test_check_connection_respects_ssl_disabled(monkeypatch):
     monkeypatch.setattr("src.primary.apps.lidarr.api.get_ssl_verify_setting", lambda: False)
     captured = {}
-    with patch.object(lidarr_api.session, "request", side_effect=_capture_session_request({"version": "2.0.0"}, captured)):
+    with patch.object(lidarr_api.session, "get", side_effect=_capture_session_get({"version": "2.0.0"}, captured)):
         result = lidarr_api.check_connection("http://lidarr:8686", "key", 30)
     assert result is True
     assert captured.get("verify") is False
@@ -111,7 +103,7 @@ def test_check_connection_respects_ssl_disabled(monkeypatch):
 def test_check_connection_respects_ssl_enabled(monkeypatch):
     monkeypatch.setattr("src.primary.apps.lidarr.api.get_ssl_verify_setting", lambda: True)
     captured = {}
-    with patch.object(lidarr_api.session, "request", side_effect=_capture_session_request({"version": "2.0.0"}, captured)):
+    with patch.object(lidarr_api.session, "get", side_effect=_capture_session_get({"version": "2.0.0"}, captured)):
         result = lidarr_api.check_connection("http://lidarr:8686", "key", 30)
     assert result is True
     assert captured.get("verify") is True
@@ -119,7 +111,7 @@ def test_check_connection_respects_ssl_enabled(monkeypatch):
 
 def test_check_connection_returns_false_on_request_error(monkeypatch):
     monkeypatch.setattr("src.primary.apps.lidarr.api.get_ssl_verify_setting", lambda: True)
-    with patch.object(lidarr_api.session, "request", side_effect=Exception("conn refused")):
+    with patch.object(lidarr_api.session, "get", side_effect=Exception("conn refused")):
         result = lidarr_api.check_connection("http://lidarr:8686", "key", 30)
     assert result is False
 
@@ -136,6 +128,24 @@ def test_check_connection_returns_false_for_empty_api_key():
 
 def test_check_connection_returns_false_when_no_version_in_response(monkeypatch):
     monkeypatch.setattr("src.primary.apps.lidarr.api.get_ssl_verify_setting", lambda: True)
-    with patch.object(lidarr_api.session, "request", side_effect=_capture_session_request({"unexpected": "data"}, {})):
+    with patch.object(lidarr_api.session, "get", side_effect=_capture_session_get({"unexpected": "data"}, {})):
         result = lidarr_api.check_connection("http://lidarr:8686", "key", 30)
     assert result is False
+
+
+# ── Shared client delegation (T6c) ───────────────────────────────────────────
+
+def test_session_is_shared_arr_client_session():
+    import src.primary.utils.arr_client as arr_client
+    assert lidarr_api.session is arr_client.session
+
+
+def test_arr_request_uses_shared_user_agent(monkeypatch):
+    import src.primary.utils.arr_client as arr_client
+    monkeypatch.setattr("src.primary.apps.lidarr.api.get_ssl_verify_setting", lambda: True)
+    captured = {}
+    with patch.object(lidarr_api.session, "get", side_effect=_capture_session_get({"version": "2.0.0"}, captured)):
+        lidarr_api.arr_request("http://lidarr:8686", "key", 30, "system/status")
+    # UA comes from the shared version source (version.txt), not a hardcoded string
+    assert captured["headers"]["User-Agent"] == arr_client.get_user_agent()
+    assert "/api/v1/" in captured["url"]
