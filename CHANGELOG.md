@@ -6,6 +6,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+
+- **Shared *Arr HTTP client** — new `src/primary/utils/arr_client.py` consolidates the request plumbing (validation, per-app logging, SSL setting, session reuse, JSON/error logging) into one implementation with 21 unit tests. No behavior change yet: per-app `arr_request()` wrappers keep their signatures and migrate to the shared client in follow-up PRs. The shared client builds the User-Agent from a single version source (`version.txt`, so it will reflect the running release instead of the stale hardcoded `Seekarr/7.0.0` once apps migrate). (#98)
+
 ### Fixed
 
 - **Readarr cutoff hunts** — `get_cutoff_unmet_books()` was sending a bogus `cutoffUnmet` query param (not part of Readarr's `wanted/cutoff` API) and never paginating, silently capping results at 10 books. It now paginates properly and returns `None` on API failure so the upgrade hunt reports the error instead of "no books eligible". (#96)
