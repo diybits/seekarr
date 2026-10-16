@@ -116,18 +116,18 @@ def get_download_queue_size(api_url: str, api_key: str, api_timeout: int) -> int
     Returns:
         The number of items in the download queue, or -1 if the request failed
     """
-    response = arr_request(api_url, api_key, api_timeout, "queue")
-    
-    if response is None:
-        return -1
-    
-    # V2 API uses records in queue response
-    if isinstance(response, dict) and "records" in response:
-        return len(response["records"])
-    elif isinstance(response, list):
-        return len(response)
-    else:
-        return -1
+    # The queue endpoint is paginated (PagingResource, default page ~10), so
+    # len(records) would cap the count. One record is enough to read totalRecords.
+    params = {"page": 1, "pageSize": 1}
+    response = arr_request(api_url, api_key, api_timeout, "queue", params=params)
+
+    if response and isinstance(response, dict) and "totalRecords" in response:
+        queue_size = response.get("totalRecords", 0)
+        whisparr_logger.debug(f"Whisparr download queue size: {queue_size}")
+        return queue_size
+
+    whisparr_logger.error("Error getting Whisparr download queue size.")
+    return -1
 
 def get_items_with_missing(api_url: str, api_key: str, api_timeout: int, monitored_only: bool) -> List[Dict[str, Any]]:
     """
