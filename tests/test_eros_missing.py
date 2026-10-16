@@ -128,3 +128,20 @@ def test_process_missing_scenes_alias_delegates(monkeypatch):
     monkeypatch.setattr("src.primary.apps.eros.missing.increment_stat", inc)
     result = eros_missing.process_missing_scenes(SETTINGS, _NO_STOP)
     assert result is True
+
+
+def test_scene_search_mode_falls_back_to_movie(monkeypatch):
+    """A legacy search_mode='scene' setting must not break the hunt or reach the api layer."""
+    _patch(monkeypatch, missing=[{"id": 1, "title": "Movie", "hasFile": False}])
+    seen = {}
+    def _capture(*a, **k):
+        seen["args"] = a
+        seen["kwargs"] = k
+        return [{"id": 1, "title": "Movie", "hasFile": False}]
+    monkeypatch.setattr("src.primary.apps.eros.api.get_items_with_missing", _capture)
+    s = {**SETTINGS, "search_mode": "scene"}
+    result = eros_missing.process_missing_items(s, _NO_STOP)
+    assert result is True  # hunt still runs in movie mode
+    # api function takes (api_url, api_key, api_timeout, monitored_only) — no search_mode
+    assert len(seen["args"]) == 4
+    assert "scene" not in seen["args"] and "scene" not in seen["kwargs"].values()

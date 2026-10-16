@@ -47,6 +47,11 @@ def process_cutoff_upgrades(
     monitored_only = app_settings.get("monitored_only", True)
     # skip_item_refresh setting removed as it was a performance bottleneck
     search_mode = app_settings.get("search_mode", "movie")  # Default to movie mode if not specified
+    if search_mode != "movie":
+        # Eros upstream (Whisparr v3) exposes no scene endpoints; scene mode
+        # used to 404 and silently fall back to movie mode.
+        eros_logger.warning(f"search_mode '{search_mode}' is not supported by Eros — using 'movie' mode")
+        search_mode = "movie"
     
     eros_logger.info(f"Using search mode: {search_mode} for quality upgrades")
     
@@ -68,7 +73,7 @@ def process_cutoff_upgrades(
 
     # Get items eligible for upgrade
     eros_logger.info("Retrieving items eligible for cutoff upgrade...")
-    upgrade_eligible_data = eros_api.get_quality_upgrades(api_url, api_key, api_timeout, monitored_only, search_mode)
+    upgrade_eligible_data = eros_api.get_quality_upgrades(api_url, api_key, api_timeout, monitored_only)
     
     if not upgrade_eligible_data:
         eros_logger.info("No items found eligible for upgrade or error retrieving them.")
@@ -121,22 +126,10 @@ def process_cutoff_upgrades(
         item_id = item.get("id")
         title = item.get("title", "Unknown Title")
         
-        # For movies, we don't use season/episode format
-        if search_mode == "movie":
-            item_info = title
-            # In Whisparr, movie quality is stored differently than TV shows
-            current_quality = item.get("movieFile", {}).get("quality", {}).get("quality", {}).get("name", "Unknown")
-        else:
-            # If somehow using scene mode, try to format as S/E if available
-            season_number = item.get('seasonNumber')
-            episode_number = item.get('episodeNumber')
-            if season_number is not None and episode_number is not None:
-                season_episode = f"S{season_number:02d}E{episode_number:02d}"
-                item_info = f"{title} - {season_episode}"
-            else:
-                item_info = title
-            # Legacy episode quality path
-            current_quality = item.get("episodeFile", {}).get("quality", {}).get("quality", {}).get("name", "Unknown")
+        # Eros is movie-based — no season/episode format
+        item_info = title
+        # In Whisparr, movie quality is stored differently than TV shows
+        current_quality = item.get("movieFile", {}).get("quality", {}).get("quality", {}).get("name", "Unknown")
         
         eros_logger.info(f"Processing item for quality upgrade: \"{item_info}\" (Item ID: {item_id})")
         eros_logger.info(f" - Current quality: {current_quality}")

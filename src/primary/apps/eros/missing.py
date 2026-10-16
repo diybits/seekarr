@@ -49,6 +49,11 @@ def process_missing_items(
     skip_future_releases = app_settings.get("skip_future_releases", True)
     # skip_item_refresh setting removed as it was a performance bottleneck
     search_mode = app_settings.get("search_mode", "movie")  # Default to movie mode if not specified
+    if search_mode != "movie":
+        # Eros upstream (Whisparr v3) exposes no scene endpoints; scene mode
+        # used to 404 and silently fall back to movie mode.
+        eros_logger.warning(f"search_mode '{search_mode}' is not supported by Eros — using 'movie' mode")
+        search_mode = "movie"
     
     eros_logger.info(f"Using search mode: {search_mode} for missing items")
     
@@ -70,7 +75,7 @@ def process_missing_items(
     
     # Get missing items
     eros_logger.info("Retrieving items with missing files...")
-    missing_items = eros_api.get_items_with_missing(api_url, api_key, api_timeout, monitored_only, search_mode) 
+    missing_items = eros_api.get_items_with_missing(api_url, api_key, api_timeout, monitored_only)
     
     if missing_items is None: # API call failed
         eros_logger.error("Failed to retrieve missing items from Eros API.")
@@ -147,18 +152,8 @@ def process_missing_items(
         item_id = item.get("id")
         title = item.get("title", "Unknown Title")
         
-        # For movies, we don't use season/episode format
-        if search_mode == "movie":
-            item_info = title
-        else:
-            # If somehow using scene mode, try to format as S/E if available
-            season_number = item.get('seasonNumber')
-            episode_number = item.get('episodeNumber')
-            if season_number is not None and episode_number is not None:
-                season_episode = f"S{season_number:02d}E{episode_number:02d}"
-                item_info = f"{title} - {season_episode}"
-            else:
-                item_info = title
+        # Eros is movie-based — no season/episode format
+        item_info = title
         
         eros_logger.info(f"Processing missing item: \"{item_info}\" (Item ID: {item_id})")
         

@@ -123,57 +123,40 @@ def get_download_queue_size(api_url: str, api_key: str, api_timeout: int) -> int
         return -1
 
 
-def get_items_with_missing(api_url: str, api_key: str, api_timeout: int, monitored_only: bool, search_mode: str = "movie") -> List[Dict[str, Any]]:
+def get_items_with_missing(api_url: str, api_key: str, api_timeout: int, monitored_only: bool) -> List[Dict[str, Any]]:
     """
     Get a list of items with missing files (not downloaded/available).
+
+    Eros (Whisparr v3) is movie-based; the legacy 'scene' search mode has been
+    removed because Eros upstream exposes no scene endpoints.
 
     Args:
         api_url: The base URL of the Eros API
         api_key: The API key for authentication
         api_timeout: Timeout for the API request
         monitored_only: If True, only return monitored items.
-        search_mode: The search mode to use - 'movie' for movie-based or 'scene' for scene-based
 
     Returns:
         A list of item objects with missing files, or None if the request failed.
     """
     try:
-        eros_logger.debug(f"Retrieving missing items using search mode: {search_mode}...")
+        eros_logger.debug("Retrieving missing items...")
 
-        if search_mode == "movie":
-            response = arr_request(api_url, api_key, api_timeout, "movie")
+        response = arr_request(api_url, api_key, api_timeout, "movie")
 
-            if response is None:
-                return None
-
-            items = []
-            if isinstance(response, list):
-                items = [item for item in response if not item.get("hasFile", True)]
-            elif isinstance(response, dict) and "records" in response:
-                items = [item for item in response["records"] if not item.get("hasFile", True)]
-
-        elif search_mode == "scene":
-            response = arr_request(api_url, api_key, api_timeout, "scene/missing",
-                                   params={"pageSize": 1000})
-
-            if response is None:
-                eros_logger.warning("Scene endpoint not available, falling back to movie mode")
-                return get_items_with_missing(api_url, api_key, api_timeout, monitored_only, "movie")
-
-            items = []
-            if isinstance(response, dict) and "records" in response:
-                items = response["records"]
-            elif isinstance(response, list):
-                items = response
-
-        else:
-            eros_logger.error(f"Invalid search mode: {search_mode}. Must be 'movie' or 'scene'")
+        if response is None:
             return None
+
+        items = []
+        if isinstance(response, list):
+            items = [item for item in response if not item.get("hasFile", True)]
+        elif isinstance(response, dict) and "records" in response:
+            items = [item for item in response["records"] if not item.get("hasFile", True)]
 
         if monitored_only:
             items = [item for item in items if item.get("monitored", False)]
 
-        eros_logger.debug(f"Found {len(items)} missing items using {search_mode} mode")
+        eros_logger.debug(f"Found {len(items)} missing items")
         return items
 
     except Exception as e:
@@ -222,57 +205,40 @@ def get_cutoff_unmet_items(api_url: str, api_key: str, api_timeout: int, monitor
         return None
 
 
-def get_quality_upgrades(api_url: str, api_key: str, api_timeout: int, monitored_only: bool, search_mode: str = "movie") -> List[Dict[str, Any]]:
+def get_quality_upgrades(api_url: str, api_key: str, api_timeout: int, monitored_only: bool) -> List[Dict[str, Any]]:
     """
     Get a list of items that can be upgraded to better quality.
+
+    Eros (Whisparr v3) is movie-based; the legacy 'scene' search mode has been
+    removed because Eros upstream exposes no scene endpoints.
 
     Args:
         api_url: The base URL of the Eros API
         api_key: The API key for authentication
         api_timeout: Timeout for the API request
         monitored_only: If True, only return monitored items.
-        search_mode: The search mode to use - 'movie' for movie-based or 'scene' for scene-based
 
     Returns:
         A list of item objects that need quality upgrades, or None if the request failed.
     """
     try:
-        eros_logger.debug(f"Retrieving quality upgrade items using search mode: {search_mode}...")
+        eros_logger.debug("Retrieving quality upgrade items...")
 
-        if search_mode == "movie":
-            response = arr_request(api_url, api_key, api_timeout, "movie")
+        response = arr_request(api_url, api_key, api_timeout, "movie")
 
-            if response is None:
-                return None
-
-            items = []
-            if isinstance(response, list):
-                items = [item for item in response if item.get("hasFile", False) and item.get("qualityCutoffNotMet", False)]
-            elif isinstance(response, dict) and "records" in response:
-                items = [item for item in response["records"] if item.get("hasFile", False) and item.get("qualityCutoffNotMet", False)]
-
-        elif search_mode == "scene":
-            response = arr_request(api_url, api_key, api_timeout, "scene/cutoff",
-                                   params={"pageSize": 1000})
-
-            if response is None:
-                eros_logger.warning("Scene cutoff endpoint not available, falling back to movie mode")
-                return get_quality_upgrades(api_url, api_key, api_timeout, monitored_only, "movie")
-
-            items = []
-            if isinstance(response, dict) and "records" in response:
-                items = response["records"]
-            elif isinstance(response, list):
-                items = response
-
-        else:
-            eros_logger.error(f"Invalid search mode: {search_mode}. Must be 'movie' or 'scene'")
+        if response is None:
             return None
+
+        items = []
+        if isinstance(response, list):
+            items = [item for item in response if item.get("hasFile", False) and item.get("qualityCutoffNotMet", False)]
+        elif isinstance(response, dict) and "records" in response:
+            items = [item for item in response["records"] if item.get("hasFile", False) and item.get("qualityCutoffNotMet", False)]
 
         if monitored_only:
             items = [item for item in items if item.get("monitored", False)]
 
-        eros_logger.debug(f"Found {len(items)} quality upgrade items using {search_mode} mode")
+        eros_logger.debug(f"Found {len(items)} quality upgrade items")
         return items
 
     except Exception as e:

@@ -15,6 +15,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - **Readarr retirement noted** — README states that Readarr was retired/archived upstream (2025-06-27); Seekarr maintains support against the final API. (#96)
 
+### Removed
+
+- **Eros scene search mode** — Eros upstream (Whisparr v3) exposes no scene endpoints, so `scene` mode always 404'd and silently fell back to movie mode, wasting a request per cycle. The dead `scene/missing` / `scene/cutoff` code paths and S/E formatting branches are removed. The `search_mode` setting is kept for config backward-compat: any non-`movie` value now logs a warning once and runs in movie mode. (#97)
+
 ## [7.4.1] — 2026-10-04
 
 ### Fixed
