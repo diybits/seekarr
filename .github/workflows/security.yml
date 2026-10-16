@@ -51,7 +51,7 @@ jobs:
           # fix ships, the next dependabot base-image bump clears it.
           ignore-unfixed: true
           # Documented false positives (see the file for justifications)
-          ignorefile: 'trivy-ignores.txt'
+          trivyignores: 'trivy-ignores.txt'
 
       - name: Upload results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v4
