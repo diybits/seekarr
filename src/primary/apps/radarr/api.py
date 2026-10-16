@@ -137,6 +137,10 @@ def get_cutoff_unmet_movies(api_url: str, api_key: str, api_timeout: int, monito
     """
     Get a list of movies that don't meet their quality profile cutoff.
 
+    Uses Radarr's native GET /api/v3/wanted/cutoff endpoint, which applies the
+    same upgradability logic as the Radarr UI (quality cutoff AND custom-format
+    cutoff score) instead of comparing raw quality IDs client-side.
+
     Args:
         api_url: The base URL of the Radarr API
         api_key: The API key for authentication
@@ -144,53 +148,31 @@ def get_cutoff_unmet_movies(api_url: str, api_key: str, api_timeout: int, monito
         monitored_only: If True, only return monitored movies.
 
     Returns:
-        A list of movie objects that need quality upgrades, or None if the request failed.
+        A list of movie objects (full MovieResource records) that need quality
+        upgrades, or None if the request failed.
     """
-    # Radarr API endpoint for cutoff unmet movies
-    # Note: Radarr's /api/v3/movie endpoint doesn't directly support a simple 'cutoffUnmet=true' like Sonarr's wanted/cutoff.
-    # We need to fetch all movies and filter locally, or use the /api/v3/movie/lookup endpoint if searching by TMDB/IMDB ID.
-    # Fetching all movies is simpler for now.
-    radarr_logger.debug("Fetching all movies to determine cutoff unmet status...")
-    movies = arr_request(api_url, api_key, api_timeout, "movie")
-    if movies is None:
-        radarr_logger.error("Failed to retrieve movies from Radarr API for cutoff check.")
-        return None
+    # Radarr's `monitored` query param is an equality filter (default true), so
+    # "include unmonitored too" requires one pass per value.
+    monitored_values = [True] if monitored_only else [True, False]
 
-    # Need quality profile information to determine cutoff unmet status.
-    # Fetch quality profiles first.
-    profiles = arr_request(api_url, api_key, api_timeout, "qualityprofile")
-    if profiles is None:
-        radarr_logger.error("Failed to retrieve quality profiles from Radarr API.")
-        return None
-    
-    # Create a map for easy lookup: profile_id -> cutoff_format_score (or cutoff quality ID)
-    # Radarr profiles have 'cutoff' (quality ID) and potentially 'cutoffFormatScore'
-    profile_cutoff_map = {p['id']: p.get('cutoff') for p in profiles}
-    # TODO: Potentially incorporate cutoffFormatScore if needed for more complex logic
-
+    page_size = 1000
     unmet_movies = []
-    for movie in movies:
-        is_monitored = movie.get("monitored", False)
-        has_file = movie.get("hasFile", False)
-        profile_id = movie.get("qualityProfileId")
-        movie_file = movie.get("movieFile")
-
-        # Apply monitored_only filter if requested
-        if not monitored_only or is_monitored:
-            if has_file and movie_file and profile_id in profile_cutoff_map:
-                cutoff_quality_id = profile_cutoff_map[profile_id]
-                current_quality_id = movie_file.get("quality", {}).get("quality", {}).get("id")
-                
-                # Simple check: if current quality ID is less than cutoff quality ID
-                # This assumes quality IDs are ordered correctly (lower ID = lower quality)
-                # A more robust check might involve comparing quality *names* or *scores* if IDs aren't reliable order indicators.
-                if current_quality_id is not None and cutoff_quality_id is not None and current_quality_id < cutoff_quality_id:
-                    # TODO: Add check for cutoffFormatScore if necessary
-                    unmet_movies.append(movie)
-            # else: # Log why a movie wasn't considered unmet (optional)
-            #     if not has_file: radarr_logger.debug(f"Skipping {movie.get('title')} - no file.")
-            #     elif not movie_file: radarr_logger.debug(f"Skipping {movie.get('title')} - no movieFile info.")
-            #     elif profile_id not in profile_cutoff_map: radarr_logger.debug(f"Skipping {movie.get('title')} - profile ID {profile_id} not found.")
+    for monitored in monitored_values:
+        fetched = 0
+        page = 1
+        while True:
+            params = {"page": page, "pageSize": page_size, "monitored": monitored}
+            data = arr_request(api_url, api_key, api_timeout, "wanted/cutoff", params=params)
+            if data is None:
+                radarr_logger.error(f"Failed to retrieve cutoff unmet movies from Radarr API (monitored={monitored}).")
+                return None
+            records = data.get("records", [])
+            unmet_movies.extend(records)
+            fetched += len(records)
+            total_records = data.get("totalRecords", fetched)
+            if not records or fetched >= total_records:
+                break
+            page += 1
 
     radarr_logger.debug(f"Found {len(unmet_movies)} cutoff unmet movies (monitored_only={monitored_only}).")
     return unmet_movies
