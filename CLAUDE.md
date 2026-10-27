@@ -139,6 +139,6 @@ Single-user login backed by `/config/user/credentials.json`. Passwords hashed wi
   - **Lint**: `ruff check src/` using `ruff.toml` (rules: E722, F401, F541, F841, W292).
   - **Test**: `pytest tests/` with `pytest-cov`; enforces ≥50% coverage gate.
 - `publish.yml` — pushes the image to GHCR on merge to `main` (`latest`, sha) and on `v*` tags (semver); a tag also creates the GitHub Release.
-- `deploy.yml` — manual `workflow_dispatch`; dispatches the Ansible deploy of a published version (`GH_PAT_SEEKARR_DEPLOY`).
+- `deploy.yml` — manual `workflow_dispatch`; dispatches the Ansible deploy of a published version (token from the `diybits-deploy-dispatch` GitHub App).
 - `security.yml` — dependency/SAST scanning (Trivy + CodeQL).
 - `seekarr-docs.yml` — deploys `docs/` to GitHub Pages.
