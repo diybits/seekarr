@@ -29,10 +29,22 @@ jobs:
     timeout-minutes: 2
 
     steps:
+      # Short-lived token that can only run workflows in diybits/infra,
+      # from the dispatch GitHub App.
+      - name: Get dispatch token for ${{ env.DEPLOY_REPO_OWNER }}/${{ env.DEPLOY_REPO }}
+        id: app_token
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          client-id: ${{ vars.DEPLOY_DISPATCH_CLIENT_ID }}
+          private-key: ${{ secrets.DEPLOY_DISPATCH_APP_KEY }}
+          owner: ${{ env.DEPLOY_REPO_OWNER }}
+          repositories: ${{ env.DEPLOY_REPO }}
+          permission-actions: write
+
       - name: Trigger Ansible ${{ github.event.inputs.environment }} Deployment for ${{ github.event.inputs.release_version }}
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
-          github-token: ${{ secrets.GH_PAT_SEEKARR_DEPLOY }}
+          github-token: ${{ steps.app_token.outputs.token }}
           script: |
             await github.rest.actions.createWorkflowDispatch({
               owner: '${{ env.DEPLOY_REPO_OWNER }}',
